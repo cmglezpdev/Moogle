@@ -28,46 +28,5 @@ public class AuxiliarMethods{
                 if(i == j) count ++;
         return count;
     }
-    public static void MergeSort(ref Files[] files, ref string[] words) {
-         files = Sort(files, words, 0, files.Length - 1);
-    }
-    private static Files[] Sort(Files[] files, string[] words, int l, int r) {
-        if(l == r) {
-            Files[] sol = new Files[1];
-            sol[0] = new Files(files[l].Name, files[l].Path);
-            return sol;
-        }
-        
-        // Dividimos el array en dos y ordenamos recursivamente
-        int middle = (l + r) / 2;
-        // La primera mitad del array
-        Files[] LeftFiles = Sort(files, words, l, middle);
-        // La segunda mitad del array
-        Files[] RightFiles = Sort(files, words, middle, r);
-        // Mezclamos los dos Arrays
-        return Merge(LeftFiles, RightFiles, words);
-    }
-    private static Files[] Merge(Files[] LeftFiles, Files[] RightFiles, string[] words) {
-       
-        int n = LeftFiles.Length, m = RightFiles.Length;
-        Files[] union = new Files[n + m];
-        int l = 0, r = 0, u = 0;
-
-        while(l < n || r < m) {
-            if(l == n) {
-                union[u ++] = LeftFiles[l ++];
-                continue;
-            }
-            if(r == m) {
-                union[u ++] = RightFiles[r ++];
-                continue;
-            }
-            
-            if(CountWordsInName(LeftFiles[l].Name, words) <= CountWordsInName(RightFiles[r].Name, words))
-                union[u ++] = LeftFiles[l ++];
-            else union[u ++] = RightFiles[r ++];
-        }
-        return union;
-    }
 
 }
