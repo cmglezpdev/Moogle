@@ -12,23 +12,11 @@ public class AuxiliarMethods{
             if(sentence[i] == ' ') continue;
             int endWord = i;
             while(sentence[endWord ++] != ' '); endWord --;
-            if(endWord - i + 1 == 1) continue; // No procesar las palabras de tamano menor a 3
-            
             words.Add(sentence.Substring(i, endWord - i + 1));
             i = endWord;
         }
 
         return words.ToArray();
     }
-
-    // Clase inecesaria por ahora
-    // private static int CountWordsInName(string name, string[] words) {
-    //     string[] wordsName = getWordsOfSentence(name);
-    //     int count = 0;
-    //     foreach(string i in wordsName)
-    //         foreach(string j in words)
-    //             if(i == j) count ++;
-    //     return count;
-    // }
 
 }

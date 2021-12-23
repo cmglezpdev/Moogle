@@ -5,13 +5,18 @@ public static class Moogle
 {
     public static SearchResult Query(string query) {
 
-        // Ficheros de la forma (la carpeta en la que estan, nombre del ficher)
+        // Ficheros de la forma (la carpeta en la que estan, nombre del fichero
         string[] files = FilesMethods.ReadFolder();
-        // Todas las palabras de query menos las que solo son de una letra
+        // Todas las palabras de query
         string[] WordsQuery = AuxiliarMethods.getWordsOfSentence(query);
         
 
 
+
+
+
+
+        
 
 
 
