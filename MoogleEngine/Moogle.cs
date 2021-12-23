@@ -10,6 +10,7 @@ public static class Moogle
         // Todas las palabras de query
         string[] WordsQuery = AuxiliarMethods.getWordsOfSentence(query);
         
+    
 
 
 
@@ -20,7 +21,6 @@ public static class Moogle
 
 
 
- 
 
 
 
@@ -34,4 +34,11 @@ public static class Moogle
 
         return new SearchResult(items, query);
     }
+}
+
+
+struct WordInfo{
+    long[] Context = new long[0]; // Guardar el contexto de la palabra
+    long HashCode = 0; // Guardar el valor hash de la palabra
+    string Word = ""; // string que representa la palabra
 }
