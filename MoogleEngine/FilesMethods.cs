@@ -11,7 +11,7 @@ public class FilesMethods {
     }
     public static string getPathFile(string file) {
         string NameFile = getNameFile(file);
-        return file.Substring(11, Math.Max(0, file.Length - NameFile.Length - 16));
+        return file.Substring(0, file.Length - NameFile.Length - 4);
     }
     public static string[] ReadFolder() {
         // Leer todos los archivos .txt de la carpeta Content

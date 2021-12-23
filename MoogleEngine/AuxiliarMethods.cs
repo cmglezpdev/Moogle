@@ -20,13 +20,15 @@ public class AuxiliarMethods{
 
         return words.ToArray();
     }
-    private static int CountWordsInName(string name, string[] words) {
-        string[] wordsName = getWordsOfSentence(name);
-        int count = 0;
-        foreach(string i in wordsName)
-            foreach(string j in words)
-                if(i == j) count ++;
-        return count;
-    }
+
+    // Clase inecesaria por ahora
+    // private static int CountWordsInName(string name, string[] words) {
+    //     string[] wordsName = getWordsOfSentence(name);
+    //     int count = 0;
+    //     foreach(string i in wordsName)
+    //         foreach(string j in words)
+    //             if(i == j) count ++;
+    //     return count;
+    // }
 
 }

@@ -1,12 +1,17 @@
-﻿// using MoogleEngine;
-namespace MoogleEngine;
+﻿using MoogleEngine;
 
 class Test{
 
     static void Main() {
 
-        Files[] files = FilesMethods.ReadFolder();
-        showSortFiles(files);
+        // string[] files = FilesMethods.ReadFolder();
+        TestgetNameFile();
+        TestgetPathFile();
+        TestgetWordsOfSentence();
+        //  string directory = "../Content/Metodos de c#/MergeSort with Recursion.txt";
+        //  Console.WriteLine(FilesMethods.getNameFile(directory));
+        //  Console.WriteLine(FilesMethods.getPathFile(directory));
+
 
 
         //? Print if all is OK
@@ -20,14 +25,19 @@ class Test{
             throw new System.Exception(message);
     }
 
-    // Arreglar el Sort que da overflow
-    static void showSortFiles(Files[] files) {
-        string[] words = {"JS"};
-        Files[] aux = files;
-        FilesMethods.Sort(ref aux, ref words);
+    static void TestgetNameFile() {
+        string directory = "../Content/Metodos de c#/MergeSort with Recursion.txt";
+        Assert(FilesMethods.getNameFile(directory) == "MergeSort with Recursion", "The file's name is wrong!");
+    }
+    static void TestgetPathFile() {
+        string directory = "../Content/Metodos de c#/MergeSort with Recursion.txt";
+        Assert(FilesMethods.getPathFile(directory) == "../Content/Metodos de c#/", "The file's path is wrong!");
+    }
 
-        foreach(Files x in aux) 
-            Console.WriteLine(x.Name);
+    static void TestgetWordsOfSentence() {
+        string[] words = {"Hasta", "el", "momento", "hemos", "logrado", "implementar", "gran", "parte", "de", "la", "interfaz", "gráfica"};
+        string sentence = "A Hasta el momento hemos logrado implementar gran parte de la interfaz gráfica.";
+        Assert(AuxiliarMethods.getWordsOfSentence(sentence) == words, "The words of sentence is wrong");
     }
 
 } 
