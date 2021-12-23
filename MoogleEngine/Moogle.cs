@@ -9,13 +9,14 @@ public static class Moogle
         string[] files = FilesMethods.ReadFolder();
         // Todas las palabras de query
         string[] WordsQuery = AuxiliarMethods.getWordsOfSentence(query);
-        
     
 
-
-
-
-
+        // Diccionario para guardar la info de todas las palabras de todos los documentos
+        Dictionary<string, WordInfo> DocsInfos = new Dictionary<string, WordInfo>();
+        // Sacar la informacion de cada documento
+        for(int i = 0; i < files.Length; i ++) {
+            FilesMethods.ReadContentFile(files[i], i, ref DocsInfos);
+        }
 
         
 
@@ -37,8 +38,3 @@ public static class Moogle
 }
 
 
-struct WordInfo{
-    long[] Context = new long[0]; // Guardar el contexto de la palabra
-    long HashCode = 0; // Guardar el valor hash de la palabra
-    string Word = ""; // string que representa la palabra
-}

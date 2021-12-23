@@ -7,4 +7,4 @@ dev:
 	dotnet watch run --project MoogleServer
 .PHONY: test
 test:
-	dotnet run
+	dotnet run --project Test
