@@ -9,16 +9,7 @@ class Test{
         // TestgetPathFile();
         // TestgetWordsOfSentence();
 
-            // StreamReader archive = new StreamReader(files[0]);
-            
-            // List<string> content = new List<string>();
-            // for(string line = ""; line != null; line = archive.ReadLine()) {
-            //     if(AuxiliarMethods.IsLineWhite(line)) continue;
-            //     content.Add(line);
-            // }
-                
 
-            // System.Console.WriteLine(content.Count);
 
 
         //? Print if all is OK

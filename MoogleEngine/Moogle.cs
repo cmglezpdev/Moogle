@@ -7,6 +7,7 @@ public static class Moogle
 
         // Ficheros de la forma (la carpeta en la que estan, nombre del fichero
         string[] files = FilesMethods.ReadFolder();
+        int TotalFiles = FilesMethods.GetTotalFiles();
         // Todas las palabras de query
         string[] WordsQuery = AuxiliarMethods.getWordsOfSentence(query);
     
@@ -18,7 +19,34 @@ public static class Moogle
             FilesMethods.ReadContentFile(files[i], i, ref DocsInfos);
         }
 
+        List<SearchItem> items = new List<SearchItem>();
+
+        foreach(string w in WordsQuery) {
+            if(DocsInfos[w] == null) continue;
+            // lA informacion de esa palabra en todos los documentos
+            List<WordInfo.info>[] infoWord = DocsInfos[w].InfoWord;
         
+            for(int i = 0; i < TotalFiles; i ++) {
+                string NameFile = FilesMethods.getNameFile(files[i]);
+                float score = (float)infoWord[i].Count;
+                int[] context = infoWord[i][0].Context;
+                
+
+
+                // Auxiliar
+                int posWord = 0;
+                while(context[posWord ++] != -1);
+                string snippet = "";
+                snippet = context.ToString();
+                // End-auxiliar
+
+
+
+
+                items.Add(new SearchItem(NameFile, (snippet == null) ? "Nada": snippet, score));
+            }
+
+        }
 
 
 
@@ -27,13 +55,15 @@ public static class Moogle
 
 
 
-        SearchItem[] items = new SearchItem[3] {
-            new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.9f),
-            new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.5f),
-            new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.1f),
-        };
 
-        return new SearchResult(items, query);
+
+        // SearchItem[] items = new SearchItem[3] {
+        //     new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.9f),
+        //     new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.5f),
+        //     new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.1f),
+        // };
+
+         return new SearchResult(items.ToArray(), query);
     }
 }
 

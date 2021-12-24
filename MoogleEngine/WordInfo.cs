@@ -1,7 +1,7 @@
 namespace MoogleEngine;
 public class WordInfo{
 
-    struct WordContext {
+    public struct WordContext {
         int[] left = new int[0];
         int[] right = new int[0];
         
@@ -12,8 +12,32 @@ public class WordInfo{
             Array.Copy(left, this.left, left.Length);
             Array.Copy(right, this.right, right.Length);
         }
+    
+        public int[] Context{
+            get{
+                int[] context = new int[left.Length + right.Length + 1];
+                for(int i = 0; i < left.Length; i ++) context[i] = left[i];
+                context[left.Length] = -1;
+                for(int i = 0, k = left.Length + 1; i < right.Length; i ++, k ++)
+                    context[k] = right[i];
+
+                return context;
+            }
+        }
     }
-    struct info{
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public struct info{
         int numberLine = 0; // Linea del documento en la que esta
         int numberWord = 0; // posicion la linea en la que esta
         WordContext context = new WordContext();
@@ -23,7 +47,29 @@ public class WordInfo{
             this.numberWord = numberWord;
             this.context = context;
         }
+    
+        public int[] Context {
+            get{
+                return context.Context;
+            }
+        }
+    
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     string Word = ""; // string que representa la palabra
     int HashCode = 0; // Guardar el valor hash de la palabra
     List<info>[] InfosWord = new List<info>[0]; // Info de la palabra en cada uno de los archivos
@@ -46,4 +92,8 @@ public class WordInfo{
         this.InfosWord = other.InfosWord;
     }
 
+
+    public List<info>[] InfoWord{
+        get{return this.InfosWord;}
+    }
 }

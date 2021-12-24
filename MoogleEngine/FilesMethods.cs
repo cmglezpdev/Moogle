@@ -42,7 +42,8 @@ public class FilesMethods {
             for(int i = n - 1; i >= 0 && context.Count < 50; i --)
                 context.Add(content[numLine][i]);
         }
-        
+
+        context.Reverse();
         return context.ToArray();
     }
 
