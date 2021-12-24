@@ -25,15 +25,29 @@ public class WordInfo{
     public void AddAppearance(int  idFile, int numLine, int numWord) {
         InfosWord[idFile].Add(new info(numLine, numWord));
     }
-
     public void Clone(WordInfo other) {
         this.Word = other.Word;
         this.HashCode = other.HashCode;
         this.InfosWord = other.InfosWord;
     }
-
-
-    public List<info>[] InfoWord{
-        get{return this.InfosWord;}
+    public List<info> InfoWordInDoc(int idFile) {
+        if(idFile > InfosWord.Length) 
+            throw new Exception("The File does't exists!");
+        return InfosWord[idFile];
     }
+
+
+    #region Calculo del ITFDF
+
+    // Termination Frecuency
+    public int TF(int idFile) {
+        return this.InfosWord[idFile].Count;
+    }
+
+    public int 
+
+
+    #endregion
+
+
 }

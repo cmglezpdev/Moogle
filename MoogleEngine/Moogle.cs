@@ -22,17 +22,11 @@ public static class Moogle
 
         List<SearchItem> items = new List<SearchItem>();
 
-        foreach(string w in WordsQuery) {
-            if(DocsInfos[w] == null) continue;
-            // lA informacion de esa palabra en todos los documentos
-            List<WordInfo.info>[] infoWord = DocsInfos[w].InfoWord;
-        
-            for(int i = 0; i < TotalFiles; i ++) {
-                string NameFile = FilesMethods.getNameFile(files[i]);
+        // foreach(string w in WordsQuery) {
+        //     if(DocsInfos[w] == null) continue;
 
-            }
 
-        }
+        // }
 
 
 

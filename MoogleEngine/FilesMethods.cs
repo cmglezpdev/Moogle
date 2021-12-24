@@ -52,6 +52,7 @@ public class FilesMethods {
 
 
 
+
     // private static int[] GetLeftContext(int numLine, int numWord, ref List<int[]> content) { 
     //     List<int> context = new List<int>();
         
