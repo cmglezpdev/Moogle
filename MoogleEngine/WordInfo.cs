@@ -8,6 +8,13 @@ public class WordInfo{
             this.numberLine = numberLine;
             this.numberWord = numberWord;
         }
+
+        public int NumberLine{
+            get{return this.numberLine;}
+        }
+        public int NumberWord{
+            get{return this.numberWord;}
+        }
     
     }
 
@@ -36,17 +43,51 @@ public class WordInfo{
         return InfosWord[idFile];
     }
 
+    public string GetContext(int idFile, int radioLength) {
+        Random rand = new Random();
+        // Escoger una aparicion random en el archivo para mostrar su contexto
+        int appaerance = rand.Next() % this.TF(idFile);
+        
+        info infoPos = this.InfosWord[idFile][appaerance];
+    
+        string context = FilesMethods.getLeftContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength)
+                      + FilesMethods.getRightContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength);
+        
+        return context;
+    }
 
-    #region Calculo del ITFDF
+
+
+    #region Calculo del TFIDF
 
     // Termination Frecuency
     public int TF(int idFile) {
         return this.InfosWord[idFile].Count;
     }
-
-    public int 
-
-
+    // Document Frecuency
+    public int DF{
+        get{
+            int cont = 0;
+            foreach(List<info> i in InfosWord) {
+                if(i.Count > 0) cont ++;
+            }
+            return cont;
+        }
+    }
+    // Inverse Document Frecuency 
+    public float IDF{
+        get{
+            int N = InfosWord.Length;
+            return (float)Math.Log(N / DF);
+        }
+    }
+    
+    public float IFIDF(int idFile) {
+        float tf = this.TF(idFile);
+        float idf = this.IDF;
+        return tf * idf;
+    }
+   
     #endregion
 
 

@@ -22,26 +22,28 @@ public static class Moogle
 
         List<SearchItem> items = new List<SearchItem>();
 
-        // foreach(string w in WordsQuery) {
-        //     if(DocsInfos[w] == null) continue;
 
+        foreach(string w in WordsQuery) {
+            if(DocsInfos[w] == null) continue; // Si la palabra no aparece en ningun documento
 
-        // }
+            for(int i = 0; i < TotalFiles; i ++) {
+                List<WordInfo.info> info = DocsInfos[w].InfoWordInDoc(i);
+                if(info.Count == 0) continue; // no Existe la palabra en el documento
+                
+                // Agregamos la palabra a nuestros resultados
+                float score = DocsInfos[w].IFIDF(i); // score de la palabra en el documento
+                string nameFile = FilesMethods.getNameFile(files[i]); // Nombre del archivo
 
+                // Mostramos cualquier pedazo de oracion en donde aparezca la palabra
+                string snippet = DocsInfos[w].GetContext(i, 5);
+                
+                items.Add(new SearchItem(nameFile, snippet, score));
+            }
 
+        }
 
+        // Implementar la ordenacion por el score
 
-
-
-
-
-
-
-        // SearchItem[] items = new SearchItem[3] {
-        //     new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.9f),
-        //     new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.5f),
-        //     new SearchItem("Hello World", "Lorem ipsum dolor sit amet", 0.1f),
-        // };
 
          return new SearchResult(items.ToArray(), query);
     }
