@@ -50,8 +50,8 @@ public class WordInfo{
         
         info infoPos = this.InfosWord[idFile][appaerance];
     
-        string context = FilesMethods.getLeftContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength)
-                      + FilesMethods.getRightContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength);
+        string context = FilesMethods.GetLeftContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength)
+                      + FilesMethods.GetRightContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength);
         
         return context;
     }

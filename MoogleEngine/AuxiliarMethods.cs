@@ -22,7 +22,7 @@ public class AuxiliarMethods{
     }
 
     // Ignorar todos los caracteres que no sean letras o numeros
-    private static bool Ignore(char x) {
+    public static bool Ignore(char x) {
         return !Char.IsLetterOrDigit(x);
     }
 
@@ -43,5 +43,23 @@ public class AuxiliarMethods{
     } 
 
 
+    // La palabra que empieza a partir de esa posicion
+    public static string WordStartIn(string sentence, int start) {
+        if(Ignore(sentence[start]))
+                return ""; // No es una posicion valida para comenzar una palabra
+        int end;
+        for(end = start; !Ignore(sentence[end]) && end < sentence.Length; end ++);
+        
+        return sentence.Substring(start, end - start);
+    }
+    // La palabra que finaliza en una posicion
+    public static string WordEndIn(string sentence, int end) {
+        if(Ignore(sentence[end]))
+                return ""; // No es una posicion valida para terminar una palabra
+        int start;
+        for(start = end; !Ignore(sentence[start]) && start >= 0; start --);
+        
+        return sentence.Substring(start + 1, end - start);
+    }
 
 }
