@@ -1,6 +1,27 @@
 ﻿namespace MoogleEngine;
 using System.Diagnostics;
 
+public class BuildDictionary {
+
+    private Dictionary<string, WordInfo> DocsInfos = new Dictionary<string, WordInfo>();
+    public BuildDictionary(bool build) {
+        if(!build) return;
+        string[] files = FilesMethods.ReadFolder();
+        // Sacar la informacion de cada documento
+        for(int i = 0; i < files.Length; i ++) 
+            FilesMethods.ReadContentFile(files[i], i, ref this.DocsInfos);
+    }
+
+    public BuildDictionary() {}
+
+    public Dictionary<string, WordInfo> Infos{
+        get{return this.DocsInfos;}
+    }
+
+}
+
+
+
 public static class Moogle
 {
     public static SearchResult Query(string query) {
@@ -14,7 +35,11 @@ public static class Moogle
         string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
     
 
-        // Diccionario para guardar la info de todas las palabras de todos los documentos
+
+
+
+
+       // Diccionario para guardar la info de todas las palabras de todos los documentos
         Dictionary<string, WordInfo> DocsInfos = new Dictionary<string, WordInfo>();
         // Sacar la informacion de cada documento
         for(int i = 0; i < files.Length; i ++) {
@@ -22,9 +47,12 @@ public static class Moogle
         }
         System.Console.WriteLine("Finished");
 
+
+
+
+
         List<SearchItem> AllItems = new List<SearchItem>();
-
-
+        
         foreach(string w in WordsQuery) {
             if(!DocsInfos.ContainsKey(w)) continue; // Si la palabra no aparece en ningun documento
 

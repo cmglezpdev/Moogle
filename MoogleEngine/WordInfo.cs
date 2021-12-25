@@ -77,14 +77,14 @@ public class WordInfo{
     private float IDF{
         get{
             int N = InfosWord.Count;
-            return (float)Math.Log((float)N / DF);
+            return (float)(1.00 + Math.Log2((float)N / DF));
         }
     }
     
     public float IFIDF(int idFile) {
         int tf = this.TF(idFile);
         float idf = this.IDF;
-        return (float)( tf * idf );
+        return (float)tf * idf;
     }
    
     #endregion

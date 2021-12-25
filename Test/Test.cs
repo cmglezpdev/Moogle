@@ -2,6 +2,9 @@
 
 class Test{
 
+    //* Para los test en donde se lea los ficheros hay que cambiar la ruta de lectura en el metodo
+    //* de "../Content/" por "Content/"
+
     static void Main() {
 
         string[] files = FilesMethods.ReadFolder();
@@ -71,30 +74,30 @@ class Test{
     }
     static void TestGetLeftContext() {
         // Tanto numLine como numWord empieza desde cero
-        string result1 = FilesMethods.GetLeftContext(0, 51, 1, 5);
+        string result1 = FilesMethods.GetLeftContext(0, 51, 1, 5, true);
         Assert(result1 == "sea capaz de recuperar los fundamentales", "Test1 TestGetLeftContext() WRONG");
 
-        string result2 = FilesMethods.GetLeftContext(0, 40, 0, 3);
+        string result2 = FilesMethods.GetLeftContext(0, 40, 0, 3, true);
         Assert(result2 == "04.03.2009                                                        ***          El", "Test2 TestGetLeftContext() WRONG");
         
-        string result3 = FilesMethods.GetLeftContext(0, 140, 2, 9);
+        string result3 = FilesMethods.GetLeftContext(0, 140, 2, 9, true);
         Assert(result3 == "supervivencia de la vida en el planeta.          Los temas tratados", "Test3 TestGetLeftContext() WRONG");   
     
-        string result4 = FilesMethods.GetLeftContext(0, 0, 1, 4);
+        string result4 = FilesMethods.GetLeftContext(0, 0, 1, 4, true);
         Assert(result4 == "                                                                            Polis, Revista", "Test4 TestGetLeftContext() WRONG");   
     }
     static void TestGetRightContext() {
         // Tanto numLine como numWord empieza desde cero
-        string result1 = FilesMethods.GetRightContext(0, 51, 1, 5);
+        string result1 = FilesMethods.GetRightContext(0, 51, 1, 5, true);
         Assert(result1 == "fundamentales aportes marxianos para la comprensión", "Test1 TestGetRightContext() WRONG");
         
-        string result2 = FilesMethods.GetRightContext(0, 35, 4, 3);
+        string result2 = FilesMethods.GetRightContext(0, 35, 4, 3, true);
         Assert(result2 == "Aceptado: 04.03.2009", "Test2 TestGetRightContext() WRONG");
         
-        string result3 = FilesMethods.GetRightContext(0, 136, 11, 12);
+        string result3 = FilesMethods.GetRightContext(0, 136, 11, 12, true);
         Assert(result3 == "es la posibilidad de supervivencia de la vida en el planeta.          Los temas", "Test3 TestGetRightContext() WRONG");   
     
-        string result4 = FilesMethods.GetRightContext(0, 187, 7, 5);
+        string result4 = FilesMethods.GetRightContext(0, 187, 7, 5, true);
         Assert(result4 == "esfer@speedy.com.ar ", "Test3 TestGetRightContext() WRONG");   
     }
 
