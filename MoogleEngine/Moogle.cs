@@ -9,10 +9,10 @@ public static class Moogle
         string[] files = FilesMethods.ReadFolder();
         int TotalFiles = FilesMethods.GetTotalFiles();
         // Todas las palabras de query
-        string[] WordsQuery = AuxiliarMethods.getWordsOfSentence(query);
+        string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
     
 
-        // Diccionario para guardar la info de todas las palabras de todos los documentos
+        // // Diccionario para guardar la info de todas las palabras de todos los documentos
         Dictionary<string, WordInfo> DocsInfos = new Dictionary<string, WordInfo>();
         // Sacar la informacion de cada documento
         for(int i = 0; i < files.Length; i ++) {
@@ -32,7 +32,7 @@ public static class Moogle
                 
                 // Agregamos la palabra a nuestros resultados
                 float score = DocsInfos[w].IFIDF(i); // score de la palabra en el documento
-                string nameFile = FilesMethods.getNameFile(files[i]); // Nombre del archivo
+                string nameFile = FilesMethods.GetNameFile(files[i]); // Nombre del archivo
 
                 // Mostramos cualquier pedazo de oracion en donde aparezca la palabra
                 string snippet = DocsInfos[w].GetContext(i, 5);
@@ -45,7 +45,12 @@ public static class Moogle
         // Implementar la ordenacion por el score
 
 
+        // SearchItem[] item = {new SearchItem("Hola", "Es todo lo que hay", 0.5f),
+        //                     new SearchItem("Nombre", "Es todo lo que hay", 0.4f),
+        //                     new SearchItem("Fereado", "Es todo lo que hay", 0.2f)};
+
          return new SearchResult(items.ToArray(), query);
+        //  return new SearchResult(items.ToArray(), query);
     }
 }
 

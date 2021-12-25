@@ -13,9 +13,9 @@ public class FilesMethods {
     }
 
 
-    public static string getNameFile(string file) {
+    public static string GetNameFile(string file) {
         int StartName = file.Length - 1;
-        for( ; file[StartName] != '/' && StartName >= 0; StartName --); StartName ++;
+        for( ; StartName >= 0 && file[StartName] != '/'; StartName --); StartName ++;
 
         return file.Substring(StartName, file.Length - StartName - 4);
     }
@@ -34,21 +34,24 @@ public class FilesMethods {
         // Leer el fichero y sacar la informacion del contenido
         StreamReader archive = new StreamReader(file);
         
-        int numLine = -1;
+        int numLine = 0;
         for(string line = archive.ReadLine(); line != null; line = archive.ReadLine(), numLine ++){
 
             if(AuxiliarMethods.IsLineWhite(line)) continue;
 
-            string[] words = AuxiliarMethods.getWordsOfSentence(line);
+            string[] words = AuxiliarMethods.GetWordsOfSentence(line);
+            // LLevar las palabras a minusculas para gastar menos memoria y busquedas mas efectivas
+            for(int i = 0; i < words.Length; i ++)
+                words[i] = words[i].ToLower();
             
             for(int numWord = 0; numWord < words.Length; numWord ++) {
-                if(DocsInfos[ words[numWord] ] != null) {
+                if(DocsInfos.ContainsKey( words[numWord] ) ) {
                     DocsInfos[ words[numWord] ].AddAppearance(idFile, numLine, numWord);
                     continue;
                 }
 
-                WordInfo curr = new WordInfo(words[numWord]);
-                curr.AddAppearance(idFile, numLine, numLine);
+               DocsInfos[ words[numWord] ] = new WordInfo(words[numWord]);
+                DocsInfos[ words[numWord] ].AddAppearance(idFile, numLine, numLine);
             }
         }
     } 
@@ -58,11 +61,15 @@ public class FilesMethods {
         return this.FILES[idFile];
     }
 
-    public static int GetCantWordsInSentence(string line) {
-        return AuxiliarMethods.getWordsOfSentence(line).Length;
+    public static int GetAmountWordsInSentence(string line) {
+        return AuxiliarMethods.GetWordsOfSentence(line).Length;
     }
 
+
+    // TODO: No anadir la palabra en los contextos laterales
     public static string GetLeftContext(int idFile, int numLine, int numWord, int length) { 
+        //todo:: Tanto numLine como numWord empieza desde cero
+        
         StringBuilder context = new StringBuilder();
         FilesMethods files = new FilesMethods();
         StreamReader reader = new StreamReader(files.GetFileByID(idFile));            
@@ -77,57 +84,60 @@ public class FilesMethods {
 
         // Buscar la posicion en donde empieza la palabra
         int posWord = 0;
-        for(int nw = 0; ; posWord ++) {
+        for(int nw = -1; posWord < AuxLines[n - 1].Length; posWord ++) {
             if(AuxiliarMethods.Ignore(AuxLines[n - 1][posWord])) continue;
             if(++ nw == numWord) break;
-            int l = AuxiliarMethods.WordStartIn(AuxLines[n - 1], posWord).Length;
+            int l = AuxiliarMethods.GetWordStartIn(AuxLines[n - 1], posWord).Length;
             posWord += l - 1;
         }
 
         // Anadimos la palabra al contexto
-        context.Append(AuxiliarMethods.WordStartIn(AuxLines[n - 1], posWord));
+        context.Append(AuxiliarMethods.GetWordStartIn(AuxLines[n - 1], posWord));
 
         // Tomamos las palabras que necesitamos para conformar el contexto izquierdo
         int  nl = numLine;
-        while(length > 0) {
-            if(nl - 1 < 0) break;
+        while(true) {
             string currLine = AuxLines[ nl ];
-            n = (nl == numLine) ? posWord : currLine.Length - 1;
+            n = (nl == numLine) ? posWord - 1 : currLine.Length - 1;
 
             for(int i = n; i >= 0 && length > 0; i --) {
                 if(AuxiliarMethods.Ignore(currLine[i])){
                     context.Insert(0, currLine[i]);
                     continue;
                 }
-                string w = AuxiliarMethods.WordEndIn(currLine, i);
+                string w = AuxiliarMethods.GetWordEndIn(currLine, i);
                 length --;
                 context.Insert(0, w);
                 i-= (w.Length - 1);
             } 
-            nl --;
+            // nl --;
+            if(-- nl >= 0 && length > 0)
+                 context.Insert(0, " "); // Espacio en blanco representando el salto de linea
+            else break;
         }
 
         return context.ToString();
     }
     public static string GetRightContext(int idFile, int numLine, int numWord, int length) { 
+        //todo:: Tanto numLine como numWord empieza desde cero
+
         StringBuilder context = new StringBuilder();
         FilesMethods files = new FilesMethods();
         StreamReader reader = new StreamReader(files.GetFileByID(idFile));            
 
         // Tomar las lineas necesarias que esten por debajo de el
         List<string> AuxLines = new List<string>();
-        for(int i = 0, k = 0; k < length; i ++) {
+        for(int i = 0, k = 1; k < length; i ++) {
             string line = reader.ReadLine();
           
             if(line == null) break; // Si llego a la ultima linea
             if(i < numLine) continue; // Sui no ha llegado a la linea donde esta la palabra
-            
-            if(i == numLine) { // Si es la linea donde esta la palabra
-                AuxLines.Add(line);
-                continue;
-            }
+            AuxLines.Add(line);
+
+            if(i == numLine) continue; // Si es la linea donde esta la palabra
+                
             // Anadiremos lineas hasta que se complete el length
-            k += GetCantWordsInSentence(line);
+            k += GetAmountWordsInSentence(line);
         }
 
 
@@ -135,33 +145,35 @@ public class FilesMethods {
 
         // Buscar la posicion en donde termina la palabra
         int posWord = 0;
-        for(int nw = 0; ++nw != numWord && posWord < AuxLines[0].Length; posWord ++) {
+        for(int nw = 0; nw <= numWord && posWord < AuxLines[0].Length; posWord ++) {
             if(AuxiliarMethods.Ignore(AuxLines[0][posWord])) continue;
-            int l = AuxiliarMethods.WordStartIn(AuxLines[0], posWord).Length;
+            int l = AuxiliarMethods.GetWordStartIn(AuxLines[0], posWord).Length;
             posWord += l - 1;
+            nw ++;
         }
 
         // Anadimos la palabra al contexto
-        context.Append(AuxiliarMethods.WordEndIn(AuxLines[0], posWord - 1));
+        context.Append(AuxiliarMethods.GetWordEndIn(AuxLines[0], posWord - 1));
 
         // Tomamos las palabras que necesitamos para conformar el contexto derecho
-        int  nl = numLine;
-        while(length > 0) {
-            if(nl + 1 == AuxLines.Count) break;
+        int  nl = 0;
+        while(true) {
             string currLine = AuxLines[ nl ];
-            n = (nl == numLine) ? posWord : 0;
+            n = (nl == 0) ? posWord : 0;
 
             for(int i = n; i < currLine.Length && length > 0; i ++) {
                 if(AuxiliarMethods.Ignore(currLine[i])){
                     context.Append(currLine[i]);
                     continue;
                 }
-                string w = AuxiliarMethods.WordStartIn(currLine, i);
+                string w = AuxiliarMethods.GetWordStartIn(currLine, i);
                 length --;
                 context.Append(w);
                 i+= w.Length - 1;
             } 
-            nl ++;
+            if( ++ nl < AuxLines.Count && length > 0)
+                context.Append(" ");
+            else break;
         }
 
         return context.ToString();

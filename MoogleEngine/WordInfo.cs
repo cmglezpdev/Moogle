@@ -19,13 +19,13 @@ public class WordInfo{
     }
 
     string Word = ""; // string que representa la palabra
-    int HashCode = 0; // Guardar el valor hash de la palabra
-    List<info>[] InfosWord = new List<info>[0]; // Info de la palabra en cada uno de los archivos
+    List<List<info>> InfosWord = new List<List<info>>(); // Info de la palabra en cada uno de los archivos
    
     public WordInfo(string Word) { 
         this.Word = Word;
-        this.HashCode = AuxiliarMethods.GetHash(Word);
-        Array.Resize(ref this.InfosWord, FilesMethods.GetTotalFiles());
+        int n = FilesMethods.GetTotalFiles();
+        for(int i = 0; i < n; i ++)
+            this.InfosWord.Add(new List<info>());
     }
 
 
@@ -34,11 +34,10 @@ public class WordInfo{
     }
     public void Clone(WordInfo other) {
         this.Word = other.Word;
-        this.HashCode = other.HashCode;
         this.InfosWord = other.InfosWord;
     }
     public List<info> InfoWordInDoc(int idFile) {
-        if(idFile > InfosWord.Length) 
+        if(idFile >= InfosWord.Count) 
             throw new Exception("The File does't exists!");
         return InfosWord[idFile];
     }
@@ -77,7 +76,7 @@ public class WordInfo{
     // Inverse Document Frecuency 
     public float IDF{
         get{
-            int N = InfosWord.Length;
+            int N = InfosWord.Count;
             return (float)Math.Log(N / DF);
         }
     }
