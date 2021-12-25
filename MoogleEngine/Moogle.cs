@@ -1,10 +1,12 @@
 ﻿namespace MoogleEngine;
-
+using System.Diagnostics;
 
 public static class Moogle
 {
     public static SearchResult Query(string query) {
 
+        Stopwatch crono = new Stopwatch();
+        crono.Start();
         // Ficheros de la forma (la carpeta en la que estan, nombre del fichero
         string[] files = FilesMethods.ReadFolder();
         int TotalFiles = FilesMethods.GetTotalFiles();
@@ -12,19 +14,19 @@ public static class Moogle
         string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
     
 
-        // // Diccionario para guardar la info de todas las palabras de todos los documentos
+        // Diccionario para guardar la info de todas las palabras de todos los documentos
         Dictionary<string, WordInfo> DocsInfos = new Dictionary<string, WordInfo>();
         // Sacar la informacion de cada documento
         for(int i = 0; i < files.Length; i ++) {
             FilesMethods.ReadContentFile(files[i], i, ref DocsInfos);
         }
+        System.Console.WriteLine("Finished");
 
-
-        List<SearchItem> items = new List<SearchItem>();
+        List<SearchItem> AllItems = new List<SearchItem>();
 
 
         foreach(string w in WordsQuery) {
-            if(DocsInfos[w] == null) continue; // Si la palabra no aparece en ningun documento
+            if(!DocsInfos.ContainsKey(w)) continue; // Si la palabra no aparece en ningun documento
 
             for(int i = 0; i < TotalFiles; i ++) {
                 List<WordInfo.info> info = DocsInfos[w].InfoWordInDoc(i);
@@ -32,25 +34,32 @@ public static class Moogle
                 
                 // Agregamos la palabra a nuestros resultados
                 float score = DocsInfos[w].IFIDF(i); // score de la palabra en el documento
+                
                 string nameFile = FilesMethods.GetNameFile(files[i]); // Nombre del archivo
 
                 // Mostramos cualquier pedazo de oracion en donde aparezca la palabra
                 string snippet = DocsInfos[w].GetContext(i, 5);
                 
-                items.Add(new SearchItem(nameFile, snippet, score));
+                AllItems.Add(new SearchItem(nameFile, snippet, score));
             }
-
         }
 
         // Implementar la ordenacion por el score
+        IEnumerable<SearchItem> AuxItems = from item in AllItems orderby item.Score descending select item; 
+
+        List<SearchItem> items = new List<SearchItem>();
+        foreach(SearchItem item in AuxItems) {
+            items.Add(item);
+            System.Console.WriteLine(item.Score);
+            if(items.Count == 10) break;
+        }
+        // End Sort
 
 
-        // SearchItem[] item = {new SearchItem("Hola", "Es todo lo que hay", 0.5f),
-        //                     new SearchItem("Nombre", "Es todo lo que hay", 0.4f),
-        //                     new SearchItem("Fereado", "Es todo lo que hay", 0.2f)};
+        crono.Stop();
+        System.Console.WriteLine(crono.ElapsedMilliseconds / 1000.00);
 
          return new SearchResult(items.ToArray(), query);
-        //  return new SearchResult(items.ToArray(), query);
     }
 }
 

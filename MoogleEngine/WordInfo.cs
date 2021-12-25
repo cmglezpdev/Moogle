@@ -49,8 +49,8 @@ public class WordInfo{
         
         info infoPos = this.InfosWord[idFile][appaerance];
     
-        string context = FilesMethods.GetLeftContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength)
-                      + FilesMethods.GetRightContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength);
+        string context = FilesMethods.GetLeftContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength, false)
+                      + FilesMethods.GetRightContext(idFile, infoPos.NumberLine, infoPos.NumberWord, radioLength, true);
         
         return context;
     }
@@ -60,11 +60,11 @@ public class WordInfo{
     #region Calculo del TFIDF
 
     // Termination Frecuency
-    public int TF(int idFile) {
+    private int TF(int idFile) {
         return this.InfosWord[idFile].Count;
     }
     // Document Frecuency
-    public int DF{
+    private int DF{
         get{
             int cont = 0;
             foreach(List<info> i in InfosWord) {
@@ -74,17 +74,17 @@ public class WordInfo{
         }
     }
     // Inverse Document Frecuency 
-    public float IDF{
+    private float IDF{
         get{
             int N = InfosWord.Count;
-            return (float)Math.Log(N / DF);
+            return (float)Math.Log((float)N / DF);
         }
     }
     
     public float IFIDF(int idFile) {
-        float tf = this.TF(idFile);
+        int tf = this.TF(idFile);
         float idf = this.IDF;
-        return tf * idf;
+        return (float)( tf * idf );
     }
    
     #endregion

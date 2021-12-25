@@ -21,7 +21,7 @@ public class FilesMethods {
     }
     public static string[] ReadFolder() {
         // Leer todos los archivos .txt de la carpeta Content
-        string[] files = Directory.GetFiles(@"Content/", "*.txt", SearchOption.AllDirectories);
+        string[] files = Directory.GetFiles(@"../Content/", "*.txt", SearchOption.AllDirectories);
         return files;
     }
 
@@ -67,7 +67,7 @@ public class FilesMethods {
 
 
     // TODO: No anadir la palabra en los contextos laterales
-    public static string GetLeftContext(int idFile, int numLine, int numWord, int length) { 
+    public static string GetLeftContext(int idFile, int numLine, int numWord, int length, bool addWord) { 
         //todo:: Tanto numLine como numWord empieza desde cero
         
         StringBuilder context = new StringBuilder();
@@ -92,7 +92,7 @@ public class FilesMethods {
         }
 
         // Anadimos la palabra al contexto
-        context.Append(AuxiliarMethods.GetWordStartIn(AuxLines[n - 1], posWord));
+        if(addWord) context.Append(AuxiliarMethods.GetWordStartIn(AuxLines[n - 1], posWord));
 
         // Tomamos las palabras que necesitamos para conformar el contexto izquierdo
         int  nl = numLine;
@@ -118,7 +118,7 @@ public class FilesMethods {
 
         return context.ToString();
     }
-    public static string GetRightContext(int idFile, int numLine, int numWord, int length) { 
+    public static string GetRightContext(int idFile, int numLine, int numWord, int length, bool addWord) { 
         //todo:: Tanto numLine como numWord empieza desde cero
 
         StringBuilder context = new StringBuilder();
@@ -153,7 +153,7 @@ public class FilesMethods {
         }
 
         // Anadimos la palabra al contexto
-        context.Append(AuxiliarMethods.GetWordEndIn(AuxLines[0], posWord - 1));
+        if(addWord) context.Append(AuxiliarMethods.GetWordEndIn(AuxLines[0], posWord - 1));
 
         // Tomamos las palabras que necesitamos para conformar el contexto derecho
         int  nl = 0;
