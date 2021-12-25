@@ -58,8 +58,7 @@ public static class Moogle
 
             for(int i = 0; i < TotalFiles; i ++) {
                 List<WordInfo.info> info = DocsInfos[w].InfoWordInDoc(i);
-                if(info.Count == 0) continue; // no Existe la palabra en el documento
-                
+                if(info.Count == 0) continue; // no Existe la palabra en el documento                
                 // Agregamos la palabra a nuestros resultados
                 float score = DocsInfos[w].IFIDF(i); // score de la palabra en el documento
                 
