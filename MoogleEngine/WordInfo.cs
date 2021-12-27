@@ -77,7 +77,7 @@ public class WordInfo{
     private float IDF{
         get{
             int N = InfosWord.Count;
-            return (float)(1.00 + Math.Log2((float)N / DF));
+            return (float)(1.00 + Math.Log((float)N / DF));
         }
     }
     

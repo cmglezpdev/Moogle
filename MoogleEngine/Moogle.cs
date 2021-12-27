@@ -52,24 +52,32 @@ public static class Moogle
 
 
         List<SearchItem> AllItems = new List<SearchItem>();
-        
-        foreach(string w in WordsQuery) {
-            if(!DocsInfos.ContainsKey(w)) continue; // Si la palabra no aparece en ningun documento
 
-            for(int i = 0; i < TotalFiles; i ++) {
-                List<WordInfo.info> info = DocsInfos[w].InfoWordInDoc(i);
-                if(info.Count == 0) continue; // no Existe la palabra en el documento                
-                // Agregamos la palabra a nuestros resultados
-                float score = DocsInfos[w].IFIDF(i); // score de la palabra en el documento
-                
-                string nameFile = FilesMethods.GetNameFile(files[i]); // Nombre del archivo
+        // Por cada documento calculamos el promedio de los scores de las palabras de la query
+        // que estan en el documento
+        for(int i = 0; i < TotalFiles; i ++) {
+            string title = FilesMethods.GetNameFile(files[i]);
+            float score = 0.00f;
+            string snippet = "";
 
-                // Mostramos cualquier pedazo de oracion en donde aparezca la palabra
-                string snippet = DocsInfos[w].GetContext(i, 5);
-                
-                AllItems.Add(new SearchItem(nameFile, snippet, score));
+
+            float auxScore = -1;
+            string auxWord = "";
+
+            foreach(string w in WordsQuery) {
+                if(!DocsInfos.ContainsKey(w)) continue;
+                float wscore = DocsInfos[w].IFIDF(i);
+                score += wscore;
+                if(wscore > auxScore) {
+                    auxScore = wscore;
+                    auxWord = w;
+                }
             }
+            System.Console.WriteLine(auxWord);
+            snippet = DocsInfos[auxWord].GetContext(i, 5);
+            AllItems.Add(new SearchItem(title, snippet, score));
         }
+
 
         // Implementar la ordenacion por el score
         IEnumerable<SearchItem> AuxItems = from item in AllItems orderby item.Score descending select item; 
