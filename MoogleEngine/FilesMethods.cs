@@ -24,37 +24,44 @@ public class FilesMethods {
         string[] files = Directory.GetFiles(@"../Content/", "*.txt", SearchOption.AllDirectories);
         return files;
     }
-
-    //! Moficiar el metodo
     public static int GetTotalFiles() {
         return ReadFolder().Length;
     }
-    public static void ReadContentFile(string file, int idFile, ref Dictionary<string, WordInfo> DocsInfos ) {
+    
+    
+    public static void ReadContentFile(string file, int idFile, ref Dictionary<int, int> DocsInfos, ref List<List<info>> WordsDocs, ref List<pair> WordsOfDocs ) {
         
+        int n = DocsInfos.Count;
+        for(int i = 0; i < n; i ++) 
+            WordsDocs[idFile].Add(new info());
+        
+    
         // Leer el fichero y sacar la informacion del contenido
         StreamReader archive = new StreamReader(file);
         
         int numLine = 0;
         for(string line = archive.ReadLine(); line != null; line = archive.ReadLine(), numLine ++){
-
+           
             if(AuxiliarMethods.IsLineWhite(line)) continue;
-
-            string[] words = AuxiliarMethods.GetWordsOfSentence(line);
-            // LLevar las palabras a minusculas para gastar menos memoria y busquedas mas efectivas
-            for(int i = 0; i < words.Length; i ++)
-                words[i] = words[i].ToLower();
             
-            for(int numWord = 0; numWord < words.Length; numWord ++) {
-                if(DocsInfos.ContainsKey( words[numWord] ) ) {
-                    DocsInfos[ words[numWord] ].AddAppearance(idFile, numLine, numWord);
+            string[] words = AuxiliarMethods.GetWordsOfSentence(line);
+            for(int i = 0; i < words.Length; i ++) {
+                int hash = AuxiliarMethods.GetHashCode(words[i]);
+                if(DocsInfos.ContainsKey(hash)) {
+                    WordsDocs[idFile][ DocsInfos[hash] ].AddAppearance(numLine, i);
                     continue;
                 }
-
-               DocsInfos[ words[numWord] ] = new WordInfo(words[numWord]);
-                DocsInfos[ words[numWord] ].AddAppearance(idFile, numLine, numLine);
+                WordsDocs[idFile].Add(new info(numLine, i));
+                WordsOfDocs.Add( new pair(words[i], WordsOfDocs.Count) );
+                DocsInfos[hash] = WordsOfDocs.Count - 1;
             }
         }
     } 
+
+
+
+
+
     public string GetFileByID(int idFile) {
         if(idFile >= this.FILES.Length) 
             throw new Exception("The File does't exists!");
@@ -178,8 +185,6 @@ public class FilesMethods {
 
         return context.ToString();
     }
-
-
 
 
 
