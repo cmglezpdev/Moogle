@@ -62,7 +62,7 @@ public class AuxiliarMethods{
         return w.GetHashCode() % MOD;
     }
 
-    public static void Resize(ref List< List<info> > aux, int newLength, int idFile) {
+    public static void Resize(ref List< List<info> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
     }

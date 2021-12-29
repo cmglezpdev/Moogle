@@ -10,24 +10,7 @@ class Test{
         // string[] files = FilesMethods.ReadFolder();
 
 
-        try
-        {
-            StreamWriter sw = new StreamWriter("archive.txt");
-            sw.WriteLine("Hola");
-            sw.WriteLine("a");
-            sw.WriteLine("todos");
-            sw.Close();
-        }
-        catch (Exception e)
-        {
-            System.Console.WriteLine(e.Message);
-        }
-        finally
-        {
-            System.Console.WriteLine("Past!!!");
-        }
-
-
+        System.Console.WriteLine(char.IsLetterOrDigit(''));
         // TestGetWordsOfSentence();
         // TestGetWordStartIn();
         // TestGetWordEndIn();

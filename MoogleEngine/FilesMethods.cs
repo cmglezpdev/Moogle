@@ -11,8 +11,6 @@ public class FilesMethods {
         Array.Resize(ref this.FILES, aux.Length);
         Array.Copy(aux, this.FILES, aux.Length);
     }
-
-
     public static string GetNameFile(string file) {
         int StartName = file.Length - 1;
         for( ; StartName >= 0 && file[StartName] != '/'; StartName --); StartName ++;
@@ -27,16 +25,14 @@ public class FilesMethods {
     public static int GetTotalFiles() {
         return ReadFolder().Length;
     }
-    
-    
-    public static void ReadContentFile(string file, int idFile, ref Dictionary<int, int> DocsInfos, ref List<List<info>> WordsDocs, ref List<pair> WordsOfDocs ) {
+    public static void ReadContentFile(string file, int idFile, ref Dictionary<int, int> IdxWords, ref List<List<info>> PosInDocs ) {
         
-        int n = DocsInfos.Count;
+        // Reservar las palabras que ya estan desde los ficheros pasados
+        int n = PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
         for(int i = 0; i < n; i ++) 
-            WordsDocs[idFile].Add(new info());
-        
-    
-        // Leer el fichero y sacar la informacion del contenido
+            PosInDocs[idFile].Add(new info());
+
+
         StreamReader archive = new StreamReader(file);
         
         int numLine = 0;
@@ -46,36 +42,33 @@ public class FilesMethods {
             
             string[] words = AuxiliarMethods.GetWordsOfSentence(line);
             for(int i = 0; i < words.Length; i ++) {
-                int hash = AuxiliarMethods.GetHashCode(words[i]);
-                if(DocsInfos.ContainsKey(hash)) {
-                    WordsDocs[idFile][ DocsInfos[hash] ].AddAppearance(numLine, i);
+                int hash = AuxiliarMethods.GetHashCode(words[i].ToLower());
+                // Si la palabra ya existe de los ficheros anteriores 
+                if(IdxWords.ContainsKey(hash)) {
+                    // Anadimos una nueva aparicion de la palabra en IdFile y en
+                    // la posicion reservada que tiene esa palabra en idFile
+                    PosInDocs[idFile][ IdxWords[hash] ].AddAppearance(numLine, i);
                     continue;
                 }
-                WordsDocs[idFile].Add(new info(numLine, i));
-                WordsOfDocs.Add( new pair(words[i], WordsOfDocs.Count) );
-                DocsInfos[hash] = WordsOfDocs.Count - 1;
+                // Sino creamos una nueva posicion con esa palabra en idfFile
+                int newPos = PosInDocs[idFile].Count;
+                PosInDocs[idFile].Add(new info());
+                PosInDocs[idFile][ newPos ].AddAppearance(numLine, i);
+                // El nuevo indice es la ultima posicion vacia de la lista de palabras
+                IdxWords[hash] = newPos;
             }
         }
 
         archive.Close();
     } 
-
-
-
-
-
     public string GetFileByID(int idFile) {
         if(idFile >= this.FILES.Length) 
             throw new Exception("The File does't exists!");
         return this.FILES[idFile];
     }
-
     public static int GetAmountWordsInSentence(string line) {
         return AuxiliarMethods.GetWordsOfSentence(line).Length;
     }
-
-
-    // TODO: No anadir la palabra en los contextos laterales
     public static string GetLeftContext(int idFile, int numLine, int numWord, int length, bool addWord) { 
         //todo:: Tanto numLine como numWord empieza desde cero
         
@@ -188,12 +181,10 @@ public class FilesMethods {
         return context.ToString();
     }
 
-
-
-
-
-
-
+    public static string GetContext(int idFile, int numLine, int numWord, int length) {
+        return GetLeftContext(idFile, numLine, numWord, length, true) + 
+               GetRightContext(idFile, numLine, numWord, length, false);
+    }
 
 
     public static void Print(float[] x) {
