@@ -56,6 +56,8 @@ public class FilesMethods {
                 DocsInfos[hash] = WordsOfDocs.Count - 1;
             }
         }
+
+        archive.Close();
     } 
 
 
@@ -185,6 +187,30 @@ public class FilesMethods {
 
         return context.ToString();
     }
+
+
+
+
+
+
+
+
+
+    public static void Print(float[] x) {
+        string path = "archive.txt";
+
+        StreamWriter sw = new StreamWriter(path);
+        string s = "";
+        for(int i = 0; i < x.Length; i ++) {
+            s += $"{x[i]} ";
+        }
+        sw.WriteLine(s);
+        sw.Close();
+    }
+
+
+
+
 
 
 

@@ -7,16 +7,35 @@ class Test{
 
     static void Main() {
 
-        string[] files = FilesMethods.ReadFolder();
+        // string[] files = FilesMethods.ReadFolder();
 
-        TestGetWordsOfSentence();
-        TestGetWordStartIn();
-        TestGetWordEndIn();
 
-        TestReadFolder();   
-        TestGetNameFile();
-        TestGetLeftContext();
-        TestGetRightContext();
+        try
+        {
+            StreamWriter sw = new StreamWriter("archive.txt");
+            sw.WriteLine("Hola");
+            sw.WriteLine("a");
+            sw.WriteLine("todos");
+            sw.Close();
+        }
+        catch (Exception e)
+        {
+            System.Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            System.Console.WriteLine("Past!!!");
+        }
+
+
+        // TestGetWordsOfSentence();
+        // TestGetWordStartIn();
+        // TestGetWordEndIn();
+
+        // TestReadFolder();   
+        // TestGetNameFile();
+        // TestGetLeftContext();
+        // TestGetRightContext();
 
 
         //? Print if all is OK
