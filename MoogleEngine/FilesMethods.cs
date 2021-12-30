@@ -91,7 +91,7 @@ public class FilesMethods {
             if(++ nw == numWord) break;
             int l = AuxiliarMethods.GetWordStartIn(AuxLines[n - 1], posWord).Length;
             posWord += l - 1;
-        }
+        } 
 
         // Anadimos la palabra al contexto
         if(addWord) context.Append(AuxiliarMethods.GetWordStartIn(AuxLines[n - 1], posWord));
@@ -200,7 +200,7 @@ public class FilesMethods {
     }
 
 
-
+  
 
 
 

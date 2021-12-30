@@ -33,23 +33,27 @@ public struct info {
     public static float TFIDF(int doc, int w, int MaxFreq, ref List<List<info>> PosInDocs ) {
         float tfidf = 0.00f;
 
-        float tf = (float)(PosInDocs[doc][w].AmountAppareance / MaxFreq);
-        
+        if(MaxFreq == 0)  // El documento esta en blanco 
+            return tfidf;
 
+        float tf = (float)(PosInDocs[doc][w].AmountAppareance / MaxFreq);
         int ni = 0;
         for(int i = 0; i < PosInDocs.Count; i ++) 
-            if(PosInDocs[i][w].AmountAppareance != 0) ni ++;
+            if(PosInDocs[i][w].AmountAppareance != 0.00f) ni ++;
         
         float idf = (float)(1.00f + Math.Log10(PosInDocs.Count / ni));
         float alfa = 0.5f;
-        tfidf = (float)(alfa + (1.0f - alfa) * idf);
+        tfidf = (float)(alfa + (1.0f - alfa) * tf) * idf;
 
         return tfidf;
     }
 
-    public static float TFIDF2(int wFreq, int MaxFreq) {
+    public static float TFIDF(int wFreq, int MaxFreq) {
         float tfidf = 0.00f;
-       
+
+        if(MaxFreq == 0) // El documento esta en blanco
+            return tfidf;
+
         float tf = (float)(wFreq / MaxFreq);
         float alfa = 0.5f;
         tfidf = (alfa + (1.00f - alfa) * tf);
