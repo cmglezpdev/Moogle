@@ -7,10 +7,19 @@ class Test{
 
     static void Main() {
 
+        Array.Sort(a);
+        Array.Reverse(a);
+
+
+
+
+
+
+
+
         // string[] files = FilesMethods.ReadFolder();
 
 
-        System.Console.WriteLine(char.IsLetterOrDigit(''));
         // TestGetWordsOfSentence();
         // TestGetWordStartIn();
         // TestGetWordEndIn();

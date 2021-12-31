@@ -84,25 +84,19 @@ public static class Moogle
             sim[doc] = new Tuple<float, int>(score, doc);
         }
 
-        //!? Ordenar los scores por scores
-
-
-
-        //! Reconstruir el score despues de ordenado
-        float[] scores = new float[TotalFiles];
-        foreach(Tuple<float, int> iSim in sim) 
-            scores[ iSim.Item2 ] = iSim.Item1;
-        
+        //! Ordenar los scores por scores
+        Array.Sort(sim);
+        Array.Reverse(sim);        
 
         // ! Construir el resultado
         List<SearchItem> items = new List<SearchItem>();
 
-        for(int doc = 0; doc < TotalFiles; doc ++) {
+        for(int i = 0; i < TotalFiles; i ++) {
            // Si ninguna de las palabras estan en el documento     
-           if(scores[doc] == 0.00f) continue;
+           if(sim[i].Item1 == 0.00f) continue;
 
             float score = 0.00f;
-            int hash = 0;
+            int hash = 0, doc = sim[i].Item2;
 
             foreach(KeyValuePair<int, int> wq in FreqWordsQuery) {
                 // Si la palabra no esta entre los documentos
