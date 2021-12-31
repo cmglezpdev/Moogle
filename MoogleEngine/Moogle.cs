@@ -1,6 +1,4 @@
 ﻿namespace MoogleEngine;
-using System.Diagnostics;
-
 public static class Moogle
 {
     public static SearchResult Query(string query)
@@ -33,11 +31,8 @@ public static class Moogle
         }
 
 
-        System.Console.WriteLine("Etapa #1");
-
-
         int MaxFreq = 0;
-        // ! Ahora creamos la matris peso de los documentos
+        // ! Ahora creamos la matriz peso de los documentos
         float[,] wDocs = new float[TotalFiles, TotalWords];
         for(int doc = 0; doc < TotalFiles; doc ++) {
             // Maximo de frecuencia entre todas las palabras del documento
@@ -66,7 +61,7 @@ public static class Moogle
             MaxFreq = Math.Max(MaxFreq, FreqWordsQuery[hash]);
         }
 
-        //! Crear la matriz query
+        //! Crear la matriz peso de la query
         float[] wQuery = new float[TotalWords];
         // Ir por todas las palabras de la query
         foreach(KeyValuePair<int, int> wq in FreqWordsQuery) {
@@ -74,10 +69,8 @@ public static class Moogle
             if(!IdxWords.ContainsKey( wq.Key )) 
                 continue;
             wQuery[ IdxWords[wq.Key] ] = info.TFIDF(wq.Value, MaxFreq);
-
         }
 
-        System.Console.WriteLine("Estapa #2");
 
 
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
@@ -91,17 +84,7 @@ public static class Moogle
             sim[doc] = new Tuple<float, int>(score, doc);
         }
 
-
-
-
-
-
-        // //? Ordenamineto de las respuestas por el score
-
-
-
-
-
+        //!? Ordenar los scores por scores
 
 
 
@@ -109,95 +92,45 @@ public static class Moogle
         float[] scores = new float[TotalFiles];
         foreach(Tuple<float, int> iSim in sim) 
             scores[ iSim.Item2 ] = iSim.Item1;
-
-
-        // ! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
-        for(int doc = 0; doc < TotalFiles; doc ++) {
-            float[] iWDoc = new float[TotalWords];
-            for(int w = 0; w < TotalWords; w ++) 
-                iWDoc[w] = wDocs[doc, w];
-
-            scores[doc] = info.Sim(ref iWDoc, ref wQuery);
-        }
-
-
-        // StreamWriter a = new StreamWriter("archive.txt");
-        // for(int i = 0; i < TotalFiles; i ++) {  
-        //     string s = "";
-        //     for(int j = 0; j < TotalWords; j ++)
-        //         s += $"{wDocs[i, j]} -- ";
-        //     a.WriteLine(s);
-        //     a.WriteLine("\n\n\n\n");
-        // }   
-        // a.Close();
-
-        // ?Ordenar los scores por scores
-        // * Implementacion
-        // * End Implementation
-
-
-        // Lista de palabras de la query(sin repeticiones)
-        int[] WQuery = new int[FreqWordsQuery.Count];
-        int t = 0;
-        foreach(KeyValuePair<int, int> wq in FreqWordsQuery) {
-            WQuery[t ++] = wq.Key;
-        }
-
-
-        System.Console.WriteLine("Estapa #3");
-
+        
 
         // ! Construir el resultado
         List<SearchItem> items = new List<SearchItem>();
-        
+
         for(int doc = 0; doc < TotalFiles; doc ++) {
-            if(scores[doc]  == 0.00f) continue; // En el documento no existe ninguna palabra de la query
-            string snippet = "";
+           // Si ninguna de las palabras estan en el documento     
+           if(scores[doc] == 0.00f) continue;
+
+            float score = 0.00f;
+            int hash = 0;
+
+            foreach(KeyValuePair<int, int> wq in FreqWordsQuery) {
+                // Si la palabra no esta entre los documentos
+                if(!IdxWords.ContainsKey(wq.Key)) continue;
+                // Si la palabra no aparece en ese documento
+                if(PosInDocs[doc][ IdxWords[wq.Key] ].AmountAppareance == 0) continue;
+
+                // Sacar la palabra de mayor score
+                if(score < PosInDocs[doc][ IdxWords[wq.Key] ].AmountAppareance) {
+                    hash = wq.Key;
+                    score = wDocs[doc, IdxWords[hash]];
+                }
+            }
+            // Si ninguna de las palabras esta en el documento
+            if(hash == 0) continue;
+            info word = PosInDocs[doc][ IdxWords[hash] ];
 
             Random r = new Random();
-            // Vamos a seleccionar una de las palabras que aparecen en el documento
-            int iWord = 0;
+            int nl = 0, nw = 0;
+            (nl, nw) = word.nthAppareance( r.Next() % word.AmountAppareance );
 
-            bool[] isOk = new bool[t];
-            bool ok = false;
+            string title = FilesMethods.GetNameFile(files[doc]);
+            string snippet = FilesMethods.GetContext(doc, nl, nw, 5);
 
-            while ( !ok ) {
-                iWord = r.Next() % t;
-                isOk[iWord] = true;
-                // Si la palabra no esta entre las de los documentos
-                if(!IdxWords.ContainsKey(WQuery[ iWord ]))  continue;
-
-                // Si el documento tiene esa palabra
-                info Word =  PosInDocs[doc][ IdxWords[ WQuery[ iWord ] ] ];
-                if( Word.AmountAppareance != 0 ) {
-                    // Seleccionamos al azar una de sus apariciones en el doc
-                    Random r2 = new Random();
-                    int kth = r2.Next() % Word.AmountAppareance;
-                    int nl, nw;
-                    (nl, nw) = Word.nthAppareance(kth);
-                    snippet = FilesMethods.GetContext(doc, nl, nw, 5);
-
-                    // Anadir la respuesta a la lista
-                    items.Add(new SearchItem(FilesMethods.GetNameFile(files[doc]), snippet, scores[doc]));   
-                    ok = true;
-                    continue;
-                }   
-                
-                ok = true;
-                foreach(bool i in isOk)
-                    if(!i) {
-                        ok = false;
-                        break;
-                    }
-            }
+            items.Add(new SearchItem(title, snippet, score));
         }
 
-        System.Console.WriteLine("Estapa #4");
 
-
-
-
-        // List<SearchItem> items = new List<SearchItem>();
 
         return new SearchResult(items.ToArray(), query);
     }

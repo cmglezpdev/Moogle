@@ -57,14 +57,23 @@ public class AuxiliarMethods{
         return sentence.Substring(start + 1, end - start);
     }
 
-    public static int GetHashCode(string w) {
-        int MOD = 1000000007;
-        return w.GetHashCode() % MOD;
-    }
 
     public static void Resize(ref List< List<info> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
     }
+
+    public static int Equival(float l, float r) {
+        float eps = 0.000000001f;
+        if( l - r <= eps ) return 0; // Son iguales
+        if( r - l > eps ) return 1; // l < r
+        return -1; // r < l
+    }
+
+    public static int GetHashCode(string w) {
+        int MOD = 1000000007; // 10^9 + 7
+        return w.GetHashCode() % MOD;
+    }
+
 
 }
