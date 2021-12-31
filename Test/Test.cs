@@ -7,16 +7,6 @@ class Test{
 
     static void Main() {
 
-        Array.Sort(a);
-        Array.Reverse(a);
-
-
-
-
-
-
-
-
         // string[] files = FilesMethods.ReadFolder();
 
 
@@ -28,6 +18,7 @@ class Test{
         // TestGetNameFile();
         // TestGetLeftContext();
         // TestGetRightContext();
+        TestGetOperators();
 
 
         //? Print if all is OK
@@ -113,6 +104,17 @@ class Test{
     }
 
     #endregion
+
+
+    static void TestGetOperators() {
+        string query = "Lo mas *~!^importante!~ !es mi !*&mamolshito";
+        Tuple<string, string>[] x = FilesMethods.GetOperatorsInQuery(query);
+
+        foreach (Tuple<string, string> item in x) {
+            
+            System.Console.WriteLine(item.ToString());   
+        } 
+    }
 
 
 

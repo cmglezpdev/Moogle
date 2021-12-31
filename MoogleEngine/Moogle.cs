@@ -72,7 +72,6 @@ public static class Moogle
         }
 
 
-
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = new Tuple<float, int>[TotalFiles];
         for(int doc = 0; doc < TotalFiles; doc ++) {
@@ -87,6 +86,14 @@ public static class Moogle
         //! Ordenar los scores por scores
         Array.Sort(sim);
         Array.Reverse(sim);        
+
+
+        // string[] operators = FilesMethods.GetOperatorsInQuery(query);
+
+
+
+
+
 
         // ! Construir el resultado
         List<SearchItem> items = new List<SearchItem>();

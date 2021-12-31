@@ -181,10 +181,49 @@ public class FilesMethods {
         return context.ToString();
     }
 
+    public static bool IsOperator(char o) {
+        return (o == '!' || o == '^' || o == '~' || o == '*');
+    }
+
     public static string GetContext(int idFile, int numLine, int numWord, int length) {
         return GetLeftContext(idFile, numLine, numWord, length, true) + 
                GetRightContext(idFile, numLine, numWord, length, false);
     }
+
+    public static Tuple<string, string>[] GetOperatorsInQuery(string query) {
+        // List<Tuple<string, int>> o = new List<Tuple<string, int>>();
+        List<Tuple<string, string>> o = new List<Tuple<string, string>>();
+        int n = query.Length;
+
+        for(int i = 0; i < query.Length; i ++) {
+            if(!IsOperator(query[i])) continue;
+            
+            // Seleccionar los operadores por tipo, ya que algunos se tratan diferentes
+            if( query[i] == '!' ) {
+                string op = "!";
+                int j = i + 1;
+                // Sacar los operadores consecutivos
+                while(j < n && (IsOperator(query[j]) || Char.IsWhiteSpace(query[j]))) {
+                    if(IsOperator(query[j])) op += query[j];
+                    j ++;
+                }
+                if(j >= n) break; //Ya se llego al final
+                string w = AuxiliarMethods.GetWordStartIn(query, j);
+                
+                // o.Add(new Tuple<string, int>(op, AuxiliarMethods.GetHashCode(w.ToLower())));
+                o.Add(new Tuple<string, string>(op, w));
+
+                i = j + w.Length - 1;
+            } 
+            
+        }
+
+        return o.ToArray(); 
+    }
+
+
+
+
 
 
     public static void Print(float[] x) {
@@ -198,11 +237,5 @@ public class FilesMethods {
         sw.WriteLine(s);
         sw.Close();
     }
-
-
-  
-
-
-
 
 }

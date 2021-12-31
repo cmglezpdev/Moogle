@@ -21,9 +21,9 @@ public class AuxiliarMethods{
         return words.ToArray();
     }
 
-    // Ignorar todos los caracteres que no sean letras o numeros
+    // Ignorar los espacios en blanco y los signos de puntuacion
     public static bool Ignore(char x) {
-        return !Char.IsLetterOrDigit(x);
+        return Char.IsWhiteSpace(x) || Char.IsWhiteSpace(x);
     }
 
     // Comprobar que una linea del fichero es o no una linea en blanco
