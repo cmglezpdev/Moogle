@@ -21,9 +21,12 @@ public class AuxiliarMethods{
         return words.ToArray();
     }
 
-    // Ignorar los espacios en blanco y los signos de puntuacion
+    public static bool IsOperator(char o) {
+        return (o == '!' || o == '^' || o == '~' || o == '*');
+    }
     public static bool Ignore(char x) {
-        return Char.IsWhiteSpace(x) || Char.IsWhiteSpace(x);
+        //  return !(Char.IsLetterOrDigit(x) || !IsOperator(x));
+        return Char.IsPunctuation(x) || IsOperator(x) || Char.IsWhiteSpace(x);
     }
 
     // Comprobar que una linea del fichero es o no una linea en blanco
@@ -63,17 +66,69 @@ public class AuxiliarMethods{
             aux[idFile].Add(new info());
     }
 
-    public static int Equival(float l, float r) {
-        float eps = 0.000000001f;
-        if( l - r <= eps ) return 0; // Son iguales
-        if( r - l > eps ) return 1; // l < r
-        return -1; // r < l
-    }
-
     public static int GetHashCode(string w) {
         int MOD = 1000000007; // 10^9 + 7
         return w.GetHashCode() % MOD;
     }
 
+    public static string GetOperators(string sentence, int pos) {
+        string operators = "";
+        int n = sentence.Length;
 
+        for(int i = pos; i < n && (IsOperator(sentence[i]) || Char.IsWhiteSpace(sentence[i])); i ++)
+            if(IsOperator(sentence[i]))
+                    operators += sentence[i];
+
+        return operators;
+    }
+
+    public static string    GetWord(string sentence, int pos, string direction) {
+        string word = "";
+        int n = sentence.Length;
+
+        switch( direction ) {
+            case "left":
+                for(int i = pos; i < n && !AuxiliarMethods.Ignore(sentence[i]); i ++)
+                    word += sentence[i];
+                break;
+            
+            case "right":
+                for(int i = pos; i >= 0 && !AuxiliarMethods.Ignore(sentence[i]); i --)
+                    word = sentence[i] + word;
+                break;
+        }
+
+        return word;
+    }
+
+    // Devuelve vacio si no es valida, y en otro caso simplifica la expresion
+    public static string ValidOperators(string op) {
+        // Si son operadores simples
+        if(op == "!") return op;
+        if(op == "^") return op;
+        if(op == "*") return op;
+
+        // Si todos son iguales 
+        bool allEquival = true;
+        for(int i = 1; i < op.Length; i ++)
+            if(op[i] != op[i - 1]) {
+                allEquival = false;
+                break;
+            }
+        if(allEquival == true) {
+            if(op[0] != '*') return op[0].ToString();
+            return op;
+        }
+
+        // Si entre los operadores aparece ~, entoces no es valido
+        for(int i = 1; i < op.Length; i ++) 
+            if(op[i] == '~') return "";
+        
+        // Si aparece ! entoces los demas operadores no importan
+        for(int i = 0; i < op.Length; i ++)
+            if(op[i] == '!') return "!";
+
+        return op;
+    }
+    
 }

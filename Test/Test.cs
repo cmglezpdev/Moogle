@@ -107,13 +107,21 @@ class Test{
 
 
     static void TestGetOperators() {
-        string query = "Lo mas *~!^importante!~ !es mi !*&mamolshito";
+        string query = "Lo mas ~!^importante! ~ !es mi ~ *&mamolshito ";
+        // string query = "!cuba ~ amor! ~ !esperanza, xq l@ viD@ es *#52mvcs!#";
+        // string query = "cmglezp@gmail.com";
+
         Tuple<string, string>[] x = FilesMethods.GetOperatorsInQuery(query);
 
         foreach (Tuple<string, string> item in x) {
-            
+
             System.Console.WriteLine(item.ToString());   
-        } 
+        }  
+
+
+        // string aux = "~";
+        // System.Console.WriteLine(aux[0]);
+
     }
 
 

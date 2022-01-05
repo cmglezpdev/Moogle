@@ -61,6 +61,7 @@ public static class Moogle
             MaxFreq = Math.Max(MaxFreq, FreqWordsQuery[hash]);
         }
 
+
         //! Crear la matriz peso de la query
         float[] wQuery = new float[TotalWords];
         // Ir por todas las palabras de la query
@@ -85,10 +86,8 @@ public static class Moogle
 
         //! Ordenar los scores por scores
         Array.Sort(sim);
-        Array.Reverse(sim);        
+        Array.Reverse(sim);
 
-
-        // string[] operators = FilesMethods.GetOperatorsInQuery(query);
 
 
 
@@ -126,7 +125,7 @@ public static class Moogle
             (nl, nw) = word.nthAppareance( r.Next() % word.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(files[doc]);
-            string snippet = FilesMethods.GetContext(doc, nl, nw, 5);
+            string snippet = FilesMethods.GetContext(doc, nl, nw, 20);
 
             items.Add(new SearchItem(title, snippet, score));
         }
