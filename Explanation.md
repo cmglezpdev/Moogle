@@ -7,7 +7,7 @@ cmglezp@gmail.com --> Esto son 3 palabras, cmglezpdev, gmail y com
 
 
 3. Bug al poner operadores de lante de un caracter que es omitido por el metodo que devuelve la palabra correspondiente a esos caracteres
-
+4. Mientras sea posible, usar el hash en vez de string
 
 Caracteres a ignorar:
 ! ¿ ? ( ) { } [ ] " ' : ; . , / ` | \ - _ 

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using MoogleEngine;
 
+Moogle.NewProcess();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

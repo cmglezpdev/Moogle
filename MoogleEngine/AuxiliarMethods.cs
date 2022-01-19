@@ -107,6 +107,7 @@ public class AuxiliarMethods{
         if(op == "!") return op;
         if(op == "^") return op;
         if(op == "*") return op;
+        if(op == "~") return op;
 
         // Si todos son iguales 
         bool allEquival = true;

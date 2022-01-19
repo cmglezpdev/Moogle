@@ -1,22 +1,117 @@
 ﻿namespace MoogleEngine;
 public static class Moogle
 {
+
+#region Variables
+    private static bool preProcess  = false;
+    private static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
+    private static Dictionary<int, int> IdxWords = new Dictionary<int, int>();     // Palabras con su indice en la lista
+    private static string[] files = new string[0];
+    private static int TotalFiles = 0;
+    private static int TotalWords = 0;
+    #endregion
+
+
+
+
     public static SearchResult Query(string query)
     {
 
-        string[] files = FilesMethods.ReadFolder();
-        int TotalFiles = files.Length;
+        //!  Matriz peso de los documentos
+        float[,] wDocs = GetWeigthOfDocs();
 
-        // Matrix con las repeticiones de las palabras en cada documento
-        List<List<info>> PosInDocs = new List<List<info>>();
-        // Palabras con su indice en la lista
-        Dictionary<int, int> IdxWords = new Dictionary<int, int>();
+        // !Frecuencia de las palabras de la query
+        Dictionary<int, int> FreqWordsQuery = GetFreqWordsInQuery(query);
+
+        //!  Matriz peso del query
+        float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
+
+
+        //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
+        Tuple<float, int>[] sim = GetSimBetweenQueryDocs(ref wQuery, ref wDocs);
+
+
+        // !Modificar el peso de los documentos en base a cada operador del query
+        Tuple<string, string>[] operators = FilesMethods.GetOperators(query);
+
+
+        for(int doc = 0; doc < TotalFiles; doc ++){
+
+            foreach(Tuple<string, string> PairOperWords in operators) {
+                string opers = PairOperWords.Item1;
+                string word = PairOperWords.Item2;
+                int Hash = AuxiliarMethods.GetHashCode(word);
+
+                // System.Console.WriteLine( wDocs[doc, IdxWords[Hash]] );
+
+
+                // Si es una palabra que no esta en ningun documento
+                if(!IdxWords.ContainsKey(Hash)) continue;
+                
+                // recorrer los operadores e ir aplicando uno por uno
+                foreach(char op in opers) {
+                    
+                    switch( op ) {
+                        //?  La palabra no puede aparecer en ningun documento que sea devuelto 
+                        case '!':
+                            // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
+                            if( wDocs[doc, IdxWords[Hash]] != 0.00f ) 
+                                sim[doc] = new Tuple<float, int> (0.00f, doc);
+                            break;
+
+                        //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
+                        case '^': 
+                            // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
+                            if(wDocs[doc, IdxWords[Hash]] == 0.00f)
+                                sim[doc] = new Tuple<float, int> (0.00f, doc);
+                            break;
+
+                        //?  Aumentar la relevancia de la palabra en el documento
+                        case '*':
+                            // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
+                            if(wDocs[doc, IdxWords[Hash]] != 0.00f)
+                                wDocs[doc, IdxWords[Hash]] += wDocs[doc, IdxWords[Hash]] * 1f/5f;
+                            break;
+                        
+                        default: break;
+                    }
+                }
+            }
+        }
+
+        //! Ordenar los scores por scores
+        Array.Sort(sim);
+        Array.Reverse(sim);
+
+        // foreach(Tuple<float, int> x in sim)
+        //     System.Console.WriteLine(x.Item1);
+
+        // !Construir el resultado
+        SearchItem[] items = BuildResult(ref sim, ref FreqWordsQuery, ref wDocs);
+        
 
 
 
+        
+        return new SearchResult(items, query);
+    }
+
+
+
+
+
+
+
+#region Methods 
+    public static void NewProcess() {
+        files = FilesMethods.ReadFolder();
+        TotalFiles = files.Length;
+        
         //! Redimencionar la matrix de las apariciones en la cantidad de documentos que son
         for(int doc = 0; doc < TotalFiles; doc ++)
             PosInDocs.Add(new List<info> ());
+    
+    
 
         //! Guardar todas las palabras de todos los documentos en la matrix
         for(int doc = 0; doc < TotalFiles; doc ++)
@@ -24,32 +119,38 @@ public static class Moogle
         
 
         // //! Redimencionar la lista de palabras de todos los documentos al maximo posible
-        int TotalWords = IdxWords.Count;
+        TotalWords = IdxWords.Count;
         for(int doc = 0; doc < TotalFiles; doc ++) {
             int n = PosInDocs[doc].Count;
             AuxiliarMethods.Resize(ref PosInDocs, doc, TotalWords - n);
         }
+    }
 
+    private static float[,] GetWeigthOfDocs() {
+        int hash = AuxiliarMethods.GetHashCode("amor");
 
         int MaxFreq = 0;
-        // ! Ahora creamos la matriz peso de los documentos
         float[,] wDocs = new float[TotalFiles, TotalWords];
         for(int doc = 0; doc < TotalFiles; doc ++) {
             // Maximo de frecuencia entre todas las palabras del documento
             MaxFreq = 0;
             for(int i = 0; i < TotalWords; i ++) 
                 MaxFreq = Math.Max(MaxFreq, PosInDocs[doc][i].AmountAppareance);
-        
             // Calcular el peso de cada palabra en el documento
-            for(int w = 0; w < TotalWords; w ++)
-                wDocs[doc, w] = info.TFIDF(doc, w, MaxFreq, ref PosInDocs);
+            for(int w = 0; w < TotalWords; w ++) {
+                wDocs[doc, w] = info.TFIDF(w, PosInDocs[doc][w].AmountAppareance, MaxFreq, ref PosInDocs);
+                
+                // if(w == IdxWords[hash])
+                //     System.Console.WriteLine( (info.TFIDF(w, PosInDocs[doc][w].AmountAppareance, MaxFreq, ref PosInDocs)));
+            }
         }
 
+        return wDocs;
+    }
 
-
+    private static Dictionary<int, int> GetFreqWordsInQuery( string query ) {
         //! Buscar la frecuencia de las palabras de la query
         string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
-        MaxFreq = 0;
         // Calculamos la frecuencia de las palabras en la query
         Dictionary<int, int> FreqWordsQuery = new Dictionary<int, int>();
         foreach(string w in WordsQuery) {
@@ -57,9 +158,17 @@ public static class Moogle
             if(!FreqWordsQuery.ContainsKey( hash ))
                 FreqWordsQuery[ hash ] = 0;
             FreqWordsQuery[ hash ] ++;
-        
-            MaxFreq = Math.Max(MaxFreq, FreqWordsQuery[hash]);
         }
+    
+        return FreqWordsQuery;
+    } 
+
+
+    private static float[] GetWeigthOfQuery(ref Dictionary<int, int> FreqWordsQuery) {
+            
+        int MaxFreq = 0;
+        foreach(KeyValuePair<int, int> PairWordFreq in FreqWordsQuery)
+            MaxFreq = Math.Max(MaxFreq, PairWordFreq.Value);
 
 
         //! Crear la matriz peso de la query
@@ -69,32 +178,35 @@ public static class Moogle
             // Si la no existe en las de los documentos
             if(!IdxWords.ContainsKey( wq.Key )) 
                 continue;
-            wQuery[ IdxWords[wq.Key] ] = info.TFIDF(wq.Value, MaxFreq);
+
+            wQuery[ IdxWords[wq.Key] ] = info.TFIDF(IdxWords[wq.Key], MaxFreq, wq.Value, ref PosInDocs);
+            //  info.TFIDF(0, wq.Value, MaxFreq);
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // System.Console.WriteLine(wQuery[ IdxWords[wq.Key] ]);
         }
 
+        return wQuery;
+    }
 
-        //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
+
+    private static Tuple<float, int>[] GetSimBetweenQueryDocs(ref float[] wQuery, ref float[,] wDocs){
+
         Tuple<float, int>[] sim = new Tuple<float, int>[TotalFiles];
         for(int doc = 0; doc < TotalFiles; doc ++) {
             float[] iWDoc = new float[TotalWords];
             for(int w = 0; w < TotalWords; w ++) 
                 iWDoc[w] = wDocs[doc, w];
                 
-            float score = info.Sim(ref iWDoc, ref wQuery);
+            float score = FilesMethods.GetScore(ref iWDoc, ref wQuery);
+            System.Console.WriteLine(score);
             sim[doc] = new Tuple<float, int>(score, doc);
         }
 
-        //! Ordenar los scores por scores
-        Array.Sort(sim);
-        Array.Reverse(sim);
+        return sim;
+    }
 
 
-
-
-
-
-
-        // ! Construir el resultado
+    private static SearchItem[] BuildResult(ref Tuple<float, int>[] sim, ref Dictionary<int, int> FreqWordsQuery, ref float[,] wDocs) {
         List<SearchItem> items = new List<SearchItem>();
 
         for(int i = 0; i < TotalFiles; i ++) {
@@ -130,10 +242,15 @@ public static class Moogle
             items.Add(new SearchItem(title, snippet, score));
         }
 
-
-
-        return new SearchResult(items.ToArray(), query);
+        return items.ToArray();
     }
+
+
+#endregion
+
+
+
+
 }
 
 

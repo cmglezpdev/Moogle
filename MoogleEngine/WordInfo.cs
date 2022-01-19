@@ -29,38 +29,22 @@ public struct info {
     
 
 
-
-    public static float TFIDF(int doc, int w, int MaxFreq, ref List<List<info>> PosInDocs ) {
+    public static float TFIDF(int w, int MaxFreq, int wFreq, ref List<List<info>> PosInDocs) {
         float tfidf = 0.00f;
 
         if(MaxFreq == 0)  // El documento esta en blanco 
             return tfidf;
 
-        float tf = (float)(PosInDocs[doc][w].AmountAppareance / MaxFreq);
+        float tf = (float)(wFreq / MaxFreq);
         int ni = 0;
         for(int i = 0; i < PosInDocs.Count; i ++) 
-            if(PosInDocs[i][w].AmountAppareance != 0.00f) ni ++;
+            if(PosInDocs[i][w].AmountAppareance > 0) ni ++;
         
-        float idf = (float)(1.00f + Math.Log10(PosInDocs.Count / ni));
-        float alfa = 0.5f;
-        tfidf = (float)(alfa + (1.0f - alfa) * tf) * idf;
+        float idf = (float)Math.Log(PosInDocs.Count / ni);
+        tfidf = tf * idf; 
 
         return tfidf;
     }
-
-    public static float TFIDF(int wFreq, int MaxFreq) {
-        float tfidf = 0.00f;
-
-        if(MaxFreq == 0) // El documento esta en blanco
-            return tfidf;
-
-        float tf = (float)(wFreq / MaxFreq);
-        float alfa = 0.5f;
-        tfidf = (alfa + (1.00f - alfa) * tf);
-       
-        return tfidf;
-    }
-
 
 
     // RANKING DE LOS DOCUMENTOS
@@ -80,7 +64,7 @@ public struct info {
 
         if(NormD == 0 || NormQ == 0 || MultVectors == 0) 
             return 0.00f;
-        return MultVectors / (NormD * NormQ);
+        return (float)(MultVectors / (NormD * NormQ));
     }
 
 }

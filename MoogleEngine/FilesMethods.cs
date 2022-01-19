@@ -185,7 +185,7 @@ public class FilesMethods {
                GetRightContext(idFile, numLine, numWord, length, false);
     }
 
-    public static Tuple<string, string>[] GetOperatorsInQuery(string query) {
+    public static Tuple<string, string>[] GetOperators(string query) {
         List<Tuple<string, string>> o = new List<Tuple<string, string>>();
         int n = query.Length;
 
@@ -219,6 +219,16 @@ public class FilesMethods {
                  i = j + wo.Length - 1;
                  continue;
             }
+            
+            // Si es la misma que la ultima que pusimos entonces significa que tiene operador, por lo tanto 
+            // la quitamos de la lista y la anadimos junto a la otra palara
+            if(o.Count >= 0) { 
+                if(prev_wo == o.Last().Item2) {
+                    prev_wo = o.Last().Item1 + o.Last().Item2;
+                    o.RemoveAt(o.Count - 1);
+                }
+            }
+
 
             o.Add(new Tuple<string, string>( "~", prev_wo + " " + operators.Substring(1, operators.Length - 1) + wo));
             i = j + wo.Length - 1;
@@ -230,20 +240,13 @@ public class FilesMethods {
     }
 
 
-
-
-
-
-    public static void Print(float[] x) {
-        string path = "archive.txt";
-
-        StreamWriter sw = new StreamWriter(path);
-        string s = "";
-        for(int i = 0; i < x.Length; i ++) {
-            s += $"{x[i]} ";
-        }
-        sw.WriteLine(s);
-        sw.Close();
+    public static float GetScore(ref float[] iWDoc, ref float[] wQuery) {
+        
+    
+        // Si la query no continene operadores
+        return info.Sim(ref iWDoc, ref wQuery);
     }
+
+
 
 }
