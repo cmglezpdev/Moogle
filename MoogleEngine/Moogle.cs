@@ -3,12 +3,13 @@ public static class Moogle
 {
 
 #region Variables
-    private static bool preProcess  = false;
-    private static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
-    private static Dictionary<int, int> IdxWords = new Dictionary<int, int>();     // Palabras con su indice en la lista
-    private static string[] files = new string[0];
-    private static int TotalFiles = 0;
-    private static int TotalWords = 0;
+    public static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
+    public static Dictionary<int, int> IdxWords = new Dictionary<int, int>();     // Palabras con su indice en la lista
+    public static string[] files = new string[0];
+    public static int TotalFiles = 0;
+    public static int TotalWords = 0;
+    public static float[,] wDocs = new float[0,0];
+
     #endregion
 
 
@@ -17,8 +18,14 @@ public static class Moogle
     public static SearchResult Query(string query)
     {
 
-        //!  Matriz peso de los documentos
-        float[,] wDocs = GetWeigthOfDocs();
+        // for(int i = 0; i < TotalFiles; i ++){
+        //     int s = 0;
+        //     for(int j = 0; j < TotalWords; j ++) {
+        //         if(wDocs[i,j] != 0f)
+        //             s ++;
+        //     }
+        //     System.Console.WriteLine(s);
+        // }
 
         // !Frecuencia de las palabras de la query
         Dictionary<int, int> FreqWordsQuery = GetFreqWordsInQuery(query);
@@ -31,60 +38,60 @@ public static class Moogle
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(ref wQuery, ref wDocs);
 
 
-        // !Modificar el peso de los documentos en base a cada operador del query
-        Tuple<string, string>[] operators = FilesMethods.GetOperators(query);
+
+      //  // !Modificar el peso de los documentos en base a cada operador del query
+        // Tuple<string, string>[] operators = FilesMethods.GetOperators(query);
 
 
-        for(int doc = 0; doc < TotalFiles; doc ++){
+        // for(int doc = 0; doc < TotalFiles; doc ++){
 
-            foreach(Tuple<string, string> PairOperWords in operators) {
-                string opers = PairOperWords.Item1;
-                string word = PairOperWords.Item2;
-                int Hash = AuxiliarMethods.GetHashCode(word);
+        //     foreach(Tuple<string, string> PairOperWords in operators) {
+        //         string opers = PairOperWords.Item1;
+        //         string word = PairOperWords.Item2;
+        //         int Hash = AuxiliarMethods.GetHashCode(word);
 
-                // System.Console.WriteLine( wDocs[doc, IdxWords[Hash]] );
+        //         // System.Console.WriteLine( wDocs[doc, IdxWords[Hash]] );
 
 
-                // Si es una palabra que no esta en ningun documento
-                if(!IdxWords.ContainsKey(Hash)) continue;
+        //         // Si es una palabra que no esta en ningun documento
+        //         if(!IdxWords.ContainsKey(Hash)) continue;
                 
-                // recorrer los operadores e ir aplicando uno por uno
-                foreach(char op in opers) {
+        //         // recorrer los operadores e ir aplicando uno por uno
+        //         foreach(char op in opers) {
                     
-                    switch( op ) {
-                        //?  La palabra no puede aparecer en ningun documento que sea devuelto 
-                        case '!':
-                            // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
-                            if( wDocs[doc, IdxWords[Hash]] != 0.00f ) 
-                                sim[doc] = new Tuple<float, int> (0.00f, doc);
-                            break;
+        //             switch( op ) {
+        //                 //?  La palabra no puede aparecer en ningun documento que sea devuelto 
+        //                 case '!':
+        //                     // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
+        //                     if( wDocs[doc, IdxWords[Hash]] != 0.00f ) 
+        //                         sim[doc] = new Tuple<float, int> (0.00f, doc);
+        //                     break;
 
-                        //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
-                        case '^': 
-                            // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
-                            if(wDocs[doc, IdxWords[Hash]] == 0.00f)
-                                sim[doc] = new Tuple<float, int> (0.00f, doc);
-                            break;
+        //                 //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
+        //                 case '^': 
+        //                     // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
+        //                     if(wDocs[doc, IdxWords[Hash]] == 0.00f)
+        //                         sim[doc] = new Tuple<float, int> (0.00f, doc);
+        //                     break;
 
-                        //?  Aumentar la relevancia de la palabra en el documento
-                        case '*':
-                            // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
-                            if(wDocs[doc, IdxWords[Hash]] != 0.00f)
-                                wDocs[doc, IdxWords[Hash]] += wDocs[doc, IdxWords[Hash]] * 1f/5f;
-                            break;
+        //                 //?  Aumentar la relevancia de la palabra en el documento
+        //                 case '*':
+        //                     // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
+        //                     if(wDocs[doc, IdxWords[Hash]] != 0.00f)
+        //                         wDocs[doc, IdxWords[Hash]] += wDocs[doc, IdxWords[Hash]] * 1f/5f;
+        //                     break;
                         
-                        default: break;
-                    }
-                }
-            }
-        }
+        //                 default: break;
+        //             }
+        //         }
+        //     }
+        // }
+
 
         //! Ordenar los scores por scores
         Array.Sort(sim);
         Array.Reverse(sim);
 
-        // foreach(Tuple<float, int> x in sim)
-        //     System.Console.WriteLine(x.Item1);
 
         // !Construir el resultado
         SearchItem[] items = BuildResult(ref sim, ref FreqWordsQuery, ref wDocs);
@@ -92,7 +99,6 @@ public static class Moogle
 
 
 
-        
         return new SearchResult(items, query);
     }
 
@@ -102,21 +108,19 @@ public static class Moogle
 
 
 
-#region Methods 
-    public static void NewProcess() {
+    #region Methods
+    public static void DatesProcessing() {
         files = FilesMethods.ReadFolder();
         TotalFiles = files.Length;
         
         //! Redimencionar la matrix de las apariciones en la cantidad de documentos que son
         for(int doc = 0; doc < TotalFiles; doc ++)
             PosInDocs.Add(new List<info> ());
-    
-    
+
 
         //! Guardar todas las palabras de todos los documentos en la matrix
         for(int doc = 0; doc < TotalFiles; doc ++)
             FilesMethods.ReadContentFile(files[doc], doc, ref IdxWords, ref PosInDocs);
-        
 
         // //! Redimencionar la lista de palabras de todos los documentos al maximo posible
         TotalWords = IdxWords.Count;
@@ -124,25 +128,26 @@ public static class Moogle
             int n = PosInDocs[doc].Count;
             AuxiliarMethods.Resize(ref PosInDocs, doc, TotalWords - n);
         }
+
+       //!  Matriz peso de los documentos
+       wDocs = GetWeigthOfDocs();
     }
 
-    private static float[,] GetWeigthOfDocs() {
-        int hash = AuxiliarMethods.GetHashCode("amor");
 
-        int MaxFreq = 0;
+    private static float[,] GetWeigthOfDocs() {
+
         float[,] wDocs = new float[TotalFiles, TotalWords];
+        
         for(int doc = 0; doc < TotalFiles; doc ++) {
             // Maximo de frecuencia entre todas las palabras del documento
-            MaxFreq = 0;
+            int MaxFreq = 0;
             for(int i = 0; i < TotalWords; i ++) 
                 MaxFreq = Math.Max(MaxFreq, PosInDocs[doc][i].AmountAppareance);
+
             // Calcular el peso de cada palabra en el documento
-            for(int w = 0; w < TotalWords; w ++) {
-                wDocs[doc, w] = info.TFIDF(w, PosInDocs[doc][w].AmountAppareance, MaxFreq, ref PosInDocs);
-                
-                // if(w == IdxWords[hash])
-                //     System.Console.WriteLine( (info.TFIDF(w, PosInDocs[doc][w].AmountAppareance, MaxFreq, ref PosInDocs)));
-            }
+            for(int IdxW = 0; IdxW < TotalWords; IdxW ++) {
+                wDocs[doc, IdxW] = info.TFIDF(IdxW, MaxFreq, PosInDocs[doc][IdxW].AmountAppareance, ref PosInDocs);
+            } 
         }
 
         return wDocs;
@@ -151,6 +156,7 @@ public static class Moogle
     private static Dictionary<int, int> GetFreqWordsInQuery( string query ) {
         //! Buscar la frecuencia de las palabras de la query
         string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
+
         // Calculamos la frecuencia de las palabras en la query
         Dictionary<int, int> FreqWordsQuery = new Dictionary<int, int>();
         foreach(string w in WordsQuery) {
@@ -180,9 +186,6 @@ public static class Moogle
                 continue;
 
             wQuery[ IdxWords[wq.Key] ] = info.TFIDF(IdxWords[wq.Key], MaxFreq, wq.Value, ref PosInDocs);
-            //  info.TFIDF(0, wq.Value, MaxFreq);
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // System.Console.WriteLine(wQuery[ IdxWords[wq.Key] ]);
         }
 
         return wQuery;
@@ -198,7 +201,6 @@ public static class Moogle
                 iWDoc[w] = wDocs[doc, w];
                 
             float score = FilesMethods.GetScore(ref iWDoc, ref wQuery);
-            System.Console.WriteLine(score);
             sim[doc] = new Tuple<float, int>(score, doc);
         }
 
@@ -246,7 +248,7 @@ public static class Moogle
     }
 
 
-#endregion
+    #endregion
 
 
 

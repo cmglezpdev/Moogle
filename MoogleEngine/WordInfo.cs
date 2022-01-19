@@ -29,7 +29,7 @@ public struct info {
     
 
 
-    public static float TFIDF(int w, int MaxFreq, int wFreq, ref List<List<info>> PosInDocs) {
+    public static float TFIDF(int IndexWord, int MaxFreq, int wFreq, ref List<List<info>> PosInDocs) {
         float tfidf = 0.00f;
 
         if(MaxFreq == 0)  // El documento esta en blanco 
@@ -38,11 +38,10 @@ public struct info {
         float tf = (float)(wFreq / MaxFreq);
         int ni = 0;
         for(int i = 0; i < PosInDocs.Count; i ++) 
-            if(PosInDocs[i][w].AmountAppareance > 0) ni ++;
+            if(PosInDocs[i][IndexWord].AmountAppareance > 0) ni ++;
         
         float idf = (float)Math.Log(PosInDocs.Count / ni);
-        tfidf = tf * idf; 
-
+        tfidf = tf * idf;
         return tfidf;
     }
 

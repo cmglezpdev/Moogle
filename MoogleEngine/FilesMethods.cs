@@ -4,13 +4,6 @@ namespace MoogleEngine;
 
 public class FilesMethods {
 
-    string[] FILES = new string[0];
-
-    public FilesMethods() {
-        string[] aux = ReadFolder();
-        Array.Resize(ref this.FILES, aux.Length);
-        Array.Copy(aux, this.FILES, aux.Length);
-    }
     public static string GetNameFile(string file) {
         int StartName = file.Length - 1;
         for( ; StartName >= 0 && file[StartName] != '/'; StartName --); StartName ++;
@@ -41,6 +34,7 @@ public class FilesMethods {
             if(AuxiliarMethods.IsLineWhite(line)) continue;
             
             string[] words = AuxiliarMethods.GetWordsOfSentence(line);
+
             for(int i = 0; i < words.Length; i ++) {
                 int hash = AuxiliarMethods.GetHashCode(words[i].ToLower());
                 // Si la palabra ya existe de los ficheros anteriores 
@@ -62,9 +56,9 @@ public class FilesMethods {
         archive.Close();
     } 
     public string GetFileByID(int idFile) {
-        if(idFile >= this.FILES.Length) 
+        if(idFile < 0 || idFile >= Moogle.TotalFiles) 
             throw new Exception("The File does't exists!");
-        return this.FILES[idFile];
+        return Moogle.files[idFile];
     }
     public static int GetAmountWordsInSentence(string line) {
         return AuxiliarMethods.GetWordsOfSentence(line).Length;
