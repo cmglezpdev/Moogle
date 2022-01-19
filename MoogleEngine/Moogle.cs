@@ -4,7 +4,7 @@ public static class Moogle
 
 #region Variables
     public static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
-    public static Dictionary<int, int> IdxWords = new Dictionary<int, int>();     // Palabras con su indice en la lista
+    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();     // Palabras con su indice en la lista
     public static string[] files = new string[0];
     public static int TotalFiles = 0;
     public static int TotalWords = 0;
@@ -28,7 +28,7 @@ public static class Moogle
         // }
 
         // !Frecuencia de las palabras de la query
-        Dictionary<int, int> FreqWordsQuery = GetFreqWordsInQuery(query);
+        Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery(query);
 
         //!  Matriz peso del query
         float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
@@ -153,34 +153,34 @@ public static class Moogle
         return wDocs;
     }
 
-    private static Dictionary<int, int> GetFreqWordsInQuery( string query ) {
+    private static Dictionary<string, int> GetFreqWordsInQuery( string query ) {
         //! Buscar la frecuencia de las palabras de la query
         string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
 
         // Calculamos la frecuencia de las palabras en la query
-        Dictionary<int, int> FreqWordsQuery = new Dictionary<int, int>();
+        Dictionary<string, int> FreqWordsQuery = new Dictionary<string, int>();
         foreach(string w in WordsQuery) {
-            int hash = AuxiliarMethods.GetHashCode(w.ToLower());
-            if(!FreqWordsQuery.ContainsKey( hash ))
-                FreqWordsQuery[ hash ] = 0;
-            FreqWordsQuery[ hash ] ++;
+            string lower = w.ToLower();
+            if(!FreqWordsQuery.ContainsKey( lower ))
+                FreqWordsQuery[ lower ] = 0;
+            FreqWordsQuery[ lower ] ++;
         }
     
         return FreqWordsQuery;
     } 
 
 
-    private static float[] GetWeigthOfQuery(ref Dictionary<int, int> FreqWordsQuery) {
+    private static float[] GetWeigthOfQuery(ref Dictionary<string, int> FreqWordsQuery) {
             
         int MaxFreq = 0;
-        foreach(KeyValuePair<int, int> PairWordFreq in FreqWordsQuery)
+        foreach(KeyValuePair<string, int> PairWordFreq in FreqWordsQuery)
             MaxFreq = Math.Max(MaxFreq, PairWordFreq.Value);
 
 
         //! Crear la matriz peso de la query
         float[] wQuery = new float[TotalWords];
         // Ir por todas las palabras de la query
-        foreach(KeyValuePair<int, int> wq in FreqWordsQuery) {
+        foreach(KeyValuePair<string, int> wq in FreqWordsQuery) {
             // Si la no existe en las de los documentos
             if(!IdxWords.ContainsKey( wq.Key )) 
                 continue;
@@ -208,7 +208,7 @@ public static class Moogle
     }
 
 
-    private static SearchItem[] BuildResult(ref Tuple<float, int>[] sim, ref Dictionary<int, int> FreqWordsQuery, ref float[,] wDocs) {
+    private static SearchItem[] BuildResult(ref Tuple<float, int>[] sim, ref Dictionary<string, int> FreqWordsQuery, ref float[,] wDocs) {
         List<SearchItem> items = new List<SearchItem>();
 
         for(int i = 0; i < TotalFiles; i ++) {
@@ -216,9 +216,11 @@ public static class Moogle
            if(sim[i].Item1 == 0.00f) continue;
 
             float score = 0.00f;
-            int hash = 0, doc = sim[i].Item2;
+            string word = "";
+            int doc = sim[i].Item2;
 
-            foreach(KeyValuePair<int, int> wq in FreqWordsQuery) {
+            // Sacar la palabra con mayor score de la query
+            foreach(KeyValuePair<string, int> wq in FreqWordsQuery) {
                 // Si la palabra no esta entre los documentos
                 if(!IdxWords.ContainsKey(wq.Key)) continue;
                 // Si la palabra no aparece en ese documento
@@ -226,17 +228,17 @@ public static class Moogle
 
                 // Sacar la palabra de mayor score
                 if(score < PosInDocs[doc][ IdxWords[wq.Key] ].AmountAppareance) {
-                    hash = wq.Key;
-                    score = wDocs[doc, IdxWords[hash]];
+                    word = wq.Key;
+                    score = wDocs[doc, IdxWords[word]];
                 }
             }
             // Si ninguna de las palabras esta en el documento
-            if(hash == 0) continue;
-            info word = PosInDocs[doc][ IdxWords[hash] ];
+            if(word == "") continue;
+            info PosOfWord = PosInDocs[doc][ IdxWords[word] ];
 
             Random r = new Random();
             int nl = 0, nw = 0;
-            (nl, nw) = word.nthAppareance( r.Next() % word.AmountAppareance );
+            (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(files[doc]);
             string snippet = FilesMethods.GetContext(doc, nl, nw, 20);

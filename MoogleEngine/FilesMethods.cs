@@ -18,7 +18,7 @@ public class FilesMethods {
     public static int GetTotalFiles() {
         return ReadFolder().Length;
     }
-    public static void ReadContentFile(string file, int idFile, ref Dictionary<int, int> IdxWords, ref List<List<info>> PosInDocs ) {
+    public static void ReadContentFile(string file, int idFile, ref Dictionary<string, int> IdxWords, ref List<List<info>> PosInDocs ) {
         
         // Reservar las palabras que ya estan desde los ficheros pasados
         int n = PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
@@ -36,12 +36,12 @@ public class FilesMethods {
             string[] words = AuxiliarMethods.GetWordsOfSentence(line);
 
             for(int i = 0; i < words.Length; i ++) {
-                int hash = AuxiliarMethods.GetHashCode(words[i].ToLower());
+                string word = words[i].ToLower();
                 // Si la palabra ya existe de los ficheros anteriores 
-                if(IdxWords.ContainsKey(hash)) {
+                if(IdxWords.ContainsKey(word)) {
                     // Anadimos una nueva aparicion de la palabra en IdFile y en
                     // la posicion reservada que tiene esa palabra en idFile
-                    PosInDocs[idFile][ IdxWords[hash] ].AddAppearance(numLine, i);
+                    PosInDocs[idFile][ IdxWords[word] ].AddAppearance(numLine, i);
                     continue;
                 }
                 // Sino creamos una nueva posicion con esa palabra en idfFile
@@ -49,7 +49,7 @@ public class FilesMethods {
                 PosInDocs[idFile].Add(new info());
                 PosInDocs[idFile][ newPos ].AddAppearance(numLine, i);
                 // El nuevo indice es la ultima posicion vacia de la lista de palabras
-                IdxWords[hash] = newPos;
+                IdxWords[word] = newPos;
             }
         }
 
