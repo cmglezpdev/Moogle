@@ -18,17 +18,9 @@ public static class Moogle
     public static SearchResult Query(string query)
     {
 
-        // for(int i = 0; i < TotalFiles; i ++){
-        //     int s = 0;
-        //     for(int j = 0; j < TotalWords; j ++) {
-        //         if(wDocs[i,j] != 0f)
-        //             s ++;
-        //     }
-        //     System.Console.WriteLine(s);
-        // }
-
         // !Frecuencia de las palabras de la query
         Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery(query);
+
 
         //!  Matriz peso del query
         float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
@@ -95,7 +87,7 @@ public static class Moogle
 
         // !Construir el resultado
         SearchItem[] items = BuildResult(ref sim, ref FreqWordsQuery, ref wDocs);
-        
+
 
 
 
@@ -139,7 +131,7 @@ public static class Moogle
         float[,] wDocs = new float[TotalFiles, TotalWords];
         
         for(int doc = 0; doc < TotalFiles; doc ++) {
-            // Maximo de frecuencia entre todas las palabras del documento
+            // Frecuencia maxima en el documento
             int MaxFreq = 0;
             for(int i = 0; i < TotalWords; i ++) 
                 MaxFreq = Math.Max(MaxFreq, PosInDocs[doc][i].AmountAppareance);

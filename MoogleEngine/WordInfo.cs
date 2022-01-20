@@ -35,12 +35,14 @@ public struct info {
         if(MaxFreq == 0)  // El documento esta en blanco 
             return tfidf;
 
-        float tf = (float)(wFreq / MaxFreq);
-        int ni = 0;
-        for(int i = 0; i < PosInDocs.Count; i ++) 
-            if(PosInDocs[i][IndexWord].AmountAppareance > 0) ni ++;
+        float tf = (float)wFreq / (float)MaxFreq;
+        int ni = 0, n = PosInDocs.Count;
+
+        for(int i = 0; i < n; i ++) 
+           if(PosInDocs[i][IndexWord].AmountAppareance > 0) ni ++;
         
-        float idf = (float)Math.Log(PosInDocs.Count / ni);
+        double division = (double)n / (double)ni;
+        float idf = (float)Math.Log10(division);
         tfidf = tf * idf;
         return tfidf;
     }
@@ -51,19 +53,20 @@ public struct info {
         float MultVectors = 0.00f;
         int n = d.Length;
         for(int i = 0; i < n; i ++)
-            MultVectors += (float)(d[i] * q[i]);
+            MultVectors += (d[i] * q[i]);
 
         float NormD = 0.00f, NormQ = 0.00f;
         for(int i = 0; i < n; i ++) {
             NormD += (float)(d[i] * d[i]);
             NormQ += (float)(q[i] * q[i]);
         }
-        NormD = (float)Math.Sqrt(NormD);
-        NormQ = (float)Math.Sqrt(NormQ);
+        NormD = (float)Math.Sqrt((double)NormD);
+        NormQ = (float)Math.Sqrt((double)NormQ);
 
-        if(NormD == 0 || NormQ == 0 || MultVectors == 0) 
+        if(NormD == 0.00f || NormQ == 0.00f || MultVectors == 0.00f) 
             return 0.00f;
-        return (float)(MultVectors / (NormD * NormQ));
+            System.Console.WriteLine(MultVectors / (NormD * NormQ));
+        return MultVectors / (NormD * NormQ);
     }
 
 }

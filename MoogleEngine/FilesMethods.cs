@@ -17,7 +17,7 @@ public class FilesMethods {
     }
     public static int GetTotalFiles() {
         return ReadFolder().Length;
-    }
+    } 
     public static void ReadContentFile(string file, int idFile, ref Dictionary<string, int> IdxWords, ref List<List<info>> PosInDocs ) {
         
         // Reservar las palabras que ya estan desde los ficheros pasados
