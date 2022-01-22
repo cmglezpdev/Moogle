@@ -70,9 +70,6 @@ public class FilesMethods {
         FilesMethods files = new FilesMethods();
         StreamReader reader = new StreamReader(files.GetFileByID(idFile));            
 
-        // SI es la primera palabra no hay contexto derecho
-        if(numLine == numWord && numWord == 0) return context.ToString();
-
         // Tomar las lineas por encima de el
         List<string> AuxLines = new List<string>();
         for(int i = 0; i <= numLine; i ++) AuxLines.Add(reader.ReadLine());
@@ -89,6 +86,9 @@ public class FilesMethods {
 
         // Anadimos la palabra al contexto
         if(addWord) context.Append(AuxiliarMethods.GetWordStartIn(AuxLines[n - 1], posWord));
+
+        // SI es la primera palabra no hay contexto derecho
+        if(numLine == numWord && numWord == 0) return context.ToString();
 
         // Tomamos las palabras que necesitamos para conformar el contexto izquierdo
         int  nl = numLine;

@@ -18,21 +18,67 @@ public static class Moogle
     public static SearchResult Query(string query)
     {
 
-        // Calcular el suggestion por las palabras que no aparecen en el documento
+        //! Calcular el suggestion por las palabras que no aparecen en el documento
         string suggestion = GetSuggestion(query);
 
+        //! Frecuencia de las palabras de la query
+        Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( suggestion );
 
-        // !Frecuencia de las palabras de la query
-        Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery(suggestion);
-
-        //!  Matriz peso del query
+        //! Matriz peso del query
         float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
 
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(ref wQuery, ref wDocs);
 
+        // !Modificar el peso de los documentos en base a cada operador del query
+        Tuple<string, string>[] operators = FilesMethods.GetOperators(suggestion);
 
-        //!!!!!!!!! Aqui van los operadores
+        // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
+        Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
+
+
+        for(int doc = 0; doc < TotalFiles; doc ++){
+
+            foreach(Tuple<string, string> PairOperWords in operators) {
+                string opers = PairOperWords.Item1;
+                string word = PairOperWords.Item2;
+
+                // Si es una palabra que no esta en ningun documento
+                if(!IdxWords.ContainsKey(word)) continue;
+                
+                // recorrer los operadores e ir aplicando uno por uno
+                foreach(char op in opers) {
+                    
+                    switch( op ) {
+                        //?  La palabra no puede aparecer en ningun documento que sea devuelto 
+                        case '!':
+                            // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
+                            if( wDocs[doc, IdxWords[word]] != 0.00f ) 
+                                sim[doc] = new Tuple<float, int> (0.00f, doc);
+                            break;
+
+                        //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
+                        case '^': 
+                            // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
+                            if(wDocs[doc, IdxWords[word]] == 0.00f)
+                                sim[doc] = new Tuple<float, int> (0.00f, doc);
+                            break;
+
+                        // //?  Aumentar la relevancia de la palabra en el documento
+                        case '*':
+                            // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
+                            if(wDocs[doc, IdxWords[word]] != 0.00f) {
+                                wDocs[doc, IdxWords[word]] += wDocs[doc, IdxWords[word]] * 1f/5f; // Actualizar el peso de la palabra especificamente
+                                MemoryChange[ new Tuple<int, int>(doc, IdxWords[word]) ] = sim[doc].Item1;
+                                sim[doc] = new Tuple<float, int>( sim[doc].Item1 + sim[doc].Item1 * 1f/5f, sim[doc].Item2 ); // Actualizar el peso del documento
+                            }
+                            break;
+                        
+                        default: break;
+                    }
+                }
+            }
+        }
 
 
         //! Ordenar los scores por scores
@@ -43,8 +89,13 @@ public static class Moogle
         // !Construir el resultado
         SearchItem[] items = BuildResult(ref sim, ref FreqWordsQuery, ref wDocs);
 
+        NormalizeData(ref MemoryChange);
+
+
         //Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
         if(suggestion == query) suggestion = ""; 
+
+        // * Antes de imprimir el suggestion, arreglar para que implrima correctamente los
 
         return new SearchResult(items, suggestion);
     }
@@ -210,13 +261,13 @@ public static class Moogle
                 if(PosInDocs[doc][ IdxWords[wq.Key] ].AmountAppareance == 0) continue;
 
                 // Sacar la palabra de mayor score
-                if(score < PosInDocs[doc][ IdxWords[wq.Key] ].AmountAppareance) {
+                if(score < wDocs[doc, IdxWords[ wq.Key ]] ) {
                     word = wq.Key;
                     score = wDocs[doc, IdxWords[word]];
                 }
             }
-            // Si ninguna de las palabras esta en el documento
-            if(word == "") continue;
+
+
             info PosOfWord = PosInDocs[doc][ IdxWords[word] ];
 
             Random r = new Random();
@@ -224,12 +275,17 @@ public static class Moogle
             (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(files[doc]);
-            string snippet = FilesMethods.GetContext(doc, nl, nw, 20);
+            string snippet = FilesMethods.GetContext(doc, nl, nw, 5);
 
             items.Add(new SearchItem(title, snippet, score));
         }
 
         return items.ToArray();
+    }
+
+    private static void NormalizeData(ref Dictionary< Tuple<int, int>, float > MemoryChange) {
+        foreach(KeyValuePair< Tuple<int, int>, float > mc in MemoryChange) 
+            wDocs[ mc.Key.Item1, mc.Key.Item2 ] = mc.Value;
     }
 
 
@@ -247,50 +303,3 @@ public static class Moogle
 
 
 
-      //  // !Modificar el peso de los documentos en base a cada operador del query
-        // Tuple<string, string>[] operators = FilesMethods.GetOperators(query);
-
-
-        // for(int doc = 0; doc < TotalFiles; doc ++){
-
-        //     foreach(Tuple<string, string> PairOperWords in operators) {
-        //         string opers = PairOperWords.Item1;
-        //         string word = PairOperWords.Item2;
-        //         int Hash = AuxiliarMethods.GetHashCode(word);
-
-        //         // System.Console.WriteLine( wDocs[doc, IdxWords[Hash]] );
-
-
-        //         // Si es una palabra que no esta en ningun documento
-        //         if(!IdxWords.ContainsKey(Hash)) continue;
-                
-        //         // recorrer los operadores e ir aplicando uno por uno
-        //         foreach(char op in opers) {
-                    
-        //             switch( op ) {
-        //                 //?  La palabra no puede aparecer en ningun documento que sea devuelto 
-        //                 case '!':
-        //                     // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
-        //                     if( wDocs[doc, IdxWords[Hash]] != 0.00f ) 
-        //                         sim[doc] = new Tuple<float, int> (0.00f, doc);
-        //                     break;
-
-        //                 //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
-        //                 case '^': 
-        //                     // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
-        //                     if(wDocs[doc, IdxWords[Hash]] == 0.00f)
-        //                         sim[doc] = new Tuple<float, int> (0.00f, doc);
-        //                     break;
-
-        //                 //?  Aumentar la relevancia de la palabra en el documento
-        //                 case '*':
-        //                     // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
-        //                     if(wDocs[doc, IdxWords[Hash]] != 0.00f)
-        //                         wDocs[doc, IdxWords[Hash]] += wDocs[doc, IdxWords[Hash]] * 1f/5f;
-        //                     break;
-                        
-        //                 default: break;
-        //             }
-        //         }
-        //     }
-        // }
