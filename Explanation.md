@@ -14,5 +14,3 @@ Caracteres a ignorar:
 
 
 5. Arreglar el suggestion para que imprima correctamente los caracteres
-
-6. Con el operador * aumentamos el score de el documento en general un 20% y despues al imprimir una aparicion seleccionamos esa
