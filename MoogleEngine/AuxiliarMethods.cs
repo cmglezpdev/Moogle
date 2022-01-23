@@ -37,6 +37,17 @@ public class AuxiliarMethods{
         return true;
     }
 
+
+    // ?    Procesar la palabra para llevarlo todo a minusculas y quitarle las tildes -------------------------------------------------------------
+    public static string NormalizeWord(string word) {
+        // Falta quitar las tildes
+        return word.ToLower();
+    }
+
+
+
+
+
     // La palabra que empieza a partir de esa posicion
     public static string GetWordStartIn(string sentence, int start) {
         if(start >= sentence.Length)
@@ -51,7 +62,7 @@ public class AuxiliarMethods{
     // La palabra que finaliza en una posicion
     public static string GetWordEndIn(string sentence, int end) {
          if(end >= sentence.Length)
-            throw new Exception("Posicion no valida");
+            throw new Exception("Position not valid!!");
         if(Ignore(sentence[end]))
                 return ""; // No es una posicion valida para terminar una palabra
         int start;
@@ -82,7 +93,7 @@ public class AuxiliarMethods{
         return operators;
     }
 
-    public static string    GetWord(string sentence, int pos, string direction) {
+    public static string GetWord(string sentence, int pos, string direction) {
         string word = "";
         int n = sentence.Length;
 

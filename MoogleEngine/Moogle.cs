@@ -114,7 +114,7 @@ public static class Moogle
         // Calculamos la frecuencia de las palabras en la query
         Dictionary<string, int> FreqWordsQuery = new Dictionary<string, int>();
         foreach(string w in WordsQuery) {
-            string lower = w.ToLower();
+            string lower = AuxiliarMethods.NormalizeWord(w);
             if(!FreqWordsQuery.ContainsKey( lower ))
                 FreqWordsQuery[ lower ] = 0;
             FreqWordsQuery[ lower ] ++;
@@ -172,7 +172,7 @@ public static class Moogle
                 continue;
             }
 
-            string w = AuxiliarMethods.GetWordStartIn(query, i);
+            string w = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWordStartIn(query, i));
             if(IdxWords.ContainsKey(w)) {
                 suggestion += w;
                 i += w.Length - 1;
@@ -231,7 +231,7 @@ public static class Moogle
             (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(files[doc]);
-            string snippet = FilesMethods.GetContext(doc, nl, nw, 5);
+            string snippet = FilesMethods.GetContext(doc, nl, nw, 10);
 
             items.Add(new SearchItem(title, snippet, score));
         }

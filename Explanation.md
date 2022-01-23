@@ -1,9 +1,3 @@
-1. Definir una palabra como letras y numeros, en caso de que tengan otro tipo de caracteres en la palabra, entonces se separan las palabras
-Ex: 12 453, amor, ver0nica
-cmglezp@gmail.com --> Esto son 3 palabras, cmglezpdev, gmail y com
-
-2. Tomar todos los operadores de la palara y aplicarlos, y en caso de que sea invalida pues no se aplicaran los operadores 
-
 
 
 3. Bug al poner operadores de lante de un caracter que es omitido por el metodo que devuelve la palabra correspondiente a esos caracteres
@@ -14,3 +8,8 @@ Caracteres a ignorar:
 
 
 5. Arreglar el suggestion para que imprima correctamente los caracteres
+
+6. Disminuir el score de las palabras que estaban mal escritas
+7. designar un umbral para si la cantidad de transformaciones que necesita una plabra es demasiado grande no la use
+
+8. Preguntar si cuando se modifica el score con el asterisco se modifica el de la query o el de los documentos

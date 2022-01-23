@@ -7,8 +7,11 @@ public class FilesMethods {
     public static string GetNameFile(string file) {
         int StartName = file.Length - 1;
         for( ; StartName >= 0 && file[StartName] != '/'; StartName --); StartName ++;
+        
+        int idxExtention = file.Length - 1;
+        while(file[idxExtention --] != '.'); idxExtention ++;
 
-        return file.Substring(StartName, file.Length - StartName - 4);
+        return file.Substring(StartName, file.Length - StartName - (file.Length - idxExtention));
     }
     public static string[] ReadFolder() {
         // Leer todos los archivos .txt de la carpeta Content
@@ -36,7 +39,7 @@ public class FilesMethods {
             string[] words = AuxiliarMethods.GetWordsOfSentence(line);
 
             for(int i = 0; i < words.Length; i ++) {
-                string word = words[i].ToLower();
+                string word = AuxiliarMethods.NormalizeWord(words[i]);
                 // Si la palabra ya existe de los ficheros anteriores 
                 if(IdxWords.ContainsKey(word)) {
                     // Anadimos una nueva aparicion de la palabra en IdFile y en
@@ -192,7 +195,7 @@ public class FilesMethods {
             int j = i;
             while(++j < n && AuxiliarMethods.Ignore(query[j]));
             if(j >= n) break;
-            string wo = AuxiliarMethods.GetWord(query, j, "left");
+            string wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, j, "left"));
 
             string operators = AuxiliarMethods.ValidOperators(op);
             if(operators == "") continue; // Si los operadores no son validos
@@ -208,7 +211,7 @@ public class FilesMethods {
             int k = i;
             while( --k >= 0 && AuxiliarMethods.Ignore(query[k]) );
             if(k < 0) continue;
-            string prev_wo = AuxiliarMethods.GetWord(query, k, "right");
+            string prev_wo =AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, k, "right"));
             if(prev_wo == "") {
                  i = j + wo.Length - 1;
                  continue;
@@ -235,8 +238,6 @@ public class FilesMethods {
 
 
     public static float GetScore(ref float[] iWDoc, ref float[] wQuery) {
-        
-    
         // Si la query no continene operadores
         return info.Sim(ref iWDoc, ref wQuery);
     }
