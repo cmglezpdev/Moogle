@@ -98,12 +98,12 @@ public class AuxiliarMethods{
         int n = sentence.Length;
 
         switch( direction ) {
-            case "left":
+            case "right":
                 for(int i = pos; i < n && !AuxiliarMethods.Ignore(sentence[i]); i ++)
                     word += sentence[i];
                 break;
             
-            case "right":
+            case "left":
                 for(int i = pos; i >= 0 && !AuxiliarMethods.Ignore(sentence[i]); i --)
                     word = sentence[i] + word;
                 break;
@@ -132,12 +132,12 @@ public class AuxiliarMethods{
             return op;
         }
 
-        // Si entre los operadores aparece ~, entoces no es valido
+        // Si entre los operadores aparece ~ entoces no es valido
         for(int i = 1; i < op.Length; i ++) 
             if(op[i] == '~') return "";
         
         // Si aparece ! entoces los demas operadores no importan
-        for(int i = 0; i < op.Length; i ++)
+        for(int i = 0; i < op.Length && op[0] != '~'; i ++)
             if(op[i] == '!') return "!";
 
         return op;

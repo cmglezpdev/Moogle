@@ -186,46 +186,56 @@ public class FilesMethods {
         List<Tuple<string, string>> o = new List<Tuple<string, string>>();
         int n = query.Length;
 
+        // Guardar las palabras que tienen el operador de cercania para despues juntarlos todos en una sola tupla
+        List<string> aux = new List<string>(); 
 
         for(int i = 0; i < query.Length; i ++) {
             if(!AuxiliarMethods.IsOperator(query[i])) continue;
 
-            // Sacar los operadores delante de la palabra y la palabra
+            // Sacar los operadores delante de la palabra en la posicion i
             string op = AuxiliarMethods.GetOperators(query, i);
             int j = i;
             while(++j < n && AuxiliarMethods.Ignore(query[j]));
             if(j >= n) break;
-            string wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, j, "left"));
+            // Sacar la palabra que esta a la derecha de la posicion j
+            string wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, j, "right"));
 
+            // Validar los operadores segun mi criterio
             string operators = AuxiliarMethods.ValidOperators(op);
             if(operators == "") continue; // Si los operadores no son validos
             
-            
+            // Si no es un operador de cercania puedo guardar la palabra con sus operadores
             if(operators[0] != '~') {
                  o.Add(new Tuple<string, string>(operators, wo));
                 i = j + wo.Length - 1;
                 continue;
             }
             
-            // Encontrar la palabra anterior a ella
+            // Como es un operador de cercania entonces encontramos la palabra anterior a ella
             int k = i;
             while( --k >= 0 && AuxiliarMethods.Ignore(query[k]) );
             if(k < 0) continue;
-            string prev_wo =AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, k, "right"));
-            if(prev_wo == "") {
+            string prev_wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, k, "left"));
+            if(prev_wo == "") { // Si la palabra no existe el operador queda invalidado por lo que no la agregamos
                  i = j + wo.Length - 1;
                  continue;
             }
             
             // Si es la misma que la ultima que pusimos entonces significa que tiene operador, por lo tanto 
-            // la quitamos de la lista y la anadimos junto a la otra palara
-            if(o.Count >= 0) { 
-                if(prev_wo == o.Last().Item2) {
-                    prev_wo = o.Last().Item1 + o.Last().Item2;
+            // la quitamos de la lista y la anadimos junto a la palara nueva
+            if(o.Count > 0) { // Si hay palabras guardadas
+                // Si la el operador de la palabra anterior es el de cercania, tenemos que cojer la segunda palabra de las que estan juntas con ese operador
+                string x = ( o.Last().Item1 != "~" ) ? o.Last().Item2 : AuxiliarMethods.GetWordsOfSentence(o.Last().Item2).Last();
+                
+                if(prev_wo == x) { // Si la palabras coinciden las tomamos y las unimos
+                    
+                    // Si la palabra es simple
+                    if(o.Last().Item1 != "~") prev_wo = o.Last().Item1 + o.Last().Item2;
+                    else prev_wo = o.Last().Item2;
+                   
                     o.RemoveAt(o.Count - 1);
                 }
             }
-
 
             o.Add(new Tuple<string, string>( "~", prev_wo + " " + operators.Substring(1, operators.Length - 1) + wo));
             i = j + wo.Length - 1;

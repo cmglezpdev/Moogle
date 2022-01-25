@@ -2,7 +2,7 @@
 public static class Moogle
 {
 
-#region Variables
+    #region Variables
     public static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
     public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();     // Palabras con su indice en la lista
     public static string[] files = new string[0];
@@ -298,11 +298,3 @@ public static class Moogle
 
 
 }
-
-
-
-
-
-
-
-

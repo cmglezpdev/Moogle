@@ -109,7 +109,7 @@ class Test{
     static void TestGetOperators() {
         // string query = "Lo **mas ~ ^importante !es mi ~ *&mamolshito ";
         // string query = "!cuba ~ amor! ~ !esperanza, xq l@ viD@ es *#52mvcs!#";
-        string query = "!cama~**~*cuna";
+        string query = "hola ~ !maria soy tu *~!tio ~ !maritza ~ *paulo";
 
         Tuple<string, string>[] x = FilesMethods.GetOperators(query);
 
@@ -118,7 +118,7 @@ class Test{
             System.Console.WriteLine(item.ToString());   
         }  
 
-        System.Console.WriteLine(query.IndexOf(' '));
+        // System.Console.WriteLine(query.IndexOf(' '));
 
         // string aux = "~";
         // System.Console.WriteLine(aux[0]);
