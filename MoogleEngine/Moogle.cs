@@ -263,27 +263,51 @@ public static class Moogle
                         //?  La palabra no puede aparecer en ningun documento que sea devuelto 
                         case '!':
                             // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
-                            if( wDocs[doc, IdxWords[word]] != 0.00f ) 
+                            if( PosInDocs[doc][IdxWords[word]].AmountAppareance > 0 ) 
                                 sim[doc] = new Tuple<float, int> (0.00f, doc);
                             break;
 
                         //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
                         case '^': 
                             // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
-                            if(wDocs[doc, IdxWords[word]] == 0.00f)
+                            if(PosInDocs[doc][IdxWords[word]].AmountAppareance == 0)
                                 sim[doc] = new Tuple<float, int> (0.00f, doc);
                             break;
 
-                        // //?  Aumentar la relevancia de la palabra en el documento
+                        // //?  Aumentar la relevancia del documento que tiene esa palabra
                         case '*':
                             // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
-                            if(wDocs[doc, IdxWords[word]] != 0.00f) {
+                            if(PosInDocs[doc][IdxWords[word]].AmountAppareance > 0) {
                                 wDocs[doc, IdxWords[word]] += wDocs[doc, IdxWords[word]] * 1f/5f; // Actualizar el peso de la palabra especificamente
                                 MemoryChange[ new Tuple<int, int>(doc, IdxWords[word]) ] = sim[doc].Item1;
                                 sim[doc] = new Tuple<float, int>( sim[doc].Item1 + sim[doc].Item1 * 1f/5f, sim[doc].Item2 ); // Actualizar el peso del documento
                             }
                             break;
                         
+                        // //? Aumentar la relevancia del documento mientras mas cercanas esten las palabras
+                        // case '~':
+                            
+                        //     // Sacar las palabras con sus operadores
+                        //     Tuple<string, string> OpersAndWords = FilesMethods.GetOperators(word); 
+                        //     for(int i = 0; i < OpersAndWords.Length; i ++) {
+                        //         string o = OpersAndWords[i].Item1;
+                        //         string w = OpersAndWords[i].Item2;
+
+                        //         // Si la palabra no tiene que aparecer es mejor anadirla a la lista y trabajarla independiente
+                        //         if(o == "!") {
+                        //             // Si la palabra aparece en el documento entonces el operador de cercania de todas las palabras queda invalidado
+                        //             if( PosInDocs[doc][ IdxWords[w] ] > 0 ) {
+                                        
+                        //             } 
+                        //             operators.Add(new Tuple<string, string>(o, w));
+                        //             continue;
+                        //         }
+
+                                
+                        //     }
+
+                        break;
+
                         default: break;
                     }
                 }

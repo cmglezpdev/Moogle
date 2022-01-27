@@ -241,6 +241,52 @@ public class FilesMethods {
             i = j + wo.Length - 1;
         }
 
+        // // El operador de cercania que tenga entre sus palabras al operador ! se removera y se anadira independiente
+        // int len = o.Count;
+        // for(int i = 0; i < len; i ++) {
+        //     if(o[i].Item1 != "~") continue;
+            
+        //     string newWords = "";
+        //     int cantNewWords = 0;
+        //     string words = o[i].Item2;
+        //     for(int j = 0; j < words.Length; j ++) {
+        //         if(AuxiliarMethods.IsOperator(words[j])) {
+        //             string oper = AuxiliarMethods.GetOperators(words, j);
+
+        //             while(AuxiliarMethods.IsOperator(words[++j]));
+        //             string word = AuxiliarMethods.GetWord(words, j, "right");
+        //             if(oper == "") {
+        //                 newWords += (word + " ");
+        //                 j += (word.Length - 1);
+        //                 cantNewWords ++;
+        //                 continue;
+        //             }
+
+        //             bool ok = true;
+        //             for(int k = 0; k < oper.Length && ok; k ++) ok = (oper[k] != '!');
+                    
+        //             if( ok ) {
+        //                 j += (word.Length - 1);
+        //                 newWords += (oper + word + " ");
+        //                 cantNewWords ++;
+        //                 continue;
+        //             } 
+
+        //             j += (word.Length - 1);
+        //             o.Add(new Tuple<string, string>(oper, word));
+        //         }
+        //     }
+        //     if(cantNewWords == 0) {
+        //         op.RemoveAt(1);
+        //     } else 
+        //     if(cantNewWords > 1) {
+        //         op[i] = new Tuple<string, string>("~", newWords);
+        //     } else 
+        //     if(can){
+
+        //     }
+        // }
+
 
 
         return o.ToArray(); 

@@ -127,6 +127,7 @@ public class AuxiliarMethods{
                 allEquival = false;
                 break;
             }
+            
         if(allEquival == true) {
             if(op[0] != '*') return op[0].ToString();
             return op;
