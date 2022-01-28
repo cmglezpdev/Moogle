@@ -117,6 +117,24 @@ class Test{
 
             System.Console.WriteLine(item.ToString());   
         }  
+
+    }
+
+
+
+    static void TestDistance() {
+        List<string> words = new List<string>();
+
+        words.Add("hechos"); 
+        words.Add("sometidos"); 
+        words.Add("procesos"); 
+
+        int n = PosInDocs[0, IdxWords[words[0]]].AmountAppareance;
+        for(int i = 0; i < n; i ++) {
+            buildTree(0, Moogle.PosInDocs, words, Tree, 0, )
+        }
+        
+
     }
 
 

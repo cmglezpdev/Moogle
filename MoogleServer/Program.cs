@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using MoogleEngine;
 
 Moogle.DatesProcessing();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

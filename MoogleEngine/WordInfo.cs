@@ -68,4 +68,37 @@ public struct info {
         return MultVectors / (NormD * NormQ);
     }
 
+
+    private static double DistanceBetweenWords(int x1, int y1, int x2, int y2) {
+        return Math.Sqrt( (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) );
+    }
+
+
+    public static void buildTree(int doc, List< List<info> > PosInDocs, Dictionary<string, int> IdxWords, List<string> words, List< List< Tuple<int, int, int> > > Tree, int kword, int x, int y) {
+
+        System.Console.WriteLine("Estoy en el buildTree");
+
+
+        info Appareances = PosInDocs[ doc ][ IdxWords[ words[kword + 1] ] ];
+        int cntAppareances = Appareances.AmountAppareance;
+        
+        // Recorrer todas las apariciones de la palabra kword
+        for(int i = 0; i < cntAppareances; i ++) {
+            int x1, y1;
+            (x1, y1) = Appareances.nthAppareance(i);
+        
+            // Anadir link entre la aparicion (x, y) de kword  con la aparicion iesima de (kowrd + 1)
+            Tree[kword].Add(new Tuple<int, int, int>(kword + 1, x1, y1));
+
+            if(kword == words.Count - 1)
+                return;
+
+            buildTree(doc, PosInDocs, IdxWords, words, Tree, kword + 1, x1, y1);
+        }
+    }
+
+
+
+
+
 }
