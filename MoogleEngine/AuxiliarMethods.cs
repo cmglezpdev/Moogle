@@ -40,8 +40,36 @@ public class AuxiliarMethods{
 
     // ?    Procesar la palabra para llevarlo todo a minusculas y quitarle las tildes -------------------------------------------------------------
     public static string NormalizeWord(string word) {
+        word.ToLower();
+        
         // Falta quitar las tildes
-        return word.ToLower();
+        string newWord = "";
+        foreach(char caracter in word) {
+            switch( caracter ) {
+                case 'á':
+                    newWord += 'a';
+                    break;
+                case 'é':
+                    newWord += 'e';
+                    break;
+                case 'í':
+                    newWord += 'i';
+                    break;
+                case 'ó':
+                    newWord += 'o';
+                    break;
+                case 'ú':
+                    newWord += 'u';
+                    break;
+                
+                default: 
+                    newWord += caracter;
+                    break;
+
+            }
+        }
+
+        return newWord;
     }
 
 

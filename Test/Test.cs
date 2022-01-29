@@ -109,31 +109,14 @@ class Test{
     static void TestGetOperators() {
         // string query = "Lo **mas ~ ^importante !es mi ~ *&mamolshito ";
         // string query = "!cuba ~ amor! ~ !esperanza, xq l@ viD@ es *#52mvcs!#";
-        string query = "hola ~ !maria soy tu ~*!tio ~ !maritza ~ *paulo";
+        string query = "!leon ~ zorro ~ muerto !leon";
 
-        Tuple<string, string>[] x = FilesMethods.GetOperators(query);
+        List< Tuple<string, string> > x = FilesMethods.GetOperators(query);
 
         foreach (Tuple<string, string> item in x) {
 
             System.Console.WriteLine(item.ToString());   
         }  
-
-    }
-
-
-
-    static void TestDistance() {
-        List<string> words = new List<string>();
-
-        words.Add("hechos"); 
-        words.Add("sometidos"); 
-        words.Add("procesos"); 
-
-        int n = PosInDocs[0, IdxWords[words[0]]].AmountAppareance;
-        for(int i = 0; i < n; i ++) {
-            buildTree(0, Moogle.PosInDocs, words, Tree, 0, )
-        }
-        
 
     }
 

@@ -74,7 +74,7 @@ public struct info {
     }
 
 
-    public static void buildTree(int doc, List< List<info> > PosInDocs, Dictionary<string, int> IdxWords, List<string> words, List< List< Tuple<int, int, int> > > Tree, int kword, int x, int y) {
+    public static void buildTree(int doc, List< List<info> > PosInDocs, Dictionary<string, int> IdxWords, List<string> words, List< Tuple<int, int> > Points, double distance, int kword, int x, int y) {
 
         System.Console.WriteLine("Estoy en el buildTree");
 
@@ -88,12 +88,13 @@ public struct info {
             (x1, y1) = Appareances.nthAppareance(i);
         
             // Anadir link entre la aparicion (x, y) de kword  con la aparicion iesima de (kowrd + 1)
-            Tree[kword].Add(new Tuple<int, int, int>(kword + 1, x1, y1));
+            Points.Add(new Tuple<int, int>(x1, y1));
+            double dist = DistanceBetweenWords(x, y, x1, y1);
 
             if(kword == words.Count - 1)
                 return;
 
-            buildTree(doc, PosInDocs, IdxWords, words, Tree, kword + 1, x1, y1);
+            buildTree(doc, PosInDocs, IdxWords, words, Points, distance + dist, kword + 1, x1, y1);
         }
     }
 

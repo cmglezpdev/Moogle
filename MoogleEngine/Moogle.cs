@@ -63,6 +63,7 @@ public static class Moogle
 
 
     #region Methods
+    
     public static void DatesProcessing() {
         files = FilesMethods.ReadFolder();
         TotalFiles = files.Length;
@@ -232,6 +233,10 @@ public static class Moogle
     }
     private static void ChangeForOperators(ref List< Tuple<string, string> > operators, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
 
+            // foreach(Tuple<string, string> df in operators)
+            //     System.Console.WriteLine($"{df.Item1} {df.Item2}");
+
+
 
         for(int doc = 0; doc < TotalFiles; doc ++){
 
@@ -240,9 +245,11 @@ public static class Moogle
                 string word = PairOperWords.Item2;
 
                 // Si es una palabra que no esta en ningun documento
-                if(!IdxWords.ContainsKey(word)) continue;
+                // El operador tiene que ser diferente al de cercania porque en ese operador se guarda
+                // mas de una palabra y ese string nunca va a estar en el diccionario
+                if(opers != "~" && !IdxWords.ContainsKey(word)) continue; 
                 
-                // recorrer los operadores e ir aplicando uno por uno
+                // recorrer los operadores e ir aplicando uno por uno   
                 foreach(char op in opers) {
                     
                     switch( op ) {
@@ -254,10 +261,10 @@ public static class Moogle
                         case '^': 
                             ProcessOperators('^', word, doc, ref MemoryChange, ref sim);
                             break;
-                        // //?  Aumentar la relevancia del documento que tiene esa palabra
+                        //?  Aumentar la relevancia del documento que tiene esa palabra
                         case '*':
                             ProcessOperators('*', word, doc, ref MemoryChange, ref sim);
-                            break;
+                            break; 
                         
                         //? Aumentar la relevancia del documento mientras mas cercanas esten las palabras
                         case '~':
@@ -265,6 +272,7 @@ public static class Moogle
 
                             // Sacar las palabras con sus operadores
                             List< Tuple<string, string> > OpersAndWords = FilesMethods.GetOperators(word); 
+    
                             for(int i = 0; i < OpersAndWords.Count; i ++) {
                                 string o = OpersAndWords[i].Item1;
                                 string w = OpersAndWords[i].Item2;
@@ -297,11 +305,12 @@ public static class Moogle
                             int n = Appareances.AmountAppareance;
 
                             for(int i = 0; i < n; i ++) {
-                                List< List< Tuple<int, int, int> > > Tree = new List< List< Tuple<int, int, int> > >();
+                                List< Tuple<int, int> > Points = new List< Tuple<int, int> >();
                                 int x, y;
                                 (x, y) = Appareances.nthAppareance(i);
                                 // Construir un arbol con todas las conexiones entre los pares con la iesima
-                                info.buildTree(doc, PosInDocs, IdxWords, wordsForCloseness, Tree, 0, x, y);
+                                double distance = 0;
+                                info.buildTree(doc, PosInDocs, IdxWords, wordsForCloseness, Points, distance, 0, x, y);
 
                                 // Recorrer el arbol en busca de la combinacion menor
 
@@ -322,21 +331,21 @@ public static class Moogle
             //?  La palabra no puede aparecer en ningun documento que sea devuelto
             case '!':
                 // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
-                if( wDocs[doc, IdxWords[word]] > 0.00f ) 
+                if( PosInDocs[doc][IdxWords[word]].AmountAppareance > 0 )  
                     sim[doc] = new Tuple<float, int> (0.00f, doc);
                 break;
 
             //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
             case '^': 
                 // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
-                if(wDocs[doc, IdxWords[word]] == 0.00f)
+                if(PosInDocs[doc][IdxWords[word]].AmountAppareance == 0)
                     sim[doc] = new Tuple<float, int> (0.00f, doc);
                 break;
 
             // //?  Aumentar la relevancia del documento que tiene esa palabra
             case '*':
                 // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
-                if(wDocs[doc, IdxWords[word] ] > 0.00f) {
+                if(PosInDocs[doc][IdxWords[word] ].AmountAppareance > 0) {
                     wDocs[doc, IdxWords[word]] += wDocs[doc, IdxWords[word]] * 1f/5f; // Actualizar el peso de la palabra especificamente
                     MemoryChange[ new Tuple<int, int>(doc, IdxWords[word]) ] = sim[doc].Item1;
                     sim[doc] = new Tuple<float, int>( sim[doc].Item1 + sim[doc].Item1 * 1f/5f, sim[doc].Item2 ); // Actualizar el peso del documento

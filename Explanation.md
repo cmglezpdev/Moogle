@@ -10,6 +10,4 @@ Caracteres a ignorar:
 5. Arreglar el suggestion para que imprima correctamente los caracteres
 
 6. Disminuir el score de las palabras que estaban mal escritas
-7. designar un umbral para si la cantidad de transformaciones que necesita una plabra es demasiado grande no la use
-
-8. Preguntar si cuando se modifica el score con el asterisco se modifica el de la query o el de los documentos
+7. designar un umbral por si la cantidad de transformaciones que necesita una plabra es demasiado grande no la use
