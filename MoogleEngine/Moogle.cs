@@ -233,18 +233,13 @@ public static class Moogle
     }
     private static void ChangeForOperators(ref List< Tuple<string, string> > operators, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
 
-            // foreach(Tuple<string, string> df in operators)
-            //     System.Console.WriteLine($"{df.Item1} {df.Item2}");
-
-
-
         for(int doc = 0; doc < TotalFiles; doc ++){
 
             foreach(Tuple<string, string> PairOperWords in operators) {
                 string opers = PairOperWords.Item1;
                 string word = PairOperWords.Item2;
 
-                // Si es una palabra que no esta en ningun documento
+                // Si es una palabra que no esta en ningun documento..
                 // El operador tiene que ser diferente al de cercania porque en ese operador se guarda
                 // mas de una palabra y ese string nunca va a estar en el diccionario
                 if(opers != "~" && !IdxWords.ContainsKey(word)) continue; 
@@ -268,14 +263,40 @@ public static class Moogle
                         
                         //? Aumentar la relevancia del documento mientras mas cercanas esten las palabras
                         case '~':
-                            List<string> wordsForCloseness = new List<string>();
 
-                            // Sacar las palabras con sus operadores
+                            List<string> wordsForCloseness = new List<string>();
                             List< Tuple<string, string> > OpersAndWords = FilesMethods.GetOperators(word); 
-    
+                            string[] SubWords = AuxiliarMethods.GetWordsOfSentence(word);
+                            int idx = 0; // Indice para recorrer las palabras con operadores
+
+
+                            //? Poner en las palabras para la cercania las que no tengan operador
+                            for(int wi = 0; wi < SubWords.Length; wi ++) {
+                                
+                                if(!IdxWords.ContainsKey(SubWords[wi])) continue;
+                                
+                                // Si no es una palabra de las que tienen operadores entonces la agrego a la lista si aparece en el documento
+                                bool found = false;
+                                foreach(Tuple<string, string> g in OpersAndWords) 
+                                    if(g.Item2 == SubWords[wi]) {
+                                        found = true;
+                                        break;
+                                    }
+                                
+                                if( found ) continue;
+                                
+                                if( PosInDocs[doc][ IdxWords[ SubWords[wi] ] ].AmountAppareance > 0 )
+                                    wordsForCloseness.Add(SubWords[wi]);
+                            }
+
+
+                            //? Trabajar con las palabras con operadores y ponerlos en la  cercania
                             for(int i = 0; i < OpersAndWords.Count; i ++) {
                                 string o = OpersAndWords[i].Item1;
                                 string w = OpersAndWords[i].Item2;
+                                
+                                if(!IdxWords.ContainsKey(w)) continue;
+
                                 // Si la palabra no esta en el documento entonces la omitimos para la cercania
                                 if( PosInDocs[doc][ IdxWords[w] ].AmountAppareance == 0 )
                                     continue;
@@ -290,17 +311,19 @@ public static class Moogle
                                  }
 
                                 // Solo nos queda por aplicar los operadores ^ y * en caso de que los tenga
-                                foreach(char x in o) ProcessOperators(x, w, doc, ref MemoryChange, ref sim);
-                                
+                                foreach(char x in o) 
+                                    ProcessOperators(x, w, doc, ref MemoryChange, ref sim);
+
                                 // anadimos las palabras a una lista para calcular la cercania
-                                if(PosInDocs[doc][ IdxWords[w] ].AmountAppareance > 0) // Si la palabra esta en el documento
-                                    wordsForCloseness.Add(w);
+                                wordsForCloseness.Add(w);
                             }
 
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
 
-                            //**** Calcular la cercania con un backtraking
+
+
+                             //**** Calcular la cercania con un backtraking
                             info Appareances = PosInDocs[doc][ IdxWords[ wordsForCloseness[0] ] ]; // Empezar con las apariciones de la primera palabra
                             int n = Appareances.AmountAppareance;
 
@@ -310,12 +333,13 @@ public static class Moogle
                                 (x, y) = Appareances.nthAppareance(i);
                                 // Construir un arbol con todas las conexiones entre los pares con la iesima
                                 double distance = 0;
+
+                                // ! FIX THE METHOD
                                 info.buildTree(doc, PosInDocs, IdxWords, wordsForCloseness, Points, distance, 0, x, y);
 
                                 // Recorrer el arbol en busca de la combinacion menor
 
                             }
-
 
                         break;
 
@@ -325,7 +349,6 @@ public static class Moogle
             }
         }
     }
-
     static private void ProcessOperators(char op, string word, int doc, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
         switch( op ) {
             //?  La palabra no puede aparecer en ningun documento que sea devuelto
