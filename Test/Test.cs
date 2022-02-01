@@ -21,6 +21,10 @@ class Test{
         TestGetOperators();
 
 
+        System.Console.WriteLine( Lemmatization.Stemmer( "animadversion" ) );
+
+
+
         //? Print if all is OK
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("It's OK!😁");
@@ -46,6 +50,7 @@ class Test{
         Assert(ok, "Test: TestGetWordsOfSentence() WRONG");
     }
     static void TestGetWordStartIn() {
+
         string sentence = "hol@ geT, Como est4n todos toda!!y";   
         Assert(AuxiliarMethods.GetWordStartIn(sentence, 8) == "", "Test: TestGetWordStartIn() WRONG");
         Assert(AuxiliarMethods.GetWordStartIn(sentence, 21) == "todos", "Test: TestGetWordStartIn() WRONG");

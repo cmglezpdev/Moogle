@@ -1,7 +1,7 @@
 // using System.Text;
 namespace MoogleEngine;
 
-public class AuxiliarMethods{
+public static class AuxiliarMethods{
 
 
     // Extraer todas las palabras de una oracion

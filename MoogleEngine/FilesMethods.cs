@@ -2,7 +2,7 @@ using System.Text;
 namespace MoogleEngine;
 
 
-public class FilesMethods {
+public static class FilesMethods {
 
     public static string GetNameFile(string file) {
         int StartName = file.Length - 1;
@@ -27,7 +27,6 @@ public class FilesMethods {
         int n = PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
         for(int i = 0; i < n; i ++) 
             PosInDocs[idFile].Add(new info());
-
 
         StreamReader archive = new StreamReader(file);
         
@@ -58,7 +57,7 @@ public class FilesMethods {
 
         archive.Close();
     } 
-    public string GetFileByID(int idFile) {
+    public static string GetFileByID(int idFile) {
         if(idFile < 0 || idFile >= Moogle.TotalFiles) 
             throw new Exception("The File does't exists!");
         return Moogle.files[idFile];
@@ -70,8 +69,7 @@ public class FilesMethods {
         //todo:: Tanto numLine como numWord empieza desde cero
         
         StringBuilder context = new StringBuilder();
-        FilesMethods files = new FilesMethods();
-        StreamReader reader = new StreamReader(files.GetFileByID(idFile));            
+        StreamReader reader = new StreamReader(GetFileByID(idFile));            
 
         // Tomar las lineas por encima de el
         List<string> AuxLines = new List<string>();
@@ -121,8 +119,7 @@ public class FilesMethods {
         //todo:: Tanto numLine como numWord empieza desde cero
 
         StringBuilder context = new StringBuilder();
-        FilesMethods files = new FilesMethods();
-        StreamReader reader = new StreamReader(files.GetFileByID(idFile));            
+        StreamReader reader = new StreamReader(GetFileByID(idFile));            
 
         // Tomar las lineas necesarias que esten por debajo de el
         List<string> AuxLines = new List<string>();

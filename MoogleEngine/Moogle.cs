@@ -321,7 +321,7 @@ public static class Moogle
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
 
-
+    
                              //**** Calcular la cercania con un backtraking
                             info Appareances = PosInDocs[doc][ IdxWords[ wordsForCloseness[0] ] ]; // Empezar con las apariciones de la primera palabra
                             int n = Appareances.AmountAppareance;
