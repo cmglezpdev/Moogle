@@ -127,29 +127,32 @@ class Test{
 
     static void TestLemmantization() {
         StreamReader Dicc = new StreamReader("Vocabulary-lemantization.txt");
-
-        List<string> w = new List<string> ();
-        List<string> l = new List<string> ();
+        StreamWriter errores =new StreamWriter("errors.txt");
 
         string t = Dicc.ReadToEnd();
         string[] text = t.Split('\n');
         Dicc.Close();
-        
-        for(int i = 1; i <= text.Length; i++) {
+        int errors = 0;
+
+
+        for(int i = 28380; i < text.Length; i++) {
+            // if(text[i] == "") continue;
             string[] x = AuxiliarMethods.GetWordsOfSentence(text[i]);
-            foreach(string v in x)
-                System.Console.Write(v + " ");
-                System.Console.WriteLine();
+            if(AuxiliarMethods.IsLineWhite(text[i])) continue;
+            string word = x[0];
+            string lemman = x[1];
+
+            string result = Lemmatization.Stemmer(word);
+            if(result != lemman) {
+                errors ++;
+                errores.WriteLine("Error con {0}. Se esperaba {1} y de devolvio {2}.", word, lemman, result);
+            }
         }
-    
-    
-    
-    
-        System.Console.WriteLine(w[3] + " " + l[3]);
-    
-    
-    
-    
+      System.Console.WriteLine(errors);
+        if(errors == 0) {
+            Console.ForegroundColor = ConsoleColor.Green;
+            System.Console.WriteLine("PAST!!");
+        }
     
     }
 

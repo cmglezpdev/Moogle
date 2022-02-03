@@ -9,8 +9,6 @@ public static class Lemmatization {
         int r1, r2, rv;
         (r1, r2, rv) = Get_R1_R2_RV(word);
         int n = word.Length;
-        System.Console.WriteLine("{0} {1} {2}", r1, r2, rv);
-
 
         string word1 = Step0(word, n - r1, n - r2, n - rv);
         if(word == word1) word1 = Step1(word, n - r1, n - r2, n - rv);
@@ -21,7 +19,7 @@ public static class Lemmatization {
 
         word1 = Step3(word1, n - r1, n - r2, n - rv);
 
-        return word1; 
+        return AuxiliarMethods.NormalizeWord( word1 ); 
     }
 
 
@@ -37,11 +35,12 @@ public static class Lemmatization {
                 break;
             }
         // Calcular R2: Lo mismo que R1 pero aplicado al propio R1
-        for(int i = n - r1; i < n; i ++) 
-                if( !IsVocal(word[i])  && IsVocal(word[i - 1])) {
+        for(int i = n - r1; i < n; i ++) {
+            if( !IsVocal(word[i])  && i - 1 >= 0 && IsVocal(word[i - 1])) {
                 r2 = n - (i + 1); // tamano 
                 break;
             }     
+        }
         
         // Calcular RV: 
         if(word.Length >=3) {

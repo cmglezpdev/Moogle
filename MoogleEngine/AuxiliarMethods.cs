@@ -25,7 +25,6 @@ public static class AuxiliarMethods{
         return (o == '!' || o == '^' || o == '~' || o == '*');
     }
     public static bool Ignore(char x) {
-        //  return !(Char.IsLetterOrDigit(x) || !IsOperator(x));
         return Char.IsPunctuation(x) || IsOperator(x) || Char.IsWhiteSpace(x);
     }
 
