@@ -69,7 +69,7 @@ public static class Lemmatization {
     }
 
 
-
+    // ? Step 0: Attached pronoun
     private static string Step0(string word, int r1, int r2, int rv) {
         int n = word.Length;
         string newWord = "";
@@ -95,9 +95,9 @@ public static class Lemmatization {
 
             if(suffix != "yendo")
                  newWord = word.Substring(0, n - i);
-            else  
+            else // Quiere decir que el prefijo es yendo 
              if(n - i - 1 >= 0 && word[n - i - 1] == 'u')
-                newWord = word.Substring(0, n - i - 1);
+                newWord = word.Substring(0, n - i);
             break;
         }
             

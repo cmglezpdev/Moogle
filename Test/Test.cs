@@ -21,7 +21,7 @@ class Test{
         TestGetOperators();
 
 
-        System.Console.WriteLine( Lemmatization.Stemmer( "torearlo" ) );
+        System.Console.WriteLine( Lemmatization.Stemmer( "sustituyendo" ) );
 
 
 
