@@ -14,11 +14,15 @@ public static class Lemmatization {
 
         string word1 = Step0(word, n - r1, n - r2, n - rv);
 
-        // if(word == word1) word1 = Step1(word, r1, r2, rv);
 
 
 
-              word1 = Step3(word1, n - r1, n - r2, n - rv);
+        if(word == word1) word1 = Step2a(word, n - r1, n - r2, n - rv);
+        if(word == word1) word1 = Step2b(word, n - r1, n - r2, n - rv);
+
+
+
+        word1 = Step3(word1, n - r1, n - r2, n - rv);
 
         return word1; 
     }
@@ -192,34 +196,45 @@ public static class Lemmatization {
 
 
 
-// // ? This is OK!!
-//     private static string Step2a(string word, int r1, int r2, int rv) {
-//         int n = word.Length;
+    // ? Step 2a: Verb suffixes beginning y
+    private static string Step2a(string word, int r1, int r2, int rv) {
+        int n = word.Length;
 
-//         for(int i = 5; i >= 2; i --) {
-//             if(i > rv) continue; 
-//             string suffix = word.Substring(n - i, i);
-//             if( !step2a.Contains(suffix) ) continue;
-//             if(n - suffix.Length - 1 >= 0 && word[n - suffix.Length - 1] == 'u')
-//                 return word.Substring(0, n - i);
-//         }
-//         return word;
-//     }
+        for(int i = 5; i >= 2; i --) {
+            if(n - i < rv) continue; 
+            string suffix = word.Substring(n - i, i);
+            if( !step2a.Contains(suffix) ) continue;
+            if(n - suffix.Length - 1 >= 0 && word[n - suffix.Length - 1] == 'u')
+                return word.Substring(0, n - i);
+        }
+        return word;
+    }
+
+    // ? Step 2b: Other verb suffixes
+    private static string Step2b(string word, int r1, int r2, int rv) {
+        int n = word.Length;
+
+        for(int i = 4; i >= 2; i --) {
+            if(n - i < rv) continue; 
+            string suffix = word.Substring(n - i, i);
+            if( !step2b1.Contains(suffix) ) continue;
+
+            if(n - i - 2 >= 0 && word.Substring(n - i - 2, 2) == "gu")
+                return word.Substring(0, n - i - 1);
+        }
+
+        for(int i = 7; i >= 2; i --) {
+            if(n - i < rv) continue;
+            string suffix = word.Substring(n - i, i);
+            if( !step2b2.Contains(suffix) ) continue;
+            
+            return  word.Substring(0, n - i);
+        }
 
 
-//     private static string Step2b(string word, int r1, int r2, int rv) {
-//         int n = word.Length;
 
-//         for(int i = 4; i >= 2; i --) {
-//             if(i > rv) continue; 
-//             string suffix = word.Substring(n - i, i);
-//             if( !step2b1.Contains(suffix) ) contiene;
-
-//             if(n - i - 2 >= 0 && word.Substring(n - i - 2, 2) == "gu")
-//                 return word.Substring(0, n - i - 1);
-//         }
-//         return word;
-//     }
+        return word;
+    }
 
 
 
