@@ -18,10 +18,9 @@ class Test{
         // TestGetNameFile();
         // TestGetLeftContext();
         // TestGetRightContext();
-        TestGetOperators();
+        // TestGetOperators();
 
-
-        System.Console.WriteLine( Lemmatization.Stemmer( "tarahumara" ) );
+        TestLemmantization();
 
 
 
@@ -125,6 +124,34 @@ class Test{
 
     }
 
+
+    static void TestLemmantization() {
+        StreamReader Dicc = new StreamReader("Vocabulary-lemantization.txt");
+
+        List<string> w = new List<string> ();
+        List<string> l = new List<string> ();
+
+        string t = Dicc.ReadToEnd();
+        string[] text = t.Split('\n');
+        Dicc.Close();
+        
+        for(int i = 1; i <= text.Length; i++) {
+            string[] x = AuxiliarMethods.GetWordsOfSentence(text[i]);
+            foreach(string v in x)
+                System.Console.Write(v + " ");
+                System.Console.WriteLine();
+        }
+    
+    
+    
+    
+        System.Console.WriteLine(w[3] + " " + l[3]);
+    
+    
+    
+    
+    
+    }
 
 
 } 

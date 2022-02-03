@@ -13,10 +13,7 @@ public static class Lemmatization {
 
 
         string word1 = Step0(word, n - r1, n - r2, n - rv);
-
-
-
-
+        if(word == word1) word1 = Step1(word, n - r1, n - r2, n - rv);
         if(word == word1) word1 = Step2a(word, n - r1, n - r2, n - rv);
         if(word == word1) word1 = Step2b(word, n - r1, n - r2, n - rv);
 
@@ -108,91 +105,107 @@ public static class Lemmatization {
         return newWord; 
     }
 
+    // ? Step 1: Standard suffix removal
+    private static string Step1(string word, int r1, int r2, int rv) {
+        int n = word.Length;
+        string suff = "";
 
-    // private static string Step1(string word, int r1, int r2, int rv) {
-    //     int n = word.Length;
-    //     string suff = "";
+        for(int i = 8; i >= 2; i --) {
 
-    //     for(int i = word.Length; i >= 1; i --) {
+            if(n - i < 0) continue; // El sufijo es mas grande que la palabra
+            string suffix = word.Substring(n - i, i);
+            if(step1_1.Contains( suffix ) || step1_2.Contains( suffix ) || step1_3.Contains( suffix ) ||
+               step1_4.Contains( suffix ) || step1_5.Contains( suffix ) || step1_6.Contains( suffix ) ||
+               step1_7.Contains( suffix ) || step1_8.Contains( suffix ) || step1_9.Contains( suffix ) ) {
+                   suff = suffix;
+                   break; 
+            }
+        }   
+        // Si contiene un suffijo de estos lo borro
+        if(suff == "") return word;
 
-    //         string suffix = word.Substring(n - i, i);
-    //         if(step1_1.Contains( suffix ) || step1_2.Contains( suffix ) || step1_3.Contains( suffix ) ||
-    //            step1_4.Contains( suffix ) || step1_5.Contains( suffix ) || step1_6.Contains( suffix ) ||
-    //            step1_7.Contains( suffix ) || step1_8.Contains( suffix ) || step1_9.Contains( suffix ) ) {
-    //             if(suff.Length < suffix.Length)
-    //                 suff = suffix;
-    //         }
-    //     }   
-    //     // Si contiene un suffijo de estos lo borro
-    //     if(suff == "") return word;
-    //     int k = suff.Length;
+        int k = suff.Length;
+        if(step1_1.Contains(suff)) {
+            if(n - k >= r2)  return word.Substring(0, n - k);
+        } else
 
-    //     if(step1_1.Contains(suff)) {
-    //         if(k <= r2)
-    //             return word.Substring(0, n - k);
-    //     } else
-    //     if(step1_2.Contains(suff)) {
-    //         if(k <= r2){
-    //             if(n - k - 2 >= 0 && word.Substring(n - k - 2, 2) == "ic") 
-    //                 return (word.Substring(0, n - k));
-    //             else
-    //                 return word.Substring(0, n - k);
-    //         }
-    //     } else
-    //     if(step1_3.Contains(suff)) {
-    //         if(k <= r2) 
-    //             return (word.Substring(0, n - k) + "log");
-    //     } else
-    //     if(step1_4.Contains(suff)) {
-    //         if(k <= r2)
-    //              return (word.Substring(0, n - k) + "u");
-    //     } else
-    //     if(step1_5.Contains(suff)) {
-    //         if(k <= r2) 
-    //             return (word.Substring(0, n - k) + "entre");
-    //     } else
-    //     if(step1_6.Contains(suff)) {
-    //         if(k <= r1 ) {
-    //             if( n - k - 2 >= 0 && word.Substring(n - k - 2, 2) == "iv" )
-    //                 return word.Substring(0, n - k - 2);
-    //             return word.Substring(0, n - k);
-    //         } else
-    //         if(k <= r2){
-    //             if(n - k - 2 >= 0 && (word.Substring(n - k - 2, 2) == "at" || word.Substring(n - k - 2, 2) == "os" || word.Substring(n - k - 2, 2) == "ic" || word.Substring(n - k - 2, 2) == "ad")) {
-    //                 if(n - k - 2 <= r2) 
-    //                     return word.Substring(0, n - k - 2);
-    //                 return word.Substring(0, n - k);
-    //              }  
-    //         }
-    //     } else
-    //     if(step1_7.Contains(suff)) {
-    //         if(k <= r2)  
-    //             if(n - k - 4 >= 0 && (word.Substring(n - k - 4, 4)  == "ante" || word.Substring(n - k - 4, 4) == "able" || word.Substring(n - k - 4, 4) == "ible")) {
-    //                 if(n - k - 4 <= r2)
-    //                     return word.Substring(0, n - k - 4);
-    //                 return (word.Substring(0, n - k));    
-    //             }
-    //     } else
-    //     if(step1_8.Contains(suff)) {
-    //         if(k <= r2)  
-    //             if(n - k - 4 >= 0 && word.Substring(n - k - 4, 4) == "abil")
-    //                 if(n - k - 4 >= r2) return word.Substring(0, n - k - 4);
-    //                 else return word.Substring(0, n - k);
-    //             else 
-    //             if(n - k - 2 && (word.Substring(n - k - 2, 2) == "ic" || word.Substring(n - k - 2, 2) == "iv"))
-    //                 if(n - k - 2 >= r2) return word.Substring(0, n - k - 2);
-    //                 else return word.Substring(0, n - k);
-    //     } else
-    //     if(step1_8.Contains(suff)) {
-    //         if(k > r2) continue;
-    //         if(n - k - 2 >= 0 && word.Substring(n - k - 2, 2) == "at")
-    //             if(n - k - 2 <= r2) return word.Substring(0, n - k - 2);
-    //         return word.Substring(0, n - k);
-    //     }
+        if(step1_2.Contains(suff)) {
+            if(n - k >= r2) {
+                if( n - k - 2 >= r2 && word.Substring(n - k - 2, 2) == "ic" )
+                    return word.Substring(0, n - k - 2);
+                return word.Substring(0, n - k);
+            }  
+        } else
+
+        if(step1_3.Contains(suff)) {
+            if(n - k >= r2) 
+                return (word.Substring(0, n - k) + "log");
+        } else
+
+        if(step1_4.Contains(suff)) {
+            if(n - k >= r2)
+                 return (word.Substring(0, n - k) + "u");
+        } else
+
+        if(step1_5.Contains(suff)) {
+            if(n - k >= r2) 
+                return (word.Substring(0, n - k) + "ente");
+        } else
+
+        if(step1_6.Contains(suff)) {
+            if(n - k >= r1 && (n - k - 2 >= 0 && word.Substring(n - k - 2, 2) == "iv"))
+                return word.Substring(0, n - k);
+
+            if(n - k >= r2) {
+                if(n - k - 2 >= r2 && word.Substring(n - k - 2, 2) == "at")
+                    return word.Substring(0, n - k - 2);
+                return word.Substring(0, n - k);
+            }
+
+            if(n - k - 2 >= r2) {
+                string s = word.Substring(n - k - 2, 2);
+                 if(s == "os" || s == "ad" || s == "ic")
+                    return word.Substring(0, n - k - 2);
+            }
+
+        } else
+
+        if(step1_7.Contains(suff)) {
+            if(n - k >= r2) {
+                if(n - k - 4 >= r2){
+                    string s = word.Substring(n - k - 4, 4);
+                    if(s == "ante" || s == "able" || s == "ible")
+                        return word.Substring(0, n - k - 4);
+                }
+                return word.Substring(0, n - k);
+            }  
+              
+        } else
+
+        if(step1_8.Contains(suff)) {
+            if(n - k >= r2) {
+
+                if(n - k - 4 >= r2 && word.Substring(n - k - 4, 4) == "abil")
+                    return word.Substring(0, n - k - 4);
+                if(n - k - 2 >= r2 && (word.Substring(n - k - 2, 2) == "ic" || word.Substring(n - k - 2, 2) == "iv"))
+                    return word.Substring(0, n - k - 2); 
+
+                return word.Substring(0, n - k);
+            } 
+               
+        } else
+        if(step1_8.Contains(suff)) {
+            if(n - k >= r2) {
+                if(n - k - 2 >= r2 && word.Substring(n - k - 2, 2) == "at")
+                    return word.Substring(0, n - k - 2);
+
+                return word.Substring(0, n - k);
+            }
+        }
         
 
-    //     return word;
-    // }
+        return word;
+    }
 
 
 
@@ -209,7 +222,6 @@ public static class Lemmatization {
         }
         return word;
     }
-
     // ? Step 2b: Other verb suffixes
     private static string Step2b(string word, int r1, int r2, int rv) {
         int n = word.Length;
@@ -235,10 +247,6 @@ public static class Lemmatization {
 
         return word;
     }
-
-
-
-
     // ? Step 3: Residual Suffix
     private static string Step3(string word, int r1, int r2, int rv) {
 
