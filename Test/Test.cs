@@ -21,7 +21,7 @@ class Test{
         TestGetOperators();
 
 
-        System.Console.WriteLine( Lemmatization.Stemmer( "animadversion" ) );
+        System.Console.WriteLine( Lemmatization.Stemmer( "movuyendola" ) );
 
 
 

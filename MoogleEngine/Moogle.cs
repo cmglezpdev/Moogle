@@ -321,7 +321,7 @@ public static class Moogle
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
 
-    
+
                              //**** Calcular la cercania con un backtraking
                             info Appareances = PosInDocs[doc][ IdxWords[ wordsForCloseness[0] ] ]; // Empezar con las apariciones de la primera palabra
                             int n = Appareances.AmountAppareance;
@@ -330,13 +330,19 @@ public static class Moogle
                                 List< Tuple<int, int> > Points = new List< Tuple<int, int> >();
                                 int x, y;
                                 (x, y) = Appareances.nthAppareance(i);
-                                // Construir un arbol con todas las conexiones entre los pares con la iesima
+                                // Construir un arbol con todas las conexiones entre los pares con la i-esima
                                 double distance = 0;
 
                                 // ! FIX THE METHOD
                                 // info.buildTree(doc, PosInDocs, IdxWords, wordsForCloseness, Points, distance, 0, x, y);
 
                                 // Recorrer el arbol en busca de la combinacion menor
+
+
+
+
+
+
 
                             }
 
@@ -348,6 +354,11 @@ public static class Moogle
             }
         }
     }
+
+
+
+
+
     static private void ProcessOperators(char op, string word, int doc, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
         switch( op ) {
             //?  La palabra no puede aparecer en ningun documento que sea devuelto
