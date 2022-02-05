@@ -232,6 +232,11 @@ public static class Moogle
     }
     private static void ChangeForOperators(ref List< Tuple<string, string> > operators, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
 
+        // Guardar las distancias del calculo de las cercanias
+        List<double> distances = new List<double> ();
+        // Guardar el documento con su cercania
+        List< Tuple<double, int> > DocsAndDistances = new List< Tuple<double, int> > ();
+
 
         for(int doc = 0; doc < TotalFiles; doc ++){
 
@@ -317,18 +322,14 @@ public static class Moogle
                                 // anadimos las palabras a una lista para calcular la cercania
                                 wordsForCloseness.Add(w);
                             }
-                             System.Console.WriteLine(wordsForCloseness.Count);
 
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
                             // **** Calcular la cercania con un backtraking
                             double minDistance = CalcMinCloseness(doc, 0, wordsForCloseness, -1, -1, 0);
 
-                            // Modificar el score en base a la cercania
-                            minDistance = (double)( minDistance / (double)SubWords.Length );
-                            sim[doc] = new Tuple<float, int>(sim[doc].Item1 + (float)minDistance ,doc);
-
-                            
+                            distances.Add(minDistance);
+                            DocsAndDistances.Add( new Tuple<double, int> (minDistance, doc) );                
 
                         break;
 
@@ -337,6 +338,22 @@ public static class Moogle
                 }
             }
         }
+
+        if(distances.Count != 0) { 
+
+            distances.Sort();
+            distances.Reverse();
+
+            DocsAndDistances.Sort();
+
+            for(int i = 0; i < distances.Count; i ++) {
+                int doc = DocsAndDistances[i].Item2;
+                float prevscore = sim[doc].Item1;
+
+                sim[doc] = new Tuple<float, int>(prevscore + (float)distances[i], doc);
+            }
+        }
+
 
 
     }
@@ -351,9 +368,6 @@ public static class Moogle
 
         info Appareances = PosInDocs[doc][ IdxWords[ words[idx] ] ];
         int n = Appareances.AmountAppareance;
-
-        System.Console.WriteLine("TO {0}", n);
-
 
         double minDistance = double.MaxValue;
 

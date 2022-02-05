@@ -65,6 +65,8 @@ public struct info {
 
         if(NormD == 0.00f || NormQ == 0.00f || MultVectors == 0.00f) 
             return 0.00f;
+
+            // System.Console.WriteLine(MultVectors / (NormD * NormQ));
         return MultVectors / (NormD * NormQ);
     }
 
