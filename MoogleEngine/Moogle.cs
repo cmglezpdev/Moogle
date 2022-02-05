@@ -359,6 +359,9 @@ public static class Moogle
                 int doc = DocsAndDistances[i].Item2;
                 float prevscore = sim[doc].Item1;
 
+                // Si el documento no tiene que aparecer
+                if( sim[doc].Item1 == 0.00f ) continue;
+
                 sim[doc] = new Tuple<float, int>(prevscore + (float)distances[i], doc);
             }
         }
