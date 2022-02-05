@@ -38,7 +38,10 @@ public static class FilesMethods {
             string[] words = AuxiliarMethods.GetWordsOfSentence(line);
 
             for(int i = 0; i < words.Length; i ++) {
-                string word = AuxiliarMethods.NormalizeWord(words[i]);
+                string word =  words[i].ToLower();
+                       word = Lemmatization.Stemmer(word);
+                       word = AuxiliarMethods.NormalizeWord(word);
+
                 // Si la palabra ya existe de los ficheros anteriores 
                 if(IdxWords.ContainsKey(word)) {
                     // Anadimos una nueva aparicion de la palabra en IdFile y en
@@ -196,6 +199,8 @@ public static class FilesMethods {
             if(j >= n) break;
             // Sacar la palabra que esta a la derecha de la posicion j
             string wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, j, "right"));
+            int auxLen = wo.Length;
+                    wo = Lemmatization.Stemmer(wo);
 
             // Validar los operadores segun mi criterio
             string operators = AuxiliarMethods.ValidOperators(op);
@@ -204,7 +209,7 @@ public static class FilesMethods {
             // Si no es un operador de cercania puedo guardar la palabra con sus operadores
             if(operators[0] != '~') {
                  o.Add(new Tuple<string, string>(operators, wo));
-                i = j + wo.Length - 1;
+                i = j + auxLen - 1;
                 continue;
             }
             
@@ -213,8 +218,9 @@ public static class FilesMethods {
             while( --k >= 0 && AuxiliarMethods.Ignore(query[k]) );
             if(k < 0) continue;
             string prev_wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, k, "left"));
+                   prev_wo = Lemmatization.Stemmer(prev_wo); 
             if(prev_wo == "") { // Si la palabra no existe el operador queda invalidado por lo que no la agregamos
-                 i = j + wo.Length - 1;
+                 i = j + auxLen - 1;
                  continue;
             }
             
@@ -235,7 +241,7 @@ public static class FilesMethods {
             }
 
             o.Add(new Tuple<string, string>( "~", prev_wo + " " + operators.Substring(1, operators.Length - 1) + wo));
-            i = j + wo.Length - 1;
+            i = j + auxLen - 1;
         }
 
         return o;

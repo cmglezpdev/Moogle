@@ -18,11 +18,15 @@ public static class Moogle
     public static SearchResult Query(string query)
     {
 
+        // System.Console.WriteLine("Total de Plabras: {0}", TotalWords);
+
+
         //! Calcular el suggestion por las palabras que no aparecen en el documento
-        string suggestion = GetSuggestion(query);
+        // string suggestion = GetSuggestion(query);
+        // string suggestion = query;
 
         //! Frecuencia de las palabras de la query
-        Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( suggestion );
+        Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( query );
 
         //! Matriz peso del query
         float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
@@ -31,9 +35,12 @@ public static class Moogle
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(ref wQuery, ref wDocs);
 
         // !Modificar el peso de los documentos en base a cada operador del query
-        List< Tuple<string, string> > operators = FilesMethods.GetOperators(suggestion);
+        List< Tuple<string, string> > operators = FilesMethods.GetOperators(query);
+
+
         // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
         Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
+        // Realizar los cambios con correspondientes a cada operador
         ChangeForOperators(ref operators, ref MemoryChange, ref sim);
 
 
@@ -49,6 +56,7 @@ public static class Moogle
         NormalizeData(ref MemoryChange);
 
         //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
+        string suggestion = query;
         if(suggestion == query) suggestion = ""; 
 
         return new SearchResult(items, suggestion);
@@ -111,6 +119,7 @@ public static class Moogle
         Dictionary<string, int> FreqWordsQuery = new Dictionary<string, int>();
         foreach(string w in WordsQuery) {
             string lower = AuxiliarMethods.NormalizeWord(w);
+                   lower = Lemmatization.Stemmer(lower);
             if(!FreqWordsQuery.ContainsKey( lower ))
                 FreqWordsQuery[ lower ] = 0;
             FreqWordsQuery[ lower ] ++;

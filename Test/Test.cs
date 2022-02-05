@@ -1,4 +1,5 @@
 ﻿using MoogleEngine;
+using System.Diagnostics;
 
 class Test{
 
@@ -18,7 +19,7 @@ class Test{
         // TestGetNameFile();
         // TestGetLeftContext();
         // TestGetRightContext();
-        // TestGetOperators();
+        TestGetOperators();
 
         // TestLemmantization();
 
@@ -136,7 +137,7 @@ class Test{
     static void TestGetOperators() {
         // string query = "Lo **mas ~ ^importante !es mi ~ *&mamolshito ";
         // string query = "!cuba ~ amor! ~ !esperanza, xq l@ viD@ es *#52mvcs!#";
-        string query = "!leon ~ zorro ~ muerto !leon";
+        string query = "leon ~ zorro ~ muerto cuba ~~universidad **tigre ^familiares";
 
         List< Tuple<string, string> > x = FilesMethods.GetOperators(query);
 
@@ -149,6 +150,9 @@ class Test{
 
 
     static void TestLemmantization() {
+        
+        Stopwatch crono = new Stopwatch();
+
         StreamReader Dicc = new StreamReader("Vocabulary-lemantization.txt");
         StreamWriter errores =new StreamWriter("errors.txt");
 
@@ -157,8 +161,9 @@ class Test{
         Dicc.Close();
         int errors = 0;
 
+        crono.Start();
 
-        for(int i = 28380; i < text.Length; i++) {
+        for(int i = 0; i < text.Length; i++) {
             // if(text[i] == "") continue;
             string[] x = AuxiliarMethods.GetWordsOfSentence(text[i]);
             if(AuxiliarMethods.IsLineWhite(text[i])) continue;
@@ -171,6 +176,10 @@ class Test{
                 errores.WriteLine("Error con {0}. Se esperaba {1} y de devolvio {2}.", word, lemman, result);
             }
         }
+
+        crono.Stop();
+        System.Console.WriteLine("Time: {0}", crono.ElapsedMilliseconds );
+
       System.Console.WriteLine(errors);
         if(errors == 0) {
             Console.ForegroundColor = ConsoleColor.Green;
