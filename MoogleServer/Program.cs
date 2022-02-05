@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MoogleEngine;
+using System.Diagnostics;
 
+Stopwatch crono = new Stopwatch();
+crono.Start();
 Moogle.DatesProcessing();
+System.Console.WriteLine(crono.ElapsedMilliseconds / 1000);
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -23,10 +23,33 @@ class Test{
         // TestLemmantization();
 
 
+    //     List<int> a = new List<int> ();
+    //     a.Add(4);
+    //     a.Add(2);
+    //     a.Add(5);
+
+    //     f(a);
+
+    //     List<int> b = new List<int> ();
+    //     b = a;
+    //     b.Add(3);
+
+    //     foreach(int g in a)
+    //         System.Console.WriteLine(g);
+    //     System.Console.WriteLine();   
+    //  foreach(int g in b)
+    //         System.Console.WriteLine(g);
+
+
 
         //? Print if all is OK
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("It's OK!😁");
+    }
+
+
+    static void f(List<int> c) {
+        c.Add(1);
     }
 
 

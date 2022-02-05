@@ -51,8 +51,6 @@ public static class Moogle
         //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
         if(suggestion == query) suggestion = ""; 
 
-        // * Antes de imprimir el suggestion, arreglar para que implrima correctamente los
-
         return new SearchResult(items, suggestion);
     }
 
@@ -192,6 +190,7 @@ public static class Moogle
 
         for(int i = 0; i < TotalFiles; i ++) {
            // Si ninguna de las palabras estan en el documento     
+        //    System.Console.WriteLine(sim[i].Item1);
            if(sim[i].Item1 == 0.00f) continue;
 
             float score = 0.00f;
@@ -232,6 +231,7 @@ public static class Moogle
             wDocs[ mc.Key.Item1, mc.Key.Item2 ] = mc.Value;
     }
     private static void ChangeForOperators(ref List< Tuple<string, string> > operators, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
+
 
         for(int doc = 0; doc < TotalFiles; doc ++){
 
@@ -317,34 +317,18 @@ public static class Moogle
                                 // anadimos las palabras a una lista para calcular la cercania
                                 wordsForCloseness.Add(w);
                             }
+                             System.Console.WriteLine(wordsForCloseness.Count);
 
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
+                            // **** Calcular la cercania con un backtraking
+                            double minDistance = CalcMinCloseness(doc, 0, wordsForCloseness, -1, -1, 0);
 
+                            // Modificar el score en base a la cercania
+                            minDistance = (double)( minDistance / (double)SubWords.Length );
+                            sim[doc] = new Tuple<float, int>(sim[doc].Item1 + (float)minDistance ,doc);
 
-                             //**** Calcular la cercania con un backtraking
-                            info Appareances = PosInDocs[doc][ IdxWords[ wordsForCloseness[0] ] ]; // Empezar con las apariciones de la primera palabra
-                            int n = Appareances.AmountAppareance;
-
-                            for(int i = 0; i < n; i ++) {
-                                List< Tuple<int, int> > Points = new List< Tuple<int, int> >();
-                                int x, y;
-                                (x, y) = Appareances.nthAppareance(i);
-                                // Construir un arbol con todas las conexiones entre los pares con la i-esima
-                                double distance = 0;
-
-                                // ! FIX THE METHOD
-                                // info.buildTree(doc, PosInDocs, IdxWords, wordsForCloseness, Points, distance, 0, x, y);
-
-                                // Recorrer el arbol en busca de la combinacion menor
-
-
-
-
-
-
-
-                            }
+                            
 
                         break;
 
@@ -353,12 +337,36 @@ public static class Moogle
                 }
             }
         }
+
+
     }
+    private static double DistanceBetweenWords(int x1, int y1, int x2, int y2) {
+        return Math.Sqrt( (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) );
+    }
+    private static double CalcMinCloseness( int doc, int idx, List<string> words, int prevx, int prevy, double distance ) {
+        // Si se procesaron todas las palabras
+        if(idx == words.Count) {
+            return distance;
+        }
+
+        info Appareances = PosInDocs[doc][ IdxWords[ words[idx] ] ];
+        int n = Appareances.AmountAppareance;
+
+        System.Console.WriteLine("TO {0}", n);
 
 
+        double minDistance = double.MaxValue;
 
+        for(int app = 0; app < n; app ++) {
+            int currx, curry;
+            (currx, curry) = Appareances.nthAppareance(app);
+            double currdist = (prevx == -1) ? 0 : DistanceBetweenWords( prevx, prevy, currx, curry );
 
+            minDistance =  Math.Min( minDistance, CalcMinCloseness(doc, idx + 1, words, currx, curry, distance + currdist) );
+        }    
 
+        return minDistance;        
+    }
     static private void ProcessOperators(char op, string word, int doc, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
         switch( op ) {
             //?  La palabra no puede aparecer en ningun documento que sea devuelto
@@ -390,8 +398,4 @@ public static class Moogle
 
 
     #endregion
-
-
-
-
 }
