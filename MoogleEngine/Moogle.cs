@@ -212,6 +212,8 @@ public static class Moogle
             }
 
 
+
+
             info PosOfWord = PosInDocs[doc][ IdxWords[word] ];
 
             Random r = new Random();
