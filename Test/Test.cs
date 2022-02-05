@@ -20,7 +20,7 @@ class Test{
         // TestGetRightContext();
         // TestGetOperators();
 
-        TestLemmantization();
+        // TestLemmantization();
 
 
 

@@ -11,3 +11,5 @@ Caracteres a ignorar:
 
 6. Disminuir el score de las palabras que estaban mal escritas
 7. designar un umbral por si la cantidad de transformaciones que necesita una plabra es demasiado grande no la use
+
+8. Implementar el Porter Algorithm con hashing
