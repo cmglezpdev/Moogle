@@ -19,29 +19,11 @@ class Test{
         // TestGetNameFile();
         // TestGetLeftContext();
         // TestGetRightContext();
-        TestGetOperators();
+        // TestGetOperators();
 
         // TestLemmantization();
 
-
-    //     List<int> a = new List<int> ();
-    //     a.Add(4);
-    //     a.Add(2);
-    //     a.Add(5);
-
-    //     f(a);
-
-    //     List<int> b = new List<int> ();
-    //     b = a;
-    //     b.Add(3);
-
-    //     foreach(int g in a)
-    //         System.Console.WriteLine(g);
-    //     System.Console.WriteLine();   
-    //  foreach(int g in b)
-    //         System.Console.WriteLine(g);
-
-
+            TestSynonymsDB();
 
         //? Print if all is OK
         Console.ForegroundColor = ConsoleColor.Green;
@@ -49,9 +31,6 @@ class Test{
     }
 
 
-    static void f(List<int> c) {
-        c.Add(1);
-    }
 
 
     static void Assert(bool condition, string message) {
@@ -185,6 +164,15 @@ class Test{
             Console.ForegroundColor = ConsoleColor.Green;
             System.Console.WriteLine("PAST!!");
         }
+    
+    }
+
+    static void TestSynonymsDB() {
+        string path = "../SynonymsDB/synonyms_db.json";
+
+        WorkSynonyms synonyms = new WorkSynonyms( path );
+        System.Console.WriteLine(synonyms.GetLengthDB());
+    
     
     }
 
