@@ -299,8 +299,6 @@ public static class Moogle
                             List<string> wordsForCloseness = new List<string>();
                             List< Tuple<string, string> > OpersAndWords = FilesMethods.GetOperators(word); 
                             string[] SubWords = AuxiliarMethods.GetWordsOfSentence(word);
-                            int idx = 0; // Indice para recorrer las palabras con operadores
-
 
                             //? Poner en las palabras para la cercania las que no tengan operador
                             for(int wi = 0; wi < SubWords.Length; wi ++) {
@@ -353,7 +351,7 @@ public static class Moogle
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
                             
-
+// *************************************************************************************
                             foreach(string words in wordsForCloseness) {
                                 int n = PosInDocs[doc][ IdxWords[words] ].AmountAppareance;
                                 for(int i = 0; i < n; i ++) {
@@ -362,36 +360,42 @@ public static class Moogle
                                 }
                             }
                             
+                            // foreach(var v in posiciones)
+                            //     System.Console.WriteLine(v.ToString());
                             
                             // Ordenar las posiciones por posiciones de menor a mayor
                             posiciones.Sort();
                             
                             int cantWords = wordsForCloseness.Count;
 
-                            int l = 0, r = -1;
+                            int l = 0, r = 0;
                             while(true) {
 
                                 // Anadir apariciones hasta que esten todas las palabras
-                                while( cnt.Count < cantWords ) {
+                                while( cnt.Count < cantWords  ) {
                                     // Si estamos en el final de todas las posiciones
                                     if(r == posiciones.Count) break;
-                                    r ++;
                                     
+                                    // Aumentamos una aparicion
                                     if( !cnt.ContainsKey( posiciones[r].Item3 ) )
                                         cnt[ posiciones[r].Item3 ] = 0;
-                                    cnt[ posiciones[r].Item3 ] ++;
+                                    cnt[ posiciones[r++].Item3 ] ++;
                                 }
                                 r --;
-                                
+
+                                // Si no hay la cantidad de palabras esactas entonces es q r llego al final y no encontro otro conj
+                                if(cnt.Count != cantWords )
+                                    break;
+
+
                                 // Eliminar apariciones de la izquierda hasta tener las minimas indispensables
-                                while( true ) {
+                                while( l < r ) {
                                     // Si ya no se pueden eliminar mas palabras
-                                    if( cnt[ posiciones[l].Item3 ] - 1  == 0) {
+                                    if( cnt[ posiciones[l].Item3 ] - 1 <= 0) {
                                         break;
                                     }
                                     // Si puedo seguir eliminando borro la aparicion esa
-                                    cnt[ posiciones[l].Item3 ] --;
-                                    l ++;
+                                    cnt[ posiciones[l++].Item3 ] --;
                                 } 
 
                                 // Guardamos los intervalos en donde aparecen todas las palabras comparar el intervalo mas cercano
@@ -401,6 +405,7 @@ public static class Moogle
                                 if(r == posiciones.Count - 1) break;
                                 // Eliminamos esa primera posicion del intervalo para que encuentre otro completo
                                 cnt.Remove( posiciones[l ++].Item3 );
+                                r ++;
                             }
                         break;
 
@@ -410,15 +415,31 @@ public static class Moogle
             }
 
            
-            // Limpiar cnt para reutilizarlo
+           // Limpiar cnt para reutilizarlo
            cnt.Clear();
 
-            double minDistance = double.MaxValue;
+            double minDistance = (double)int.MaxValue;
+            System.Console.WriteLine(minDistance);
+
+
+            // foreach( Tuple<int, int> i_interv in Interv ) {
+            //     string s = "";
+            //     for(int i = i_interv.Item1; i <= i_interv.Item2; i ++)
+            //         s += posiciones[i].Item3 + ' ';
+            //     System.Console.WriteLine(s);
+            // }
+
+            // System.Console.WriteLine();
+            // System.Console.WriteLine();
+            // System.Console.WriteLine();
+            // System.Console.WriteLine();
 
             // Recorrer los intervalos en busca del mas cercano
             foreach( Tuple<int, int> i_interv in Interv ) {
 
-                (int l, int r) = i_interv;
+                int l = i_interv.Item1;
+                int r = i_interv.Item2;
+
                 double distance = 0.00;
                 int prevx = -1, prevy = -1;
 
@@ -432,13 +453,15 @@ public static class Moogle
                     prevy = posiciones[i].Item2;
                 }
                 minDistance = Math.Min( minDistance, distance );
+
             }
-            System.Console.WriteLine(minDistance);
+            // System.Console.WriteLine(minDistance);
             float score = sim[doc].Item1;
-            sim[doc] = new Tuple<float, int> (score + 1.00f/(float)minDistance, doc);
+            // minDistance = (minDistance == 0.00) ? 1.00 : minDistance;
+            // sim[doc] = new Tuple<float, int> ((float)(1.00f/minDistance) + score, doc);
 
         }
-
+// *******************************************************************************************
 
     }
     private static double DistanceBetweenWords(int x1, int y1, int x2, int y2) {
