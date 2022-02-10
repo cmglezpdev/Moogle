@@ -14,7 +14,7 @@ public static class AuxiliarMethods{
             if(Ignore(sentence[i])) continue;
             int endWord = i;
             while(++ endWord < n && !Ignore(sentence[endWord]));
-            words.Add(sentence.Substring(i, endWord - i));
+            words.Add( NormalizeWord(sentence.Substring(i, endWord - i)));
             i = endWord - 1;
         }
 
