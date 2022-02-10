@@ -212,7 +212,6 @@ public static class Moogle
 
         for(int i = 0; i < TotalFiles; i ++) {
            // Si ninguna de las palabras estan en el documento     
-        //    System.Console.WriteLine(sim[i].Item1);
            if(sim[i].Item1 == 0.00f) continue;
 
             float score = 0.00f;
@@ -240,6 +239,9 @@ public static class Moogle
 
             Random r = new Random();
             int nl = 0, nw = 0;
+
+    //??? Arreglar esta cosa 
+            // if(PosOfWord.AmountAppareance == 0) continue;
             (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(files[doc]);
@@ -419,7 +421,7 @@ public static class Moogle
            cnt.Clear();
 
             double minDistance = (double)int.MaxValue;
-            System.Console.WriteLine(minDistance);
+            // System.Console.WriteLine(minDistance);
 
 
             // foreach( Tuple<int, int> i_interv in Interv ) {
@@ -455,10 +457,10 @@ public static class Moogle
                 minDistance = Math.Min( minDistance, distance );
 
             }
-            // System.Console.WriteLine(minDistance);
             float score = sim[doc].Item1;
-            // minDistance = (minDistance == 0.00) ? 1.00 : minDistance;
-            // sim[doc] = new Tuple<float, int> ((float)(1.00f/minDistance) + score, doc);
+            minDistance = ( minDistance <= 0.000000001 ) ? 1.00 : minDistance;
+            System.Console.WriteLine(minDistance);
+            sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
 
         }
 // *******************************************************************************************
