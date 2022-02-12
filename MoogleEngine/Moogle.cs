@@ -144,9 +144,6 @@ public static class Moogle
         return suggestion;
     }
 
-
-
-
     private static SearchItem[] BuildResult(ref Tuple<float, int>[] sim, ref Dictionary<string, int> FreqWordsQuery, ref float[,] wDocs) {
         List<SearchItem> items = new List<SearchItem>();
 
@@ -308,13 +305,6 @@ public static class Moogle
                             
                             // Ordenar las posiciones por posiciones de menor a mayor
                             posiciones.Sort();
-
-
-
-                            // foreach(var x in posiciones)
-                            //     System.Console.WriteLine(x.ToString());
-                            // System.Console.WriteLine();
-
 
                             int cantWords = wordsForCloseness.Count;
 
