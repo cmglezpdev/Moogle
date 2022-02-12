@@ -23,7 +23,6 @@ public static class AuxiliarMethods{
     public static bool Ignore(char x) {
         return Char.IsPunctuation(x) || WorkingOperators.IsOperator(x) || Char.IsWhiteSpace(x);
     }
-
     // Comprobar que una linea del fichero es o no una linea en blanco
     public static bool IsLineWhite(string line) {
         for(int i = 0; i < line.Length; i ++)

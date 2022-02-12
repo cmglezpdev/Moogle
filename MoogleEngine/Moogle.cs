@@ -8,7 +8,7 @@ public static class Moogle
     {
 
         // ! Calcular el suggestion por las palabras que no aparecen en el documento
-        string suggestion = GetSuggestion(query);
+        (string suggestion, query ) = GetSuggestion(query);
 
         //! Frecuencia de las palabras de la query
         Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( query );
@@ -22,10 +22,10 @@ public static class Moogle
         // !Modificar el peso de los documentos en base a cada operador del query
         List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
 
-
-        // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
+        // Estructura para Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
         Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
-        // Realizar los cambios correspondientes a cada operador
+        
+        //! Realizar los cambios correspondientes a cada operador
         WorkingOperators.ChangeForOperators( operators, MemoryChange, sim);
 
 
@@ -100,10 +100,16 @@ public static class Moogle
         
         return sim;
     }
-    private static string GetSuggestion(string query) {
+    private static (string, string) GetSuggestion(string query) {
         string suggestion = "";
+        string newQuery = "";
+
+        string[] words = AuxiliarMethods.GetWordsOfSentence(query);
+        List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
+        
 
         for(int i = 0; i < query.Length; i ++) {
+       
             // Si es un caracter que no forme una palabra entoces la anadimos a la sugerencia
             if(AuxiliarMethods.Ignore(query[i])) {
                 suggestion += query[i];
@@ -113,7 +119,7 @@ public static class Moogle
             string w = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWordStartIn(query, i));
             string lemman = Lemmatization.Stemmer(w);
 
-            // Si la palabra no esta en el documento entonces no hay que modificarla
+            // Si la palabra esta en el documento entonces no hay que modificarla
             if(Data.IdxWords.ContainsKey(lemman)) {
                 suggestion += w;
                 i += w.Length - 1;
@@ -122,10 +128,6 @@ public static class Moogle
 
             // En caso de que no este
             // !Antes de usar Levenshtein vemos si tiene sinonimos en la BD -----------------------------------------------------------------------------
-            // string[] synonyms = GetSynonyms(w);
-            // "../SynonymsDB/synonyms_db.json"
-
-
 
             string newW = "";
             int steps = 100000;
@@ -138,10 +140,10 @@ public static class Moogle
             }
             suggestion += newW;
             i += w.Length - 1;
-        }
+       }
 
 
-        return suggestion;
+        return (suggestion, newQuery);
     }
     private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs) {
         List<SearchItem> items = new List<SearchItem>();

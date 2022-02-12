@@ -4,12 +4,14 @@ static public class Data {
 
 
     #region Variables
-    public static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
-    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();     // Palabras con su indice en la lista
-    public static string[] files = new string[0];
-    public static int TotalFiles = 0;
-    public static int TotalWords = 0;
-    public static float[,] wDocs = new float[0,0];
+    public static List<List<info>> PosInDocs;         // Matrix con las repeticiones de las palabras en cada documento
+    public static Dictionary<string, int> IdxWords;     // Palabras con su indice en la lista
+    public static string[] files;
+    public static int TotalFiles;
+    public static int TotalWords;
+    public static float[,] wDocs;
+    public static WorkingSynonyms synonyms;
+
 
     #endregion
 
@@ -40,7 +42,6 @@ static public class Data {
         //!  Matriz peso de los documentos
         wDocs = GetWeigthOfDocs();
     }
-   
     public static float[,] GetWeigthOfDocs() {
 
         float[,] wDocs = new float[TotalFiles, TotalWords];
