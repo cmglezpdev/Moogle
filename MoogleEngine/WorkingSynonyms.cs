@@ -1,7 +1,7 @@
 namespace MoogleEngine;
 using System.Text.Json;
 
-public class WorkSynonyms {
+public class WorkingSynonyms {
 
     private class Synonyms {
         private List<string[]> synonyms { get; set; }
@@ -16,7 +16,7 @@ public class WorkSynonyms {
 
     private Synonyms db;
 
-    public WorkSynonyms( string pathdb ) {
+    public WorkingSynonyms( string pathdb ) {
         string dbString = File.ReadAllText(pathdb);
        this.db = JsonSerializer.Deserialize<Synonyms>(dbString);
     }
