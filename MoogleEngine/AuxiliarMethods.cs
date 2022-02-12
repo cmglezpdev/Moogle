@@ -32,11 +32,11 @@ public static class AuxiliarMethods{
         return true;
     }
     public static string NormalizeWord(string word) {
-        word.ToLower();
+        string w = word.ToLower();
         
         // Falta quitar las tildes
         string newWord = "";
-        foreach(char caracter in word) {
+        foreach(char caracter in w) {
             switch( caracter ) {
                 case 'á':
                     newWord += 'a';

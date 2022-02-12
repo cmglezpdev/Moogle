@@ -57,8 +57,7 @@ public static class Moogle
         // Calculamos la frecuencia de las palabras en la query
         Dictionary<string, int> FreqWordsQuery = new Dictionary<string, int>();
         foreach(string w in WordsQuery) {
-            string lower = AuxiliarMethods.NormalizeWord(w);
-                   lower = Lemmatization.Stemmer(lower);
+            string lower = Lemmatization.Stemmer( w.ToLower() );
             if(!FreqWordsQuery.ContainsKey( lower ))
                 FreqWordsQuery[ lower ] = 0;
             FreqWordsQuery[ lower ] ++;
@@ -110,7 +109,7 @@ public static class Moogle
                 continue;
             }
 
-            string w = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWordStartIn(query, i));
+            string w = AuxiliarMethods.GetWordStartIn(query, i).ToLower();
             string lemman = Lemmatization.Stemmer(w);
 
             // Si la palabra no esta en el documento entonces no hay que modificarla
