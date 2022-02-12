@@ -20,7 +20,6 @@ public static class AuxiliarMethods{
 
         return words.ToArray();
     }
-
     public static bool IsOperator(char o) {
         return (o == '!' || o == '^' || o == '~' || o == '*');
     }
@@ -35,9 +34,6 @@ public static class AuxiliarMethods{
                 return false;
         return true;
     }
-
-
-    // ?    Procesar la palabra para llevarlo todo a minusculas y quitarle las tildes -------------------------------------------------------------
     public static string NormalizeWord(string word) {
         word.ToLower();
         
@@ -70,12 +66,7 @@ public static class AuxiliarMethods{
 
         return newWord;
     }
-
-
-
-
-
-    // La palabra que empieza a partir de esa posicion
+   // La palabra que empieza a partir de esa posicion
     public static string GetWordStartIn(string sentence, int start) {
         if(start >= sentence.Length)
             throw new Exception("Posicion no valida");
@@ -97,18 +88,10 @@ public static class AuxiliarMethods{
         
         return sentence.Substring(start + 1, end - start);
     }
-
-
-    public static void Resize(List< List<info> > aux, int idFile, int newLength) {
+   public static void Resize(List< List<info> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
     }
-
-    public static int GetHashCode(string w) {
-        int MOD = 1000000007; // 10^9 + 7
-        return w.GetHashCode() % MOD;
-    }
-
     public static string GetOperators(string sentence, int pos) {
         string operators = "";
         int n = sentence.Length;
@@ -119,7 +102,6 @@ public static class AuxiliarMethods{
 
         return operators;
     }
-
     public static string GetWord(string sentence, int pos, string direction) {
         string word = "";
         int n = sentence.Length;
@@ -138,7 +120,6 @@ public static class AuxiliarMethods{
 
         return word;
     }
-
     // Devuelve vacio si no es valida, y en otro caso simplifica la expresion
     public static string ValidOperators(string op) {
         // Si son operadores simples
@@ -170,8 +151,6 @@ public static class AuxiliarMethods{
 
         return op;
     }
-    
-
     public static int LevenshteinDistance(string a, string b) {
 
         int n = a.Length,
