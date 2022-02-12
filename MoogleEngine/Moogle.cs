@@ -20,13 +20,13 @@ public static class Moogle
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(wQuery, Data.wDocs);
 
         // !Modificar el peso de los documentos en base a cada operador del query
-        List< Tuple<string, string> > operators = FilesMethods.GetOperators(query);
+        List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
 
 
         // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
         Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
         // Realizar los cambios correspondientes a cada operador
-        UpdateScore.ChangeForOperators( operators, MemoryChange, sim);
+        WorkingOperators.ChangeForOperators( operators, MemoryChange, sim);
 
 
         //! Ordenar los scores por scores
