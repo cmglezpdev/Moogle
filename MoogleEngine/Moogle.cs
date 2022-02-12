@@ -17,7 +17,7 @@ public static class Moogle
         float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
 
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
-        Tuple<float, int>[] sim = GetSimBetweenQueryDocs(ref wQuery, ref Data.wDocs);
+        Tuple<float, int>[] sim = GetSimBetweenQueryDocs(wQuery, Data.wDocs);
 
         // !Modificar el peso de los documentos en base a cada operador del query
         List< Tuple<string, string> > operators = FilesMethods.GetOperators(query);
@@ -26,7 +26,7 @@ public static class Moogle
         // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
         Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
         // Realizar los cambios correspondientes a cada operador
-        ChangeForOperators(ref operators, ref MemoryChange, ref sim);
+        ChangeForOperators( operators, MemoryChange, sim);
 
 
         //! Ordenar los scores por scores
@@ -34,10 +34,10 @@ public static class Moogle
         Array.Reverse(sim);
 
         // !Construir el resultado
-        SearchItem[] items = BuildResult(ref sim, ref FreqWordsQuery, ref Data.wDocs);
+        SearchItem[] items = BuildResult( sim, FreqWordsQuery, Data.wDocs);
 
         //! Devolver a los valores originales a los scores que ya fueron modificados 
-        NormalizeData(ref MemoryChange);
+        NormalizeData(MemoryChange);
 
         // //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
         // if(suggestion == query) suggestion = ""; 
@@ -86,7 +86,7 @@ public static class Moogle
 
         return wQuery;
     }
-    private static Tuple<float, int>[] GetSimBetweenQueryDocs(ref float[] wQuery, ref float[,] wDocs){
+    private static Tuple<float, int>[] GetSimBetweenQueryDocs( float[] wQuery, float[,] wDocs){
 
         Tuple<float, int>[] sim = new Tuple<float, int>[Data.TotalFiles];
         for(int doc = 0; doc < Data.TotalFiles; doc ++) {
@@ -94,7 +94,7 @@ public static class Moogle
             for(int w = 0; w < Data.TotalWords; w ++) 
                 iWDoc[w] = wDocs[doc, w];
                 
-            float score = FilesMethods.GetScore(ref iWDoc, ref wQuery);
+            float score = FilesMethods.GetScore( iWDoc, wQuery);
             sim[doc] = new Tuple<float, int>(score, doc);
         }
         
@@ -144,7 +144,7 @@ public static class Moogle
         return suggestion;
     }
 
-    private static SearchItem[] BuildResult(ref Tuple<float, int>[] sim, ref Dictionary<string, int> FreqWordsQuery, ref float[,] wDocs) {
+    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs) {
         List<SearchItem> items = new List<SearchItem>();
 
         for(int i = 0; i < Data.TotalFiles; i ++) {
@@ -188,11 +188,11 @@ public static class Moogle
 
         return items.ToArray();
     }
-    private static void NormalizeData(ref Dictionary< Tuple<int, int>, float > MemoryChange) {
+    private static void NormalizeData( Dictionary< Tuple<int, int>, float > MemoryChange) {
         foreach(KeyValuePair< Tuple<int, int>, float > mc in MemoryChange) 
             Data.wDocs[ mc.Key.Item1, mc.Key.Item2 ] = mc.Value;
     }
-    private static void ChangeForOperators(ref List< Tuple<string, string> > operators, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
+    private static void ChangeForOperators( List< Tuple<string, string> > operators, Dictionary< Tuple<int, int>, float > MemoryChange,  Tuple<float, int>[] sim) {
 
         for(int doc = 0; doc < Data.TotalFiles; doc ++){
 
@@ -223,15 +223,15 @@ public static class Moogle
                     switch( op ) {
                         //?  La palabra no puede aparecer en ningun documento que sea devuelto 
                         case '!':
-                            ProcessOperators('!', word, doc, ref MemoryChange, ref sim);
+                            ProcessOperators('!', word, doc, MemoryChange, sim);
                             break;
                         //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
                         case '^': 
-                            ProcessOperators('^', word, doc, ref MemoryChange, ref sim);
+                            ProcessOperators('^', word, doc, MemoryChange, sim);
                             break;
                         //?  Aumentar la relevancia del documento que tiene esa palabra
                         case '*':
-                            ProcessOperators('*', word, doc, ref MemoryChange, ref sim);
+                            ProcessOperators('*', word, doc, MemoryChange, sim);
                             break; 
                         
                         //? Aumentar la relevancia del documento mientras mas cercanas esten las palabras
@@ -275,7 +275,7 @@ public static class Moogle
                                 if(o == "!") {
                                     // Si la palabra aparece en el documento entonces el operador de cercania de todas las palabras queda invalidado
                                     if( Data.PosInDocs[doc][ Data.IdxWords[w] ].AmountAppareance > 0 ) {
-                                         ProcessOperators('!', w, doc, ref MemoryChange, ref sim);
+                                         ProcessOperators('!', w, doc, MemoryChange, sim);
                                         break;
                                     }
                                      continue;                                    
@@ -283,7 +283,7 @@ public static class Moogle
 
                                 // Solo nos queda por aplicar los operadores ^ y * en caso de que los tenga
                                 foreach(char x in o) 
-                                    ProcessOperators(x, w, doc, ref MemoryChange, ref sim);
+                                    ProcessOperators(x, w, doc, MemoryChange, sim);
 
                                 // anadimos las palabras a una lista para calcular la cercania
                                 wordsForCloseness.Add(w);
@@ -400,7 +400,7 @@ public static class Moogle
         // Con x1 <= x2 && y1 <= y2
         return x2 + Math.Max(0, 15 - x1); // 15 es un valor promedio de la cantidad de palabras por linea
     }
-    static private void ProcessOperators(char op, string word, int doc, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
+    static private void ProcessOperators(char op, string word, int doc, Dictionary< Tuple<int, int>, float > MemoryChange, Tuple<float, int>[] sim) {
         switch( op ) {
             //?  La palabra no puede aparecer en ningun documento que sea devuelto
             case '!':

@@ -28,13 +28,13 @@ static public class Data {
 
         //! Guardar todas las palabras de todos los documentos en la matrix
         for(int doc = 0; doc < TotalFiles; doc ++)
-            FilesMethods.ReadContentFile(files[doc], doc, ref IdxWords, ref PosInDocs);
+            FilesMethods.ReadContentFile(files[doc], doc, IdxWords, PosInDocs);
 
         // //! Redimencionar la lista de palabras de todos los documentos al maximo posible
         TotalWords = IdxWords.Count;
         for(int doc = 0; doc < TotalFiles; doc ++) {
             int n = PosInDocs[doc].Count;
-            AuxiliarMethods.Resize(ref PosInDocs, doc, TotalWords - n);
+            AuxiliarMethods.Resize(PosInDocs, doc, TotalWords - n);
         }
 
         //!  Matriz peso de los documentos

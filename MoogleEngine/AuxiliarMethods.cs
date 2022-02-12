@@ -99,7 +99,7 @@ public static class AuxiliarMethods{
     }
 
 
-    public static void Resize(ref List< List<info> > aux, int idFile, int newLength) {
+    public static void Resize(List< List<info> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
     }

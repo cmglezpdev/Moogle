@@ -21,7 +21,7 @@ public static class FilesMethods {
     public static int GetTotalFiles() {
         return ReadFolder().Length;
     } 
-    public static void ReadContentFile(string file, int idFile, ref Dictionary<string, int> IdxWords, ref List<List<info>> PosInDocs ) {
+    public static void ReadContentFile(string file, int idFile, Dictionary<string, int> IdxWords, List<List<info>> PosInDocs ) {
         
         // Reservar las palabras que ya estan desde los ficheros pasados
         int n = PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
@@ -248,7 +248,7 @@ public static class FilesMethods {
     }
 
 
-    public static float GetScore(ref float[] iWDoc, ref float[] wQuery) {
+    public static float GetScore(float[] iWDoc, float[] wQuery) {
         // Si la query no continene operadores
         return info.Sim(ref iWDoc, ref wQuery);
     }
