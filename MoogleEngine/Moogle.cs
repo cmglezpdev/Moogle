@@ -128,6 +128,10 @@ public static class Moogle
 
             // En caso de que no este
             // !Antes de usar Levenshtein vemos si tiene sinonimos en la BD -----------------------------------------------------------------------------
+            
+
+
+
 
             string newW = "";
             int steps = 100000;

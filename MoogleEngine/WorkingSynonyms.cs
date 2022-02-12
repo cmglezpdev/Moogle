@@ -3,25 +3,30 @@ using System.Text.Json;
 
 public class WorkingSynonyms {
 
-    private class Synonyms {
-        private List<string[]> synonyms { get; set; }
-        public Synonyms(){}
-        public int Length {
-            get{return this.synonyms.Count;}
-        }
+    private class synonyms {
+        public List<string[]> sinonimos { get; set; }
     }
 
-    private Synonyms db;
 
-    public WorkingSynonyms( string pathdb ) {
+    private List<string[]> Synonyms;
+    public WorkingSynonyms( string pathdb ) { // Constructor
+        
+        // Leer el Json y guardarlo en un string
         string dbString = File.ReadAllText(pathdb);
-        this.db = JsonSerializer.Deserialize<Synonyms>(dbString);
+
+        // Convertir el string con el json a una structura de datos
+        synonyms db = JsonSerializer.Deserialize<synonyms>(dbString);
+        
+        // Guardar el contenido de los sinonimos
+        this.Synonyms = db.sinonimos;
+    }
+
+
+    public int LengthDB {
+        get{return this.Synonyms.Count;}
     }
 
 
 
-    public int GetLengthDB() {
-        return this.db.Length;
-    }
 
 }

@@ -4,13 +4,13 @@ static public class Data {
 
 
     #region Variables
-    public static List<List<info>> PosInDocs;         // Matrix con las repeticiones de las palabras en cada documento
-    public static Dictionary<string, int> IdxWords;     // Palabras con su indice en la lista
-    public static string[] files;
+    public static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
+    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();     // Palabras con su indice en la lista
+    public static string[] files = new string[0];
     public static int TotalFiles;
     public static int TotalWords;
-    public static float[,] wDocs;
-    public static WorkingSynonyms synonyms;
+    public static float[,] wDocs = new float[0, 0];
+    public static WorkingSynonyms Synonyms;
 
 
     #endregion
@@ -19,7 +19,7 @@ static public class Data {
 
 
 
-    public static void DatesProcessing() {
+    public static void DataProcessing() {
         files = FilesMethods.ReadFolder();
         TotalFiles = files.Length;
         
@@ -41,6 +41,10 @@ static public class Data {
 
         //!  Matriz peso de los documentos
         wDocs = GetWeigthOfDocs();
+
+        //! Cargar la base de datos de sinonimos
+        Synonyms = new WorkingSynonyms("../SynonymsDB/synonyms_db.json");
+
     }
     public static float[,] GetWeigthOfDocs() {
 
