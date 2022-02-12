@@ -1,4 +1,6 @@
 ﻿namespace MoogleEngine;
+using System.Text.Json;
+
 public static class Moogle
 {
 
@@ -18,12 +20,8 @@ public static class Moogle
     public static SearchResult Query(string query)
     {
 
-        // System.Console.WriteLine("Total de Plabras: {0}", TotalWords);
-
-
-        //! Calcular el suggestion por las palabras que no aparecen en el documento
-        // string suggestion = GetSuggestion(query);
-        // string suggestion = query;
+        // ! Calcular el suggestion por las palabras que no aparecen en el documento
+        string suggestion = GetSuggestion(query);
 
         //! Frecuencia de las palabras de la query
         Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( query );
@@ -40,7 +38,7 @@ public static class Moogle
 
         // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
         Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
-        // Realizar los cambios con correspondientes a cada operador
+        // Realizar los cambios correspondientes a cada operador
         ChangeForOperators(ref operators, ref MemoryChange, ref sim);
 
 
@@ -48,19 +46,20 @@ public static class Moogle
         Array.Sort(sim);
         Array.Reverse(sim);
 
-
         // !Construir el resultado
         SearchItem[] items = BuildResult(ref sim, ref FreqWordsQuery, ref wDocs);
 
         //! Devolver a los valores originales a los scores que ya fueron modificados 
         NormalizeData(ref MemoryChange);
 
-        //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
-        string suggestion = query;
-        if(suggestion == query) suggestion = ""; 
+        // //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
+        // if(suggestion == query) suggestion = ""; 
 
         return new SearchResult(items, suggestion);
     }
+
+
+
 
 
 
@@ -158,26 +157,36 @@ public static class Moogle
             float score = FilesMethods.GetScore(ref iWDoc, ref wQuery);
             sim[doc] = new Tuple<float, int>(score, doc);
         }
-
+        
         return sim;
     }
     private static string GetSuggestion(string query) {
         string suggestion = "";
 
         for(int i = 0; i < query.Length; i ++) {
-            // Si es un caracter que forme una palabra entoces la anadimos a la sugerencia
+            // Si es un caracter que no forme una palabra entoces la anadimos a la sugerencia
             if(AuxiliarMethods.Ignore(query[i])) {
                 suggestion += query[i];
                 continue;
             }
 
             string w = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWordStartIn(query, i));
-            if(IdxWords.ContainsKey(w)) {
+            string lemman = Lemmatization.Stemmer(w);
+
+            // Si la palabra no esta en el documento entonces no hay que modificarla
+            if(IdxWords.ContainsKey(lemman)) {
                 suggestion += w;
                 i += w.Length - 1;
                 continue;
             }
-        
+
+            // En caso de que no este
+            // !Antes de usar Levenshtein vemos si tiene sinonimos en la BD -----------------------------------------------------------------------------
+            // string[] synonyms = GetSynonyms(w);
+            // "../SynonymsDB/synonyms_db.json"
+
+
+
             string newW = "";
             int steps = 100000;
             foreach(KeyValuePair<string, int> wd in IdxWords) {
@@ -194,12 +203,15 @@ public static class Moogle
 
         return suggestion;
     }
+
+
+
+
     private static SearchItem[] BuildResult(ref Tuple<float, int>[] sim, ref Dictionary<string, int> FreqWordsQuery, ref float[,] wDocs) {
         List<SearchItem> items = new List<SearchItem>();
 
         for(int i = 0; i < TotalFiles; i ++) {
            // Si ninguna de las palabras estan en el documento     
-        //    System.Console.WriteLine(sim[i].Item1);
            if(sim[i].Item1 == 0.00f) continue;
 
             float score = 0.00f;
@@ -227,6 +239,8 @@ public static class Moogle
 
             Random r = new Random();
             int nl = 0, nw = 0;
+
+
             (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(files[doc]);
@@ -243,13 +257,19 @@ public static class Moogle
     }
     private static void ChangeForOperators(ref List< Tuple<string, string> > operators, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
 
-        // Guardar las distancias del calculo de las cercanias
-        List<double> distances = new List<double> ();
-        // Guardar el documento con su cercania
-        List< Tuple<double, int> > DocsAndDistances = new List< Tuple<double, int> > ();
-
-
         for(int doc = 0; doc < TotalFiles; doc ++){
+
+                          
+            // Guardar todas las posiciones de las palabras en un array para ordenarlos 
+            List< Tuple<int, int, string> > posiciones = new List< Tuple<int, int, string> > ();
+            // Diccionario para registrar las apariciones durante la busqueda
+            Dictionary< string, int > cnt = new Dictionary< string, int >();
+            // Guardar los intervalos en donde estan todas las palabras
+            List< Tuple<int, int> > Interv = new List< Tuple<int, int> > ();
+            // Marcador para saber si durante el procesamiento de este documento habia algun operador de cercania
+            // para poder agregar los cambios
+            bool workWithClossenes = false;
+
 
             foreach(Tuple<string, string> PairOperWords in operators) {
                 string opers = PairOperWords.Item1;
@@ -283,8 +303,6 @@ public static class Moogle
                             List<string> wordsForCloseness = new List<string>();
                             List< Tuple<string, string> > OpersAndWords = FilesMethods.GetOperators(word); 
                             string[] SubWords = AuxiliarMethods.GetWordsOfSentence(word);
-                            int idx = 0; // Indice para recorrer las palabras con operadores
-
 
                             //? Poner en las palabras para la cercania las que no tengan operador
                             for(int wi = 0; wi < SubWords.Length; wi ++) {
@@ -336,64 +354,121 @@ public static class Moogle
 
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
-                            // **** Calcular la cercania con un backtraking
-                            double minDistance = CalcMinCloseness(doc, 0, wordsForCloseness, -1, -1, 0);
+                            
+                            // *************************************************************************************
+                            workWithClossenes = true; // Hay que realizar los cambios
 
-                            distances.Add(minDistance);
-                            DocsAndDistances.Add( new Tuple<double, int> (minDistance, doc) );                
+                            foreach(string words in wordsForCloseness) {
+                                int n = PosInDocs[doc][ IdxWords[words] ].AmountAppareance;
+                                for(int i = 0; i < n; i ++) {
+                                    (int x, int y) = PosInDocs[doc][ IdxWords[words] ].nthAppareance(i);
+                                    posiciones.Add( new Tuple<int, int, string>( x, y, words ) );
+                                }
+                            }
+                            
+                            // Ordenar las posiciones por posiciones de menor a mayor
+                            posiciones.Sort();
 
+
+
+                            // foreach(var x in posiciones)
+                            //     System.Console.WriteLine(x.ToString());
+                            // System.Console.WriteLine();
+
+
+                            int cantWords = wordsForCloseness.Count;
+
+                            int l = 0, r = 0;
+                            while(true) {
+
+                                // Anadir apariciones hasta que esten todas las palabras
+                                while( cnt.Count < cantWords  ) {
+                                    // Si estamos en el final de todas las posiciones
+                                    if(r == posiciones.Count) break;
+                                    
+                                    // Aumentamos una aparicion
+                                    if( !cnt.ContainsKey( posiciones[r].Item3 ) )
+                                        cnt[ posiciones[r].Item3 ] = 0;
+                                    cnt[ posiciones[r++].Item3 ] ++;
+                                }
+                                r --;
+
+                                // Si no hay la cantidad de palabras esactas entonces es q r llego al final y no encontro otro conj
+                                if(cnt.Count != cantWords )
+                                    break;
+
+
+                                // Eliminar apariciones de la izquierda hasta tener las minimas indispensables
+                                while( l < r ) {
+                                    // Si ya no se pueden eliminar mas palabras
+                                    if( cnt[ posiciones[l].Item3 ] - 1 <= 0) {
+                                        break;
+                                    }
+                                    // Si puedo seguir eliminando borro la aparicion esa
+                                    cnt[ posiciones[l++].Item3 ] --;
+                                } 
+
+                                // Guardamos los intervalos en donde aparecen todas las palabras comparar el intervalo mas cercano
+                                Interv.Add( new Tuple<int, int> (l, r) );
+
+                                // Si r llego al final paramos la busqueda
+                                if(r == posiciones.Count - 1) break;
+                                // Eliminamos esa primera posicion del intervalo para que encuentre otro completo
+                                cnt.Remove( posiciones[l ++].Item3 );
+                                r ++;
+                            }
                         break;
 
                         default: break;
                     }
                 }
             }
-        }
 
-        if(distances.Count != 0) { 
+            // Si no hay que hacerle cambios al documento que implique la cercania
+            if( !workWithClossenes ) continue;
 
-            distances.Sort();
-            distances.Reverse();
 
-            DocsAndDistances.Sort();
+           // Limpiar cnt para reutilizarlo
+           cnt.Clear();
 
-            for(int i = 0; i < distances.Count; i ++) {
-                int doc = DocsAndDistances[i].Item2;
-                float prevscore = sim[doc].Item1;
+            int minDistance = int.MaxValue;
 
-                // Si el documento no tiene que aparecer
-                if( sim[doc].Item1 == 0.00f ) continue;
 
-                sim[doc] = new Tuple<float, int>(prevscore + (float)distances[i], doc);
+            // Recorrer los intervalos en busca del mas cercano
+            foreach( Tuple<int, int> i_interv in Interv ) {
+
+                int l = i_interv.Item1;
+                int r = i_interv.Item2;
+
+                int distance = 0;
+                int prevx =  posiciones[l].Item1, prevy = posiciones[l].Item2;
+
+                for(int i = l; i <= r; i ++) {
+                    if( cnt.ContainsKey(posiciones[i].Item3) )
+                        continue;
+                    cnt[ posiciones[i].Item3 ] = 1;
+                    
+                    distance += DistanceBetweenWords(prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
+                    prevx = posiciones[i].Item1;
+                    prevy = posiciones[i].Item2;
+                }
+                minDistance = Math.Min( minDistance, distance );
+                
             }
+            float score = sim[doc].Item1;
+            sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
+
         }
-
-
+        // *******************************************************************************************
 
     }
-    private static double DistanceBetweenWords(int x1, int y1, int x2, int y2) {
-        return Math.Sqrt( (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) );
-    }
-    private static double CalcMinCloseness( int doc, int idx, List<string> words, int prevx, int prevy, double distance ) {
-        // Si se procesaron todas las palabras
-        if(idx == words.Count) {
-            return distance;
-        }
-
-        info Appareances = PosInDocs[doc][ IdxWords[ words[idx] ] ];
-        int n = Appareances.AmountAppareance;
-
-        double minDistance = double.MaxValue;
-
-        for(int app = 0; app < n; app ++) {
-            int currx, curry;
-            (currx, curry) = Appareances.nthAppareance(app);
-            double currdist = (prevx == -1) ? 0 : DistanceBetweenWords( prevx, prevy, currx, curry );
-
-            minDistance =  Math.Min( minDistance, CalcMinCloseness(doc, idx + 1, words, currx, curry, distance + currdist) );
-        }    
-
-        return minDistance;        
+    private static int DistanceBetweenWords(int x1, int y1, int x2, int y2) {
+        int distance =  Math.Abs(x1 - x2);
+        // Si estan en la misma linea resto sus posiciones
+        if(x1 == x2) return distance + Math.Abs(y1 - y2);
+        
+        // Con x1 <= x2 && y1 <= y2
+        return x2 + Math.Max(0, 15 - x1); // 15 es un valor promedio de la cantidad de palabras por linea
     }
     static private void ProcessOperators(char op, string word, int doc, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
         switch( op ) {
