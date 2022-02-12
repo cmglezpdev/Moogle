@@ -23,7 +23,9 @@ class Test{
 
         // TestLemmantization();
 
-            TestSynonymsDB();
+            // TestSynonymsDB();
+
+            System.Console.WriteLine( Lemmatization.Stemmer("maldicion") );
 
         //? Print if all is OK
         Console.ForegroundColor = ConsoleColor.Green;

@@ -240,8 +240,7 @@ public static class Moogle
             Random r = new Random();
             int nl = 0, nw = 0;
 
-    //??? Arreglar esta cosa 
-            // if(PosOfWord.AmountAppareance == 0) continue;
+
             (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(files[doc]);
@@ -267,6 +266,9 @@ public static class Moogle
             Dictionary< string, int > cnt = new Dictionary< string, int >();
             // Guardar los intervalos en donde estan todas las palabras
             List< Tuple<int, int> > Interv = new List< Tuple<int, int> > ();
+            // Marcador para saber si durante el procesamiento de este documento habia algun operador de cercania
+            // para poder agregar los cambios
+            bool workWithClossenes = false;
 
 
             foreach(Tuple<string, string> PairOperWords in operators) {
@@ -353,7 +355,9 @@ public static class Moogle
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
                             
-// *************************************************************************************
+                            // *************************************************************************************
+                            workWithClossenes = true; // Hay que realizar los cambios
+
                             foreach(string words in wordsForCloseness) {
                                 int n = PosInDocs[doc][ IdxWords[words] ].AmountAppareance;
                                 for(int i = 0; i < n; i ++) {
@@ -362,12 +366,16 @@ public static class Moogle
                                 }
                             }
                             
-                            // foreach(var v in posiciones)
-                            //     System.Console.WriteLine(v.ToString());
-                            
                             // Ordenar las posiciones por posiciones de menor a mayor
                             posiciones.Sort();
-                            
+
+
+
+                            // foreach(var x in posiciones)
+                            //     System.Console.WriteLine(x.ToString());
+                            // System.Console.WriteLine();
+
+
                             int cantWords = wordsForCloseness.Count;
 
                             int l = 0, r = 0;
@@ -416,25 +424,15 @@ public static class Moogle
                 }
             }
 
-           
+            // Si no hay que hacerle cambios al documento que implique la cercania
+            if( !workWithClossenes ) continue;
+
+
            // Limpiar cnt para reutilizarlo
            cnt.Clear();
 
-            double minDistance = (double)int.MaxValue;
-            // System.Console.WriteLine(minDistance);
+            int minDistance = int.MaxValue;
 
-
-            // foreach( Tuple<int, int> i_interv in Interv ) {
-            //     string s = "";
-            //     for(int i = i_interv.Item1; i <= i_interv.Item2; i ++)
-            //         s += posiciones[i].Item3 + ' ';
-            //     System.Console.WriteLine(s);
-            // }
-
-            // System.Console.WriteLine();
-            // System.Console.WriteLine();
-            // System.Console.WriteLine();
-            // System.Console.WriteLine();
 
             // Recorrer los intervalos en busca del mas cercano
             foreach( Tuple<int, int> i_interv in Interv ) {
@@ -442,32 +440,35 @@ public static class Moogle
                 int l = i_interv.Item1;
                 int r = i_interv.Item2;
 
-                double distance = 0.00;
-                int prevx = -1, prevy = -1;
+                int distance = 0;
+                int prevx =  posiciones[l].Item1, prevy = posiciones[l].Item2;
 
                 for(int i = l; i <= r; i ++) {
                     if( cnt.ContainsKey(posiciones[i].Item3) )
                         continue;
                     cnt[ posiciones[i].Item3 ] = 1;
                     
-                    distance += ( prevx == -1 ) ? 0.00 : DistanceBetweenWords(prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
+                    distance += DistanceBetweenWords(prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
                     prevx = posiciones[i].Item1;
                     prevy = posiciones[i].Item2;
                 }
                 minDistance = Math.Min( minDistance, distance );
-
+                
             }
             float score = sim[doc].Item1;
-            minDistance = ( minDistance <= 0.000000001 ) ? 1.00 : minDistance;
-            System.Console.WriteLine(minDistance);
             sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
 
         }
-// *******************************************************************************************
+        // *******************************************************************************************
 
     }
-    private static double DistanceBetweenWords(int x1, int y1, int x2, int y2) {
-        return Math.Sqrt( (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) );
+    private static int DistanceBetweenWords(int x1, int y1, int x2, int y2) {
+        int distance =  Math.Abs(x1 - x2);
+        // Si estan en la misma linea resto sus posiciones
+        if(x1 == x2) return distance + Math.Abs(y1 - y2);
+        
+        // Con x1 <= x2 && y1 <= y2
+        return x2 + Math.Max(0, 15 - x1); // 15 es un valor promedio de la cantidad de palabras por linea
     }
     static private void ProcessOperators(char op, string word, int doc, ref Dictionary< Tuple<int, int>, float > MemoryChange, ref Tuple<float, int>[] sim) {
         switch( op ) {
