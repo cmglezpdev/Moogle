@@ -20,11 +20,8 @@ public static class AuxiliarMethods{
 
         return words.ToArray();
     }
-    public static bool IsOperator(char o) {
-        return (o == '!' || o == '^' || o == '~' || o == '*');
-    }
     public static bool Ignore(char x) {
-        return Char.IsPunctuation(x) || IsOperator(x) || Char.IsWhiteSpace(x);
+        return Char.IsPunctuation(x) || WorkingOperators.IsOperator(x) || Char.IsWhiteSpace(x);
     }
 
     // Comprobar que una linea del fichero es o no una linea en blanco
@@ -91,16 +88,6 @@ public static class AuxiliarMethods{
    public static void Resize(List< List<info> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
-    }
-    public static string GetOperators(string sentence, int pos) {
-        string operators = "";
-        int n = sentence.Length;
-
-        for(int i = pos; i < n && (IsOperator(sentence[i]) || Char.IsWhiteSpace(sentence[i])); i ++)
-            if(IsOperator(sentence[i]))
-                    operators += sentence[i];
-
-        return operators;
     }
     public static string GetWord(string sentence, int pos, string direction) {
         string word = "";
