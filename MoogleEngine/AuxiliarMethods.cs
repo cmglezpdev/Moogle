@@ -33,8 +33,7 @@ public static class AuxiliarMethods{
     }
     public static string NormalizeWord(string word) {
         string w = word.ToLower();
-        
-        // Falta quitar las tildes
+        char[] vowels = { 'a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú', 'ü' };
         string newWord = "";
         foreach(char caracter in w) {
             switch( caracter ) {
@@ -53,6 +52,10 @@ public static class AuxiliarMethods{
                 case 'ú':
                     newWord += 'u';
                     break;
+                case 'ü':
+                    newWord += 'u';
+                    break;
+                
                 
                 default: 
                     newWord += caracter;
