@@ -1,15 +1,17 @@
-1. Bug al poner operadores de lante de un caracter que es omitido por el metodo que devuelve la palabra correspondiente a esos caracteres
-2. Mientras sea posible, usar el hash en vez de string
 
 Caracteres a ignorar:
 ! ¿ ? ( ) { } [ ] " ' : ; . , / ` | \ - _
 
 
-5. Arreglar el suggestion para que imprima correctamente los caracteres
+1. Arreglar el suggestion para que imprima correctamente los caracteres
 
-6. Disminuir el score de las palabras que estaban mal escritas
-
-9. En la cercania
+2. En la cercania
     .: Los documentos con menos palabras del conjunto de las cercanas tiene que tener menos score que las que tienen mas palabras
 
-10. Cambiar el metodo para calcular la distancia minima en la cercania entre varias palabras xq es demasiado lento. Normalmente pra 4 palabras ya es super lento dependiendo de la frecuencia de las palabras
+3.  Cambiar el metodo para calcular la distancia minima en la cercania entre varias palabras xq es demasiado lento. Normalmente pra 4 palabras ya es super lento dependiendo de la frecuencia de las palabras
+
+
+4.  Arreglar el suggestion
+5.  MOdifcar el score de las palabras mal escritas y las buscadas del diccionario para que salgan con menos score
+6.  Eliminar las cosas raras que hice para llamar al NormalizeWord en los diferentes metodos
+7.  Anadir al SaveData una lista con la cantidad de palabras por linea para el calculo despues de la cercania

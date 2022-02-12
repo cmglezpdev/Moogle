@@ -4,8 +4,9 @@ namespace MoogleEngine;
 
 public static class Lemmatization {
 
-    public static string Stemmer(string word) {
-        
+    public static string Stemmer(string w) {
+        string word = w.ToLower();
+
         int r1, r2, rv;
         (r1, r2, rv) = Get_R1_R2_RV(word);
         int n = word.Length;
