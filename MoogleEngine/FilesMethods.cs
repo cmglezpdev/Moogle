@@ -186,6 +186,4 @@ public static class FilesMethods {
         return info.Sim(ref iWDoc, ref wQuery);
     }
 
-
-
 }
