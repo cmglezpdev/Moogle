@@ -61,9 +61,9 @@ public static class FilesMethods {
         archive.Close();
     } 
     public static string GetFileByID(int idFile) {
-        if(idFile < 0 || idFile >= Moogle.TotalFiles) 
+        if(idFile < 0 || idFile >= Data.TotalFiles) 
             throw new Exception("The File does't exists!");
-        return Moogle.files[idFile];
+        return Data.files[idFile];
     }
     public static int GetAmountWordsInSentence(string line) {
         return AuxiliarMethods.GetWordsOfSentence(line).Length;

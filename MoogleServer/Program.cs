@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 Stopwatch crono = new Stopwatch();
 crono.Start();
-Moogle.DatesProcessing();
+Data.DatesProcessing();
 System.Console.WriteLine(crono.ElapsedMilliseconds / 1000);
 
 var builder = WebApplication.CreateBuilder(args);
