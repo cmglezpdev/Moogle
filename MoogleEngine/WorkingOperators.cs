@@ -90,11 +90,6 @@ public static class WorkingOperators {
 
         for(int doc = 0; doc < Data.TotalFiles; doc ++){
 
-            // Marcador para saber si durante el procesamiento de este documento habia algun operador de cercania
-            // para poder agregar los cambios
-            bool workWithClossenes = false;
-
-
             foreach(Tuple<string, string> PairOperWords in operators) {
                 string opers = PairOperWords.Item1;
                 string word = PairOperWords.Item2;
@@ -179,11 +174,15 @@ public static class WorkingOperators {
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
                             
+                            string aux = "";
+                            foreach(string x in wordsForCloseness)
+                                aux += x + " ";
+
+                            ProcessOperator('~', aux, doc, MemoryChange, sim);
+
+                            
                             // *************************************************************************************
                             // * Llamar a la funcion para calcular los intervalos de la cercania       
-                            float minDistance = ProcessClossenes(wordsForCloseness, doc);
-                            float score = sim[doc].Item1;
-                            sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
 
 
                         break;
@@ -248,7 +247,10 @@ public static class WorkingOperators {
 
             //? Calcular la cercania 
             case '~':
-
+                string[] wordsForCloseness = AuxiliarMethods.GetWordsOfSentence(word);
+                float minDistance = ProcessClossenes(wordsForCloseness, doc);
+                float score = sim[doc].Item1;
+                sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
                 break;
 
             default: break;
@@ -259,8 +261,7 @@ public static class WorkingOperators {
 
 
 
-//!!!!!!!!!!!! HEREEEEEEEEEEEEEEEEEEEEEEEE!!!
-    public static float ProcessClossenes( List<string> wordsForCloseness, int doc ) {
+    public static float ProcessClossenes( string[] wordsForCloseness, int doc ) {
 
         Dictionary<string, int> cnt = new Dictionary<string, int>();
         List<Tuple<int, int>> Interv = new List<Tuple<int, int>>();
@@ -278,7 +279,7 @@ public static class WorkingOperators {
         // Ordenar las posiciones por posiciones de menor a mayor
         posiciones.Sort();
 
-        int cantWords = wordsForCloseness.Count;
+        int cantWords = wordsForCloseness.Length;
 
         int l = 0, r = 0;
         while(true) {
