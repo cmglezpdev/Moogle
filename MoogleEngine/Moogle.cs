@@ -109,7 +109,7 @@ public static class Moogle
                 continue;
             }
 
-            string w = AuxiliarMethods.GetWordStartIn(query, i).ToLower();
+            string w = AuxiliarMethods.GetWordStartIn(query, i);
             string lemman = Lemmatization.Stemmer(w);
 
             // Si la palabra no esta en el documento entonces no hay que modificarla

@@ -90,13 +90,6 @@ public static class WorkingOperators {
 
         for(int doc = 0; doc < Data.TotalFiles; doc ++){
 
-                          
-            // Guardar todas las posiciones de las palabras en un array para ordenarlos 
-            List< Tuple<int, int, string> > posiciones = new List< Tuple<int, int, string> > ();
-            // Diccionario para registrar las apariciones durante la busqueda
-            Dictionary< string, int > cnt = new Dictionary< string, int >();
-            // Guardar los intervalos en donde estan todas las palabras
-            List< Tuple<int, int> > Interv = new List< Tuple<int, int> > ();
             // Marcador para saber si durante el procesamiento de este documento habia algun operador de cercania
             // para poder agregar los cambios
             bool workWithClossenes = false;
@@ -187,60 +180,12 @@ public static class WorkingOperators {
                                 continue;
                             
                             // *************************************************************************************
-                            workWithClossenes = true; // Hay que realizar los cambios
-
-                            foreach(string words in wordsForCloseness) {
-                                int n = Data.PosInDocs[doc][ Data.IdxWords[words] ].AmountAppareance;
-                                for(int i = 0; i < n; i ++) {
-                                    (int x, int y) = Data.PosInDocs[doc][ Data.IdxWords[words] ].nthAppareance(i);
-                                    posiciones.Add( new Tuple<int, int, string>( x, y, words ) );
-                                }
-                            }
-                            
-                            // Ordenar las posiciones por posiciones de menor a mayor
-                            posiciones.Sort();
-
-                            int cantWords = wordsForCloseness.Count;
-
-                            int l = 0, r = 0;
-                            while(true) {
-
-                                // Anadir apariciones hasta que esten todas las palabras
-                                while( cnt.Count < cantWords  ) {
-                                    // Si estamos en el final de todas las posiciones
-                                    if(r == posiciones.Count) break;
-                                    
-                                    // Aumentamos una aparicion
-                                    if( !cnt.ContainsKey( posiciones[r].Item3 ) )
-                                        cnt[ posiciones[r].Item3 ] = 0;
-                                    cnt[ posiciones[r++].Item3 ] ++;
-                                }
-                                r --;
-
-                                // Si no hay la cantidad de palabras esactas entonces es q r llego al final y no encontro otro conj
-                                if(cnt.Count != cantWords )
-                                    break;
+                            // * Llamar a la funcion para calcular los intervalos de la cercania       
+                            float minDistance = ProcessClossenes(wordsForCloseness, doc);
+                            float score = sim[doc].Item1;
+                            sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
 
 
-                                // Eliminar apariciones de la izquierda hasta tener las minimas indispensables
-                                while( l < r ) {
-                                    // Si ya no se pueden eliminar mas palabras
-                                    if( cnt[ posiciones[l].Item3 ] - 1 <= 0) {
-                                        break;
-                                    }
-                                    // Si puedo seguir eliminando borro la aparicion esa
-                                    cnt[ posiciones[l++].Item3 ] --;
-                                } 
-
-                                // Guardamos los intervalos en donde aparecen todas las palabras comparar el intervalo mas cercano
-                                Interv.Add( new Tuple<int, int> (l, r) );
-
-                                // Si r llego al final paramos la busqueda
-                                if(r == posiciones.Count - 1) break;
-                                // Eliminamos esa primera posicion del intervalo para que encuentre otro completo
-                                cnt.Remove( posiciones[l ++].Item3 );
-                                r ++;
-                            }
                         break;
 
                         default: break;
@@ -248,43 +193,20 @@ public static class WorkingOperators {
                 }
             }
 
-            // Si no hay que hacerle cambios al documento que implique la cercania
-            if( !workWithClossenes ) continue;
+
+            // Guardar todas las posiciones de las palabras en un array para ordenarlos 
+            List< Tuple<int, int, string> > posiciones = new List< Tuple<int, int, string> > ();
+            // Diccionario para registrar las apariciones durante la busqueda
+            Dictionary< string, int > cnt = new Dictionary< string, int >();
+            // Guardar los intervalos en donde estan todas las palabras
+            List< Tuple<int, int> > Interv = new List< Tuple<int, int> > ();
 
 
-           // Limpiar cnt para reutilizarlo
-           cnt.Clear();
-
-            int minDistance = int.MaxValue;
 
 
-            // Recorrer los intervalos en busca del mas cercano
-            foreach( Tuple<int, int> i_interv in Interv ) {
-
-                int l = i_interv.Item1;
-                int r = i_interv.Item2;
-
-                int distance = 0;
-                int prevx =  posiciones[l].Item1, prevy = posiciones[l].Item2;
-
-                for(int i = l; i <= r; i ++) {
-                    if( cnt.ContainsKey(posiciones[i].Item3) )
-                        continue;
-                    cnt[ posiciones[i].Item3 ] = 1;
-                    
-                    distance += DistanceBetweenWords(prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
-                    prevx = posiciones[i].Item1;
-                    prevy = posiciones[i].Item2;
-                }
-                minDistance = Math.Min( minDistance, distance );
-                
-            }
-            float score = sim[doc].Item1;
-            sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
+            // *******************************************************************************************
 
         }
-        // *******************************************************************************************
-
     }
 
     //* Funcion Auxiliar paraCalcular la distancia entre dos palabras del documento
@@ -323,11 +245,109 @@ public static class WorkingOperators {
                     sim[doc] = new Tuple<float, int>( sim[doc].Item1 + sim[doc].Item1 * 1f/5f, sim[doc].Item2 ); // Actualizar el peso del documento
                 }
                 break;   
+
+            //? Calcular la cercania 
+            case '~':
+
+                break;
+
             default: break;
         }
     }
 
 
 
+
+
+//!!!!!!!!!!!! HEREEEEEEEEEEEEEEEEEEEEEEEE!!!
+    public static float ProcessClossenes( List<string> wordsForCloseness, int doc ) {
+
+        Dictionary<string, int> cnt = new Dictionary<string, int>();
+        List<Tuple<int, int>> Interv = new List<Tuple<int, int>>();
+         List<Tuple<int, int, string>> posiciones=  new List<Tuple<int, int, string>>();
+
+
+        foreach(string words in wordsForCloseness) {
+            int n = Data.PosInDocs[doc][ Data.IdxWords[words] ].AmountAppareance;
+            for(int i = 0; i < n; i ++) {
+                (int x, int y) = Data.PosInDocs[doc][ Data.IdxWords[words] ].nthAppareance(i);
+                posiciones.Add( new Tuple<int, int, string>( x, y, words ) );
+            }
+        }
+        
+        // Ordenar las posiciones por posiciones de menor a mayor
+        posiciones.Sort();
+
+        int cantWords = wordsForCloseness.Count;
+
+        int l = 0, r = 0;
+        while(true) {
+
+            // Anadir apariciones hasta que esten todas las palabras
+            while( cnt.Count < cantWords  ) {
+                // Si estamos en el final de todas las posiciones
+                if(r == posiciones.Count) break;
+                
+                // Aumentamos una aparicion
+                if( !cnt.ContainsKey( posiciones[r].Item3 ) )
+                    cnt[ posiciones[r].Item3 ] = 0;
+                cnt[ posiciones[r++].Item3 ] ++;
+            }
+            r --;
+
+            // Si no hay la cantidad de palabras esactas entonces es q r llego al final y no encontro otro conj
+            if(cnt.Count != cantWords )
+                break;
+
+
+            // Eliminar apariciones de la izquierda hasta tener las minimas indispensables
+            while( l < r ) {
+                // Si ya no se pueden eliminar mas palabras
+                if( cnt[ posiciones[l].Item3 ] - 1 <= 0) {
+                    break;
+                }
+                // Si puedo seguir eliminando borro la aparicion esa
+                cnt[ posiciones[l++].Item3 ] --;
+            } 
+
+            // Guardamos los intervalos en donde aparecen todas las palabras comparar el intervalo mas cercano
+            Interv.Add( new Tuple<int, int> (l, r) );
+
+            // Si r llego al final paramos la busqueda
+            if(r == posiciones.Count - 1) break;
+            // Eliminamos esa primera posicion del intervalo para que encuentre otro completo
+            cnt.Remove( posiciones[l ++].Item3 );
+            r ++;
+        }
+
+        // Limpiar cnt para reutilizarlo
+        cnt.Clear();
+
+        int minDistance = int.MaxValue;
+
+
+        // Recorrer los intervalos en busca del mas cercano
+        foreach( Tuple<int, int> i_interv in Interv ) {
+
+            int li = i_interv.Item1;
+            int ri = i_interv.Item2;
+
+            int distance = 0;
+            int prevx =  posiciones[li].Item1, prevy = posiciones[li].Item2;
+
+            for(int i = li; i <= ri; i ++) {
+                if( cnt.ContainsKey(posiciones[i].Item3) )
+                    continue;
+                cnt[ posiciones[i].Item3 ] = 1;
+                
+                distance += DistanceBetweenWords(prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
+                prevx = posiciones[i].Item1;
+                prevy = posiciones[i].Item2;
+            }
+            minDistance = Math.Min( minDistance, distance );
+            
+        }
+        return minDistance;
+    }
 
 }
