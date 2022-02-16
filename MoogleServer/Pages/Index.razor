@@ -9,7 +9,7 @@
 
 @if (!string.IsNullOrEmpty(result.Suggestion)) {
     <div class="suggestion">
-        <p>¿Quisite decir <strong><a href="#">@result.Suggestion</a></strong>?</p>
+        <p>¿Quisite decir <strong><a href="#" @onclick = "RunQuery" >@result.Suggestion</a></strong>?</p>
     </div>
 }
 
