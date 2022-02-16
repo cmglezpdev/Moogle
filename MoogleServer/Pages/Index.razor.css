@@ -1,14 +1,4 @@
 .results {
     text-align: left;
-    background-color: rgb(10, 10, 146);
 }
 
-.item .title {
-    font-size: large;
-    font-weight: bold;
-}
-
-.test{
-    text-decoration: line-through;
-    font-size: 50px;
-}
