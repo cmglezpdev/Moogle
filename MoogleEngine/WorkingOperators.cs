@@ -179,31 +179,12 @@ public static class WorkingOperators {
                                 aux += x + " ";
 
                             ProcessOperator('~', aux, doc, MemoryChange, sim);
-
-                            
-                            // *************************************************************************************
-                            // * Llamar a la funcion para calcular los intervalos de la cercania       
-
-
                         break;
 
                         default: break;
                     }
                 }
             }
-
-
-            // Guardar todas las posiciones de las palabras en un array para ordenarlos 
-            List< Tuple<int, int, string> > posiciones = new List< Tuple<int, int, string> > ();
-            // Diccionario para registrar las apariciones durante la busqueda
-            Dictionary< string, int > cnt = new Dictionary< string, int >();
-            // Guardar los intervalos en donde estan todas las palabras
-            List< Tuple<int, int> > Interv = new List< Tuple<int, int> > ();
-
-
-
-
-            // *******************************************************************************************
 
         }
     }
@@ -247,10 +228,11 @@ public static class WorkingOperators {
 
             //? Calcular la cercania 
             case '~':
-                string[] wordsForCloseness = AuxiliarMethods.GetWordsOfSentence(word);
-                float minDistance = ProcessClossenes(wordsForCloseness, doc);
+                string[] wordsForCloseness = AuxiliarMethods.GetWordsOfSentence(word);                
+                (float minDistance, Tuple<int, int>[] aux) = ProcessCloseness(wordsForCloseness, doc);
                 float score = sim[doc].Item1;
                 sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
+
                 break;
 
             default: break;
@@ -261,11 +243,15 @@ public static class WorkingOperators {
 
 
 
-    public static float ProcessClossenes( string[] wordsForCloseness, int doc ) {
+    public static (float, Tuple<int, int>[]) ProcessCloseness( string[] wordsForCloseness, int doc ) {
 
-        Dictionary<string, int> cnt = new Dictionary<string, int>();
-        List<Tuple<int, int>> Interv = new List<Tuple<int, int>>();
-         List<Tuple<int, int, string>> posiciones=  new List<Tuple<int, int, string>>();
+        // Guardar todas las posiciones de las palabras en un array para ordenarlos 
+        List< Tuple<int, int, string> > posiciones = new List< Tuple<int, int, string> > ();
+        // Diccionario para registrar las apariciones durante la busqueda
+        Dictionary< string, int > cnt = new Dictionary< string, int >();
+        // Guardar los intervalos en donde estan todas las palabras
+        List< Tuple<int, int> > Interv = new List< Tuple<int, int> > ();
+
 
 
         foreach(string words in wordsForCloseness) {
@@ -321,14 +307,15 @@ public static class WorkingOperators {
             r ++;
         }
 
-        // Limpiar cnt para reutilizarlo
-        cnt.Clear();
-
         int minDistance = int.MaxValue;
-
+        // Lista de posiciones mas cercanas para el snippet
+        List<Tuple<int, int>> positionsForSnippet = new List<Tuple<int, int>>();
 
         // Recorrer los intervalos en busca del mas cercano
         foreach( Tuple<int, int> i_interv in Interv ) {
+
+            // Limpiar cnt para reutilizarlo con cada intervalo
+           cnt.Clear();
 
             int li = i_interv.Item1;
             int ri = i_interv.Item2;
@@ -336,19 +323,34 @@ public static class WorkingOperators {
             int distance = 0;
             int prevx =  posiciones[li].Item1, prevy = posiciones[li].Item2;
 
+            List<Tuple<int, int>> aux = new List<Tuple<int, int>>();
+
+            // Ir por todas las apariciones de las palabras en el intervalo [li ... ri] y tomar una aparicion de cada palabra
             for(int i = li; i <= ri; i ++) {
                 if( cnt.ContainsKey(posiciones[i].Item3) )
                     continue;
                 cnt[ posiciones[i].Item3 ] = 1;
                 
+                aux.Add( new Tuple<int, int> ( posiciones[i].Item1, posiciones[i].Item2 ) );
+
                 distance += DistanceBetweenWords(prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
                 prevx = posiciones[i].Item1;
                 prevy = posiciones[i].Item2;
             }
-            minDistance = Math.Min( minDistance, distance );
+
+            if(distance < minDistance) {
+                minDistance = distance;
+                positionsForSnippet.Clear();
+
+                // Quedarme con las posiciones de las palabras que conforman la distancia mas corta
+                for(int i = 0; i < aux.Count; i ++)
+                    positionsForSnippet.Add(new Tuple<int, int>(aux[i].Item1, aux[i].Item2));
+            }
+
             
         }
-        return minDistance;
+
+        return (minDistance, positionsForSnippet.ToArray());
     }
 
 }
