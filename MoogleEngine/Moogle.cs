@@ -179,7 +179,7 @@ public static class Moogle
             (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(Data.files[doc]);
-            string snippet = FilesMethods.GetContext(doc, nl, nw, 10);
+            string snippet = FilesMethods.GetContext(doc, nl, nw, 50);
 
             items.Add(new SearchItem(title, snippet, score));
         }
