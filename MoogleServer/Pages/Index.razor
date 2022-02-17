@@ -20,7 +20,7 @@
     <li>
         <div class="item">
             <p class="title"><strong>@item.Title</strong></p>
-            <p>... @item.Snippet ...</p>
+            <p>... @((MarkupString)item.Snippet) ...</p>
         </div>
     </li>
 }
