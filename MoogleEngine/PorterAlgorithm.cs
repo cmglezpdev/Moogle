@@ -5,12 +5,12 @@ namespace MoogleEngine;
 public static class Lemmatization {
 
     public static string Stemmer(string w) {
-        string word = w.ToLower();
+        string word = AuxiliarMethods.NormalizeWord(w);
 
         int r1, r2, rv;
         (r1, r2, rv) = Get_R1_R2_RV(word);
         int n = word.Length;
-
+        
         string word1 = Step0(word, n - r1, n - r2, n - rv);
         if(word == word1) word1 = Step1(word, n - r1, n - r2, n - rv);
         if(word == word1) word1 = Step2a(word, n - r1, n - r2, n - rv);
@@ -20,14 +20,14 @@ public static class Lemmatization {
 
         word1 = Step3(word1, n - r1, n - r2, n - rv);
 
-        return AuxiliarMethods.NormalizeWord( word1 ); 
+        return word1; 
     }
 
 
     private static (int, int, int) Get_R1_R2_RV(string word) {
         int r1, r2, rv;
         int n = word.Length;
-        r1 = r2 = rv = n;
+        r1 = r2 = rv = 0;
 
             // Calcular R1: El substring que esta despues de la primera no-vocal precedida por una vocal
         for(int i  = 1; i < n; i ++) 
@@ -285,35 +285,35 @@ public static class Lemmatization {
 
 #region DataForPorterAlgoritm
     
-    private static char[] vowels = { 'a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú', 'ü' };
+    private static char[] vowels = { 'a', 'e', 'i', 'o', 'u'};
 
     private static string[] step0 = { "me", "se", "sela", "selo", "selas", "selos", "la", "le", "lo", "las", "les", "los", "nos" }; 
-    private static string[] stepAfter0 = { "iéndo", "ándo", "ár", "ér", "ír", "ando", "iendo", "ar", "er", "ir", "yendo" };
+    private static string[] stepAfter0 = { "ando", "iendo", "ar", "er", "ir", "yendo" };
    
     private static string[] step1_1 = { "anza", "anzas", "ico", "ica", "icos", "icas", "ismo", "ismos", "able", "ables", "ible", "ibles",
                                        "ista", "istas", "oso", "osa", "osos", "osas", "amiento", "amientos", "imiento", "imientos" };
-    private static string[] step1_2 = { "adora", "ador", "ación", "adoras", "adores", "aciones", "ante", "antes", "ancia", "ancias" };
-    private static string[] step1_3 = { "logía", "logías" };
-    private static string[] step1_4 = { "ución", "uciones" };
+    private static string[] step1_2 = { "adora", "ador", "ación", "acion", "adoras", "adores", "aciones", "ante", "antes", "ancia", "ancias" };
+    private static string[] step1_3 = { "logia", "logias" };
+    private static string[] step1_4 = { "ucion", "uciones" };
     private static string[] step1_5 = { "encia", "encias" };
     private static string[] step1_6 = { "amente" };
     private static string[] step1_7 = { "mente" };
     private static string[] step1_8 = { "idad", "idades" };
     private static string[] step1_9 = { "iva", "ivo", "ivas", "ivos" };
 
-    private static string[] step2a = { "ya", "ye", "yan", "yen", "yeron", "yendo", "yo", "yó", "yas", "yes", "yais", "yamos" };
-    private static string[] step2b1 = {"en", "es", "éis", "emos"};
-    private static string[] step2b2 = { "arían", "arías", "arán", "arás", "aríais", "aría", "aréis", "aríamos", "aremos", "ará", "aré",
-                                       "erían", "erías", "erán", "erás", "eríais", "ería", "eréis", "eríamos", "eremos", "erá", "eré",
-                                       "irían", "irías", "irán", "irás", "iríais", "iría", "iréis", "iríamos", "iremos", "irá", "iré",
-                                       "aba", "ada", "ida", "ía", "ara", "iera", "ad", "ed", "id", "ase", "iese", "aste", "iste", "an",
-                                       "aban", "ían", "aran", "ieran", "asen", "iesen", "aron", "ieron", "ado", "ido", "ando", "iendo",
-                                       "ió", "ar", "er", "ir", "as", "abas", "adas", "idas", "ías", "aras", "ieras", "ases", "ieses", "ís",
-                                       "áis", "abais", "íais", "arais", "ierais", "aseis", "ieseis", "asteis", "isteis", "ados", "idos", "amos",
-                                       "ábamos", "íamos", "imos", "áramos", "iéramos", "iésemos", "ásemos"};
+    private static string[] step2a = { "ya", "ye", "yan", "yen", "yeron", "yendo", "yo", "yas", "yes", "yais", "yamos" };
+    private static string[] step2b1 = {"en", "es", "eis", "emos"};
+    private static string[] step2b2 = { "arian", "arias", "aran", "aras", "ariais", "aria", "areis", "ariamos", "aremos", "ara", "are",
+                                       "erian", "erias", "eran", "eras", "eriais", "eria", "ereis", "eriamos", "eremos", "era", "ere",
+                                       "irian", "irias", "iran", "iras", "iriais", "iria", "ireis", "iriamos", "iremos", "ira", "ire",
+                                       "aba", "ada", "ida", "ia", "ara", "iera", "ad", "ed", "id", "ase", "iese", "aste", "iste", "an",
+                                       "aban", "ian", "aran", "ieran", "asen", "iesen", "aron", "ieron", "ado", "ido", "ando", "iendo",
+                                       "io", "ar", "er", "ir", "as", "abas", "adas", "idas", "ias", "aras", "ieras", "ases", "ieses", "is",
+                                       "ais", "abais", "iais", "arais", "ierais", "aseis", "ieseis", "asteis", "isteis", "ados", "idos", "amos",
+                                       "abamos", "iamos", "imos", "aramos", "ieramos", "iesemos", "asemos"};
 
-    private static string[] step3a = {"os", "a", "o", "á", "í", "ó"};
-    private static string[] step3b = {"e", "é"};
+    private static string[] step3a = {"os", "a", "o", "i"};
+    private static string[] step3b = {"e"};
 
 #endregion
 
