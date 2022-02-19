@@ -4,7 +4,7 @@ using System.Text.Json;
 public class WorkingSynonyms {
 
     private class synonyms {
-        public List<string[]> sinonimos { get; set; }
+        public List<string[]>? sinonimos { get; set; }
     }
 
 
@@ -15,10 +15,10 @@ public class WorkingSynonyms {
         string dbString = File.ReadAllText(pathdb);
 
         // Convertir el string con el json a una structura de datos
-        synonyms db = JsonSerializer.Deserialize<synonyms>(dbString);
+        synonyms db = JsonSerializer.Deserialize<synonyms>(dbString)!;
         
         // Guardar el contenido de los sinonimos
-        this.Synonyms = db.sinonimos;
+        this.Synonyms = db.sinonimos!;
     }
 
 

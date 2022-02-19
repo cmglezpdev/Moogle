@@ -84,10 +84,23 @@ public static class AuxiliarMethods{
         
         return sentence.Substring(start + 1, end - start);
     }
-   public static void Resize(List< List<info> > aux, int idFile, int newLength) {
+    public static void Resize(List< List<info> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
     }
+
+    public static int AmountAppareanceOfWordBetweenAllFiles(string word) {
+        if(!Data.IdxWords.ContainsKey(word)) 
+            return 0;
+            
+        int count = 0;
+        int idx = Data.IdxWords[ word ];
+        for(int doc = 0; doc < Data.TotalFiles; doc ++)
+            if(Data.PosInDocs[doc][ idx ].AmountAppareance != 0)
+                count ++;
+        return count;
+    }
+
     public static string GetWord(string sentence, int pos, string direction) {
         string word = "";
         int n = sentence.Length;
