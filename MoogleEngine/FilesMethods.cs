@@ -178,8 +178,8 @@ public static class FilesMethods {
         return context.ToString();
     }
     public static string GetContext(int idFile, int numLine, int numWord, int length) {
-        return GetLeftContext(idFile, numLine, numWord, length, true) + 
-               GetRightContext(idFile, numLine, numWord, length, false);
+        return GetLeftContext(idFile, numLine, numWord, length / 2, true) + 
+               GetRightContext(idFile, numLine, numWord, length / 2, false);
     }
     public static float GetScore(float[] iWDoc, float[] wQuery) {
         // Si la query no continene operadores

@@ -150,8 +150,9 @@ public static class Moogle
            if(sim[i].Item1 == 0.00f) continue;
 
             float score = 0.00f;
-            string word = "";
             int doc = sim[i].Item2;
+
+            List<string> wordsForCloseness = new List<string>();
 
             // Sacar la palabra con mayor score de la query
             foreach(KeyValuePair<string, int> wq in FreqWordsQuery) {
@@ -160,29 +161,50 @@ public static class Moogle
                 // Si la palabra no aparece en ese documento
                 if(Data.PosInDocs[doc][ Data.IdxWords[wq.Key] ].AmountAppareance == 0) continue;
 
-                // Sacar la palabra de mayor score
-                if(score < wDocs[doc, Data.IdxWords[ wq.Key ]] ) {
-                    word = wq.Key;
-                    score = wDocs[doc, Data.IdxWords[word]];
-                }
+                // Anadir la palabra para ver donde estan mas cercas
+                wordsForCloseness.Add(wq.Key);
             }
 
 
+            (_, Tuple<int, int>[] positions) = WorkingOperators.ProcessCloseness(wordsForCloseness.ToArray(), doc);
+            int LengthSnippet = 100;
+            Array.Sort(positions);
 
 
-            info PosOfWord = Data.PosInDocs[doc][ Data.IdxWords[word] ];
+            int solCount = 0;
+            Tuple<int, int> solPosition = new Tuple<int, int>(positions[0].Item1, positions[0].Item2);
 
-            Random r = new Random();
-            int nl = 0, nw = 0;
+    
+            // Ver cual es el subarray que contiene la mayor cantidad de palabras en un diametro equivalente al tamano del snippet
+            for(int iword = 0; iword < positions.Length; iword ++) {
+                
+                int count = 1;
+                // Count to left
+                int idx = iword - 1;
+                while(idx >= 0 && WorkingOperators.DistanceBetweenWords(positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
+                    idx --;
+                    count ++;
+                }
 
+                // Count to right
+                idx = iword + 1;
+                while(idx < positions.Length && WorkingOperators.DistanceBetweenWords(positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
+                    idx ++;
+                    count ++;
+                }
 
-            (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
+                // Quedarme con el snippet que contenga mas palabas
+                if(solCount < count) {
+                    solCount = count;
+                    solPosition = new Tuple<int, int>(positions[iword].Item1, positions[iword].Item2);
+                }
+
+            }
+
 
             string title = FilesMethods.GetNameFile(Data.files[doc]);
-            string prev_snippet = FilesMethods.GetContext(doc, nl, nw, 10);
+            string prev_snippet = FilesMethods.GetContext(doc, solPosition.Item1, solPosition.Item2, LengthSnippet);
 
-            //* Modificar aqui todas las palabras que aparecen en la query con negrita 
-            //* Renderizar en snippet en html para la negrita
             string snippet = "";
             for(int c = 0; c < prev_snippet.Length; c ++) {
                 if( AuxiliarMethods.Ignore( prev_snippet[c] ) ) {
@@ -198,6 +220,8 @@ public static class Moogle
                 c += ( aux.Length - 1 );
             } 
 
+
+        
 
             items.Add(new SearchItem(title, snippet, score));
         }
