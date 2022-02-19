@@ -33,10 +33,14 @@ public static class FilesMethods {
         string[] lines = archive.Split('\n');
 
         int TotalLines = lines.Length;
-
-        for(int line = 0; line < TotalLines; line ++) {
         
+        // recorrer todas las lineas del documento
+        for(int line = 0; line < TotalLines; line ++) {
+
+            if(AuxiliarMethods.IsLineWhite(lines[line])) continue;
+
             string[] words = AuxiliarMethods.GetWordsOfSentence(lines[line]);
+            // Recorrer todas las palabras de la linea actual
             for(int i = 0; i < words.Length; i ++) {
                 string word = Lemmatization.Stemmer( words[i] );
 
