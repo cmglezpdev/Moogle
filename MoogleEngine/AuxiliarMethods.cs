@@ -7,15 +7,20 @@ public static class AuxiliarMethods{
     // Extraer todas las palabras de una oracion
     public static string[] GetWordsOfSentence(string sentence) {
 
-        List<string> words = new List<string>();
+        string[] aux = sentence.Split(' ');
+        int n = aux.Length;
+        List<string> words = new List<string> ();   
 
-        int n = sentence.Length;
         for(int i = 0; i < n; i ++) {
-            if(Ignore(sentence[i])) continue;
-            int endWord = i;
-            while(++ endWord < n && !Ignore(sentence[endWord]));
-            words.Add( NormalizeWord(sentence.Substring(i, endWord - i)));
-            i = endWord - 1;
+
+            if(aux[i] == "") continue;
+
+            int l = 0, r = aux[i].Length - 1;
+            
+            while( Ignore(aux[i][l]) ) l++;
+            while( Ignore(aux[i][r]) ) r--;
+        
+            words.Add(aux[i].Substring(l, l + r + 1));
         }
 
         return words.ToArray();
