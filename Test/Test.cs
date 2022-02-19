@@ -29,12 +29,10 @@ class Test{
         // System.Console.WriteLine(Lemmatization.Stemmer("a"));
         // System.Console.WriteLine(Lemmatization.Stemmer("todos"));
 
-        string w = "Todos los chicos de mi cq, pintan con Hol@  cuba";
-        string[] x = AuxiliarMethods.GetWordsOfSentence(w);
+        string w = "La casa, la vida, y la ! ^ comida! ESTA aqui.";
 
-        foreach(string a in x)
-            System.Console.WriteLine(a);
-
+        string x = AuxiliarMethods.FormatQuery(w);
+        System.Console.WriteLine(x);
 
 
         //? Print if all is OK

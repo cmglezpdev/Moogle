@@ -1,4 +1,4 @@
-// using System.Text;
+using System.Text;
 namespace MoogleEngine;
 
 public static class AuxiliarMethods{
@@ -30,10 +30,42 @@ public static class AuxiliarMethods{
     
       public static string FormatQuery(string query) {
         string[] partsOfQuery = query.Split(' ');   
+        int n = partsOfQuery.Length;
 
+        StringBuilder format = new StringBuilder(partsOfQuery[0]);
+        for(int i = 1; i < n; i ++) {
+            int len = partsOfQuery[i - 1].Length;
 
+            if( (Char.IsLetterOrDigit(partsOfQuery[i - 1][len - 1]) && Char.IsLetterOrDigit(partsOfQuery[i][0])) ||
+              (Char.IsLetterOrDigit(partsOfQuery[i - 1][len - 1]) && WorkingOperators.IsOperator(partsOfQuery[i][0])) ||
+              (WorkingOperators.IsOperator(partsOfQuery[i - 1][len - 1]) && Char.IsLetterOrDigit(partsOfQuery[i][0])) ) {
+                format.Append(" " + partsOfQuery[i]);
+                continue;
+            }
 
-        return query;
+            format.Append(partsOfQuery[i]);
+        }
+
+        for(int i = 1; i < format.Length; i ++) {
+            // Si es un signo de puntuacion lo elimino e inserto un espacio en blanco
+            if(Char.IsPunctuation(format[i]) && !WorkingOperators.IsOperator(format[i])) {
+                format.Remove(i, 1);
+                format.Insert(i, ' ');
+            }
+
+            if(Char.IsLetterOrDigit(format[i - 1]) && WorkingOperators.IsOperator(format[i])) {
+                format.Insert(i, ' ');
+            }
+
+            // Eliminar si hay dos espacios en blanco adyacentes
+            if(Char.IsWhiteSpace(format[i]) && Char.IsWhiteSpace(format[i - 1])) {
+                format.Remove(i, 1);
+                i --;
+                continue;
+            }
+        }
+
+        return format.ToString();
     }
     
     public static bool IsWord(string l) {
