@@ -211,6 +211,7 @@ public static class WorkingOperators {
 
         return distance;
     }
+    
     //* Funcion Auxiliar para actualizar el score de los documentos para un operador
     public static void ProcessOperator(char op, string word, int doc, Dictionary< Tuple<int, int>, float > MemoryChange, Tuple<float, int>[] sim) {
         switch( op ) {
