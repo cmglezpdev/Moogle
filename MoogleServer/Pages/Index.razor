@@ -21,6 +21,9 @@
         <div class="item">
             <p class="title"><strong>@item.Title</strong></p>
             <p>... @((MarkupString)item.Snippet) ...</p>
+            @if( !string.IsNullOrEmpty(item.MissingWords) ){
+                <p><strong>No aparece:</strong> @((MarkupString)item.MissingWords)</p>
+            }
         </div>
     </li>
 }
@@ -70,6 +73,11 @@
 .input-search:focus{
     outline: 3px solid rgb(73, 171, 236);
     border: 2px solid #fff;
+}
+
+.item :nth-child(3) {
+    text-align: left;
+    padding-left: 20px;
 }
 
 

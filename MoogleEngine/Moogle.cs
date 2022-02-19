@@ -1,5 +1,6 @@
 ﻿namespace MoogleEngine;
 using System.Text.Json;
+using System.Text;
 
 public static class Moogle
 {
@@ -22,7 +23,6 @@ public static class Moogle
         // !Modificar el peso de los documentos en base a cada operador del query
         List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
 
-
         // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
         Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
         // Realizar los cambios correspondientes a cada operador
@@ -33,8 +33,8 @@ public static class Moogle
         Array.Sort(sim);
         Array.Reverse(sim);
 
-        // !Construir el resultado
-        SearchItem[] items = BuildResult( sim, FreqWordsQuery, Data.wDocs);
+        //! Construir el resultado
+        SearchItem[] items = BuildResult( sim, FreqWordsQuery, Data.wDocs, query);
 
         //! Devolver a los valores originales a los scores que ya fueron modificados 
         NormalizeData(MemoryChange);
@@ -142,8 +142,9 @@ public static class Moogle
 
         return suggestion;
     }
-    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs) {
+    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs, string query) {
         List<SearchItem> items = new List<SearchItem>();
+        string[] wordsOfQuery = AuxiliarMethods.GetWordsOfSentence(query);
 
         for(int i = 0; i < Data.TotalFiles; i ++) {
            // Si ninguna de las palabras estan en el documento     
@@ -220,10 +221,25 @@ public static class Moogle
                 c += ( aux.Length - 1 );
             } 
 
+            // Comprobar cuales son las palabras de la query que faltan en el documento
+            StringBuilder missingWords = new StringBuilder();
+            foreach(string w in wordsOfQuery) {
+                if(!Data.IdxWords.ContainsKey( Lemmatization.Stemmer( w ) )) {
+                    missingWords.Append(w + ", ");
+                    continue;
+                }
+                if(Data.wDocs[ doc, Data.IdxWords[ Lemmatization.Stemmer( w ) ] ] == 0.00f)
+                    missingWords.Append(w + ", ");
+            }
 
-        
+            if(missingWords.Length != 0) {
+                missingWords.Remove( missingWords.Length - 2, 2 );
+                missingWords.Insert(0, "<del><i>");
+                missingWords.Append("</i></del>");
+            }
 
-            items.Add(new SearchItem(title, snippet, score));
+
+            items.Add(new SearchItem(title, snippet, score, missingWords.ToString()) );
         }
 
         return items.ToArray();
