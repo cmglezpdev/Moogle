@@ -7,6 +7,10 @@ public static class Moogle
     public static SearchResult Query(string query)
     {
 
+        foreach(var h in Data.IdxWords)
+            System.Console.WriteLine(h.Key);
+
+
         // ! Calcular el suggestion por las palabras que no aparecen en el documento
         string suggestion = GetSuggestion(query);
 

@@ -28,37 +28,31 @@ public static class FilesMethods {
         for(int i = 0; i < n; i ++) 
             PosInDocs[idFile].Add(new info());
 
-        StreamReader archive = new StreamReader(file);
+
+        string archive = File.ReadAllText(file);
+        string[] lines = archive.Split('\n');
+
+        int TotalLines = lines.Length;
+
+        for(int line = 0; line < TotalLines; line ++) {
         
-        int numLine = 0;
-        for(string line = archive.ReadLine()!; line != null; line = archive.ReadLine()!, numLine ++){
-           
-            if(AuxiliarMethods.IsLineWhite(line)) continue;
-            
-            string[] words = AuxiliarMethods.GetWordsOfSentence(line);
-
+            string[] words = AuxiliarMethods.GetWordsOfSentence(lines[line]);
             for(int i = 0; i < words.Length; i ++) {
-                string word =  words[i].ToLower();
-                       word = Lemmatization.Stemmer(word);
-                       word = AuxiliarMethods.NormalizeWord(word);
+                string word = Lemmatization.Stemmer( words[i] );
 
-                // Si la palabra ya existe de los ficheros anteriores 
                 if(IdxWords.ContainsKey(word)) {
-                    // Anadimos una nueva aparicion de la palabra en IdFile y en
-                    // la posicion reservada que tiene esa palabra en idFile
-                    PosInDocs[idFile][ IdxWords[word] ].AddAppearance(numLine, i);
+                    PosInDocs[ idFile ][ IdxWords[word] ].AddAppearance(line, i);
                     continue;
                 }
-                // Sino creamos una nueva posicion con esa palabra en idfFile
+            
                 int newPos = PosInDocs[idFile].Count;
                 PosInDocs[idFile].Add(new info());
-                PosInDocs[idFile][ newPos ].AddAppearance(numLine, i);
+                PosInDocs[idFile][ newPos ].AddAppearance(line, i);
                 // El nuevo indice es la ultima posicion vacia de la lista de palabras
                 IdxWords[word] = newPos;
             }
         }
 
-        archive.Close();
     } 
     public static string GetFileByID(int idFile) {
         if(idFile < 0 || idFile >= Data.TotalFiles) 
