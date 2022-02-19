@@ -1,3 +1,4 @@
+using System.Text;
 namespace MoogleEngine;
 
 public static class WorkingOperators {
@@ -21,11 +22,8 @@ public static class WorkingOperators {
 
     //* Devolver lista de pares en forma de <operadores, palabra>
     public static List< Tuple<string, string> > GetOperators(string query) {
-        List<Tuple<string, string>> o = new List<Tuple<string, string>>();
+        List<Tuple<string, string>> o = new List<Tuple<string, string>> ();        StringBuilder auxQ = new StringBuilder();
         int n = query.Length;
-
-        // Guardar las palabras que tienen el operador de cercania para despues juntarlos todos en una sola tupla
-        List<string> aux = new List<string>(); 
 
         for(int i = 0; i < query.Length; i ++) {
             if(!IsOperator(query[i])) continue;
