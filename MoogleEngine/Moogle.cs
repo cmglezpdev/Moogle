@@ -7,6 +7,8 @@ public static class Moogle
 
     public static SearchResult Query(string query)
     {
+        //! Formatear la query 
+        string formatQuery = AuxiliarMethods.FormatQuery(query);
 
         // ! Calcular el suggestion por las palabras que no aparecen en el documento
         string suggestion = GetSuggestion(query);

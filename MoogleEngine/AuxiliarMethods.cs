@@ -27,6 +27,32 @@ public static class AuxiliarMethods{
 
         return words.ToArray();
     }
+    
+      public static string FormatQuery(string query) {
+        string[] partsOfQuery = query.Split(' ');   
+
+
+
+        return query;
+    }
+    
+    public static bool IsWord(string l) {
+        foreach(char c in l) {
+            if(!Char.IsLetterOrDigit(c))
+                return false;
+        }
+        return true;
+    }
+
+    public static bool IsLineOperators(string l) {
+        foreach(char c in l) {
+            if(!WorkingOperators.IsOperator(c))
+                return false;
+        }
+        return true;
+    }
+
+
     public static bool Ignore(char x) {
         // return Char.IsPunctuation(x) || WorkingOperators.IsOperator(x) || Char.IsWhiteSpace(x);
         return !Char.IsLetterOrDigit(x);
