@@ -181,14 +181,14 @@ public static class Moogle
                 int count = 1;
                 // Count to left
                 int idx = iword - 1;
-                while(idx >= 0 && WorkingOperators.DistanceBetweenWords(positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
+                while(idx >= 0 && WorkingOperators.DistanceBetweenWords(doc, positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
                     idx --;
                     count ++;
                 }
 
                 // Count to right
                 idx = iword + 1;
-                while(idx < positions.Length && WorkingOperators.DistanceBetweenWords(positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
+                while(idx < positions.Length && WorkingOperators.DistanceBetweenWords(doc, positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
                     idx ++;
                     count ++;
                 }
