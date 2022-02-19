@@ -1,9 +1,11 @@
 ﻿@page "/"
 
+<link rel = "stylesheet" href = "./Index.razor.css">
+
 <PageTitle>Moogle!</PageTitle>
 <h1>🔍 Moogle!</h1>
 
-<input class="p-1 my-4" @bind="query" @bind:event="oninput" @onkeydown="PushEnter" placeholder="Introduzca su búsqueda">
+<input class="p-1 my-4 input-search" @bind="query" @bind:event="oninput" @onkeydown="PushEnter" placeholder="Introduzca su búsqueda">
 
 <button type="default" class="btn btn-primary" @onclick="RunQuery">🔍 Buscar</button>
 
@@ -18,7 +20,7 @@
     <li>
         <div class="item">
             <p class="title"><strong>@item.Title</strong></p>
-            <p>... @item.Snippet ...</p>
+            <p>... @((MarkupString)item.Snippet) ...</p>
         </div>
     </li>
 }
@@ -37,3 +39,36 @@
             RunQuery();
     }
 }
+
+@* Styles CSS *@
+<style>
+
+.results li{
+    list-style: none;
+}
+
+.item {
+    background-color: rgb(202, 223, 242);
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: 20px 10px;
+    margin: 10px;
+}
+
+.item .title {
+    font-size: 20px;
+    color: rgb(45, 45, 247);
+}
+
+.item .title:hover {
+    color: rgb(10, 10, 146);
+    cursor: pointer;
+}
+
+.input-search:focus{
+    outline: 3px solid rgb(73, 171, 236);
+    border: 2px solid #fff;
+}
+
+
+</style>

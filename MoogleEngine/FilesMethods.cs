@@ -31,7 +31,7 @@ public static class FilesMethods {
         StreamReader archive = new StreamReader(file);
         
         int numLine = 0;
-        for(string line = archive.ReadLine(); line != null; line = archive.ReadLine(), numLine ++){
+        for(string line = archive.ReadLine()!; line != null; line = archive.ReadLine()!, numLine ++){
            
             if(AuxiliarMethods.IsLineWhite(line)) continue;
             
@@ -76,7 +76,7 @@ public static class FilesMethods {
 
         // Tomar las lineas por encima de el
         List<string> AuxLines = new List<string>();
-        for(int i = 0; i <= numLine; i ++) AuxLines.Add(reader.ReadLine());
+        for(int i = 0; i <= numLine; i ++) AuxLines.Add(reader.ReadLine()!);
         int n = AuxLines.Count;
 
         // Buscar la posicion en donde empieza la palabra
@@ -127,7 +127,7 @@ public static class FilesMethods {
         // Tomar las lineas necesarias que esten por debajo de el
         List<string> AuxLines = new List<string>();
         for(int i = 0, k = 1; k < length; i ++) {
-            string line = reader.ReadLine();
+            string line = reader.ReadLine()!;
           
             if(line == null) break; // Si llego a la ultima linea
             if(i < numLine) continue; // Sui no ha llegado a la linea donde esta la palabra

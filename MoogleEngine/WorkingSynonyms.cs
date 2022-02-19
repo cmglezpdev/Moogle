@@ -6,7 +6,9 @@ public class WorkingSynonyms {
     private class Synonyms {
         private List<string[]> synonyms { get; set; }
 
-        public Synonyms(){}
+        public Synonyms(){
+            this.synonyms = new List<string[]>();
+        }
 
         public int Length {
             get{return this.synonyms.Count;}
@@ -18,7 +20,7 @@ public class WorkingSynonyms {
 
     public WorkingSynonyms( string pathdb ) {
         string dbString = File.ReadAllText(pathdb);
-       this.db = JsonSerializer.Deserialize<Synonyms>(dbString);
+       this.db = JsonSerializer.Deserialize<Synonyms>(dbString)!;
     }
 
     public int GetLengthDB() {

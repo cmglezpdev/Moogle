@@ -179,7 +179,25 @@ public static class Moogle
             (nl, nw) = PosOfWord.nthAppareance( r.Next() % PosOfWord.AmountAppareance );
 
             string title = FilesMethods.GetNameFile(Data.files[doc]);
-            string snippet = FilesMethods.GetContext(doc, nl, nw, 10);
+            string prev_snippet = FilesMethods.GetContext(doc, nl, nw, 10);
+
+            //* Modificar aqui todas las palabras que aparecen en la query con negrita 
+            //* Renderizar en snippet en html para la negrita
+            string snippet = "";
+            for(int c = 0; c < prev_snippet.Length; c ++) {
+                if( AuxiliarMethods.Ignore( prev_snippet[c] ) ) {
+                    snippet += prev_snippet[c];
+                    continue;
+                } 
+                string aux = AuxiliarMethods.GetWordStartIn(prev_snippet, c);
+                if( FreqWordsQuery.ContainsKey( Lemmatization.Stemmer(aux) ) ) {
+                    snippet += ( "<strong>" + aux + "</strong>" );
+                } else {
+                    snippet += aux;
+                }
+                c += ( aux.Length - 1 );
+            } 
+
 
             items.Add(new SearchItem(title, snippet, score));
         }
