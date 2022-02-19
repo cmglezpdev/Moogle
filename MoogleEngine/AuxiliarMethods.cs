@@ -57,13 +57,27 @@ public static class AuxiliarMethods{
                 format.Insert(i, ' ');
             }
 
+        }
+
+        // Remplazar los operadores por su equivalente ya validado
+        partsOfQuery = format.ToString().Split(' ');
+        n = partsOfQuery.Length;
+
+        for(int i = 0; i < n; i ++) {
+            string part = partsOfQuery[i];
+            if(!IsLineOperators(part)) continue;
+            format.Replace(part, ValidOperators(part));
+        }
+
+
+        for(int i = 1; i < format.Length; i ++) {
             // Eliminar si hay dos espacios en blanco adyacentes
             if(Char.IsWhiteSpace(format[i]) && Char.IsWhiteSpace(format[i - 1])) {
                 format.Remove(i, 1);
                 i --;
-                continue;
             }
         }
+
 
         return format.ToString();
     }
@@ -77,6 +91,8 @@ public static class AuxiliarMethods{
     }
 
     public static bool IsLineOperators(string l) {
+        if(l == "") return false;
+        
         foreach(char c in l) {
             if(!WorkingOperators.IsOperator(c))
                 return false;
@@ -182,6 +198,8 @@ public static class AuxiliarMethods{
     }
     // Devuelve vacio si no es valida, y en otro caso simplifica la expresion
     public static string ValidOperators(string op) {
+        if(op == "") return "";
+
         // Si son operadores simples
         if(op == "!") return op;
         if(op == "^") return op;
