@@ -234,8 +234,8 @@ public static class Moogle
 
             if(missingWords.Length != 0) {
                 missingWords.Remove( missingWords.Length - 2, 2 );
-                missingWords.Insert(0, "<del>");
-                missingWords.Append("</del>");
+                missingWords.Insert(0, "<del><i>");
+                missingWords.Append("</i></del>");
             }
 
 
