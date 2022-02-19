@@ -17,10 +17,12 @@ public static class AuxiliarMethods{
 
             int l = 0, r = aux[i].Length - 1;
             
-            while( Ignore(aux[i][l]) ) l++;
-            while( Ignore(aux[i][r]) ) r--;
-        
-            words.Add(aux[i].Substring(l, l + r + 1));
+            while( l < aux[i].Length && Ignore(aux[i][l]) ) l++;
+            while( r >= 0 && Ignore(aux[i][r]) ) r--;
+
+            if(l == aux[i].Length || r < 0) continue;
+
+            words.Add(aux[i].Substring(l, r - l + 1));
         }
 
         return words.ToArray();
