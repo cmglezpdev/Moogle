@@ -25,9 +25,8 @@ public static class FilesMethods {
         
         // Reservar las palabras que ya estan desde los ficheros pasados
         int n = PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
-        for(int i = 0; i < n; i ++) 
-            PosInDocs[idFile].Add(new info());
-
+        for(int i = 0; i < n; i ++)
+            Data.PosInDocs[idFile].Add(new info());
 
         string archive = File.ReadAllText(file);
         string[] lines = archive.Split('\n');
@@ -36,10 +35,11 @@ public static class FilesMethods {
         
         // recorrer todas las lineas del documento
         for(int line = 0; line < TotalLines; line ++) {
-
             if(AuxiliarMethods.IsLineWhite(lines[line])) continue;
 
             string[] words = AuxiliarMethods.GetWordsOfSentence(lines[line]);
+            Data.CntWordsForLines[idFile].Add( words.Length );
+
             // Recorrer todas las palabras de la linea actual
             for(int i = 0; i < words.Length; i ++) {
                 string word = Lemmatization.Stemmer( words[i] );
