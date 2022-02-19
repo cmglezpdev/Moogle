@@ -25,40 +25,38 @@ public static class FilesMethods {
         
         // Reservar las palabras que ya estan desde los ficheros pasados
         int n = PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
-        for(int i = 0; i < n; i ++) 
-            PosInDocs[idFile].Add(new info());
+        for(int i = 0; i < n; i ++)
+            Data.PosInDocs[idFile].Add(new info());
 
-        StreamReader archive = new StreamReader(file);
+        string archive = File.ReadAllText(file);
+        string[] lines = archive.Split('\n');
+
+        int TotalLines = lines.Length;
         
-        int numLine = 0;
-        for(string line = archive.ReadLine()!; line != null; line = archive.ReadLine()!, numLine ++){
-           
-            if(AuxiliarMethods.IsLineWhite(line)) continue;
-            
-            string[] words = AuxiliarMethods.GetWordsOfSentence(line);
+        // recorrer todas las lineas del documento
+        for(int line = 0; line < TotalLines; line ++) {
+            if(AuxiliarMethods.IsLineWhite(lines[line])) continue;
 
+            string[] words = AuxiliarMethods.GetWordsOfSentence(lines[line]);
+            Data.CntWordsForLines[idFile].Add( words.Length );
+
+            // Recorrer todas las palabras de la linea actual
             for(int i = 0; i < words.Length; i ++) {
-                string word =  words[i].ToLower();
-                       word = Lemmatization.Stemmer(word);
-                       word = AuxiliarMethods.NormalizeWord(word);
+                string word = Lemmatization.Stemmer( words[i] );
 
-                // Si la palabra ya existe de los ficheros anteriores 
                 if(IdxWords.ContainsKey(word)) {
-                    // Anadimos una nueva aparicion de la palabra en IdFile y en
-                    // la posicion reservada que tiene esa palabra en idFile
-                    PosInDocs[idFile][ IdxWords[word] ].AddAppearance(numLine, i);
+                    PosInDocs[ idFile ][ IdxWords[word] ].AddAppearance(line, i);
                     continue;
                 }
-                // Sino creamos una nueva posicion con esa palabra en idfFile
+            
                 int newPos = PosInDocs[idFile].Count;
                 PosInDocs[idFile].Add(new info());
-                PosInDocs[idFile][ newPos ].AddAppearance(numLine, i);
+                PosInDocs[idFile][ newPos ].AddAppearance(line, i);
                 // El nuevo indice es la ultima posicion vacia de la lista de palabras
                 IdxWords[word] = newPos;
             }
         }
 
-        archive.Close();
     } 
     public static string GetFileByID(int idFile) {
         if(idFile < 0 || idFile >= Data.TotalFiles) 

@@ -10,7 +10,7 @@ static public class Data {
     public static int TotalFiles = 0;
     public static int TotalWords = 0;
     public static float[,] wDocs = new float[0,0];
-
+    public static List< List<int> > CntWordsForLines = new List<List<int>> ();
     #endregion
 
 
@@ -22,8 +22,10 @@ static public class Data {
         TotalFiles = files.Length;
         
         //! Redimencionar la matrix de las apariciones en la cantidad de documentos que son
-        for(int doc = 0; doc < TotalFiles; doc ++)
+        for(int doc = 0; doc < TotalFiles; doc ++) {
             PosInDocs.Add(new List<info> ());
+            CntWordsForLines.Add( new List<int>() );
+        }
 
 
         //! Guardar todas las palabras de todos los documentos en la matrix

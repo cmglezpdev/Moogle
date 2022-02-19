@@ -25,9 +25,16 @@ class Test{
 
             // TestSynonymsDB();
 
-        System.Console.WriteLine(Lemmatization.Stemmer("Hola"));
-        System.Console.WriteLine(Lemmatization.Stemmer("a"));
-        System.Console.WriteLine(Lemmatization.Stemmer("todos"));
+        // System.Console.WriteLine(Lemmatization.Stemmer("Hola"));
+        // System.Console.WriteLine(Lemmatization.Stemmer("a"));
+        // System.Console.WriteLine(Lemmatization.Stemmer("todos"));
+
+        string w = "Todos los chicos de mi cq, pintan con Hol@  cuba";
+        string[] x = AuxiliarMethods.GetWordsOfSentence(w);
+
+        foreach(string a in x)
+            System.Console.WriteLine(a);
+
 
 
         //? Print if all is OK

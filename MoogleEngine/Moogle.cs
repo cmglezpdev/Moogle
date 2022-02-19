@@ -1,5 +1,6 @@
 ﻿namespace MoogleEngine;
 using System.Text.Json;
+using System.Text;
 
 public static class Moogle
 {
@@ -32,8 +33,8 @@ public static class Moogle
         Array.Sort(sim);
         Array.Reverse(sim);
 
-        // !Construir el resultado
-        SearchItem[] items = BuildResult( sim, FreqWordsQuery, Data.wDocs);
+        //! Construir el resultado
+        SearchItem[] items = BuildResult( sim, FreqWordsQuery, Data.wDocs, query);
 
         //! Devolver a los valores originales a los scores que ya fueron modificados 
         NormalizeData(MemoryChange);
@@ -141,8 +142,9 @@ public static class Moogle
 
         return suggestion;
     }
-    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs) {
+    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs, string query) {
         List<SearchItem> items = new List<SearchItem>();
+        string[] wordsOfQuery = AuxiliarMethods.GetWordsOfSentence(query);
 
         for(int i = 0; i < Data.TotalFiles; i ++) {
            // Si ninguna de las palabras estan en el documento     
@@ -180,14 +182,14 @@ public static class Moogle
                 int count = 1;
                 // Count to left
                 int idx = iword - 1;
-                while(idx >= 0 && WorkingOperators.DistanceBetweenWords(positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
+                while(idx >= 0 && WorkingOperators.DistanceBetweenWords(doc, positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
                     idx --;
                     count ++;
                 }
 
                 // Count to right
                 idx = iword + 1;
-                while(idx < positions.Length && WorkingOperators.DistanceBetweenWords(positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
+                while(idx < positions.Length && WorkingOperators.DistanceBetweenWords(doc, positions[iword].Item1, positions[iword].Item2, positions[idx].Item1, positions[idx].Item2) <= LengthSnippet/2 ) {
                     idx ++;
                     count ++;
                 }
@@ -219,10 +221,25 @@ public static class Moogle
                 c += ( aux.Length - 1 );
             } 
 
+            // Comprobar cuales son las palabras de la query que faltan en el documento
+            StringBuilder missingWords = new StringBuilder();
+            foreach(string w in wordsOfQuery) {
+                if(!Data.IdxWords.ContainsKey( Lemmatization.Stemmer( w ) )) {
+                    missingWords.Append(w + ", ");
+                    continue;
+                }
+                if(Data.wDocs[ doc, Data.IdxWords[ Lemmatization.Stemmer( w ) ] ] == 0.00f)
+                    missingWords.Append(w + ", ");
+            }
 
-        
+            if(missingWords.Length != 0) {
+                missingWords.Remove( missingWords.Length - 2, 2 );
+                missingWords.Insert(0, "<del><i>");
+                missingWords.Append("</i></del>");
+            }
 
-            items.Add(new SearchItem(title, snippet, score));
+
+            items.Add(new SearchItem(title, snippet, score, missingWords.ToString()) );
         }
 
         return items.ToArray();

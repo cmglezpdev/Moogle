@@ -1,3 +1,4 @@
+using System.Text;
 namespace MoogleEngine;
 
 public static class WorkingOperators {
@@ -21,11 +22,8 @@ public static class WorkingOperators {
 
     //* Devolver lista de pares en forma de <operadores, palabra>
     public static List< Tuple<string, string> > GetOperators(string query) {
-        List<Tuple<string, string>> o = new List<Tuple<string, string>>();
+        List<Tuple<string, string>> o = new List<Tuple<string, string>> ();        StringBuilder auxQ = new StringBuilder();
         int n = query.Length;
-
-        // Guardar las palabras que tienen el operador de cercania para despues juntarlos todos en una sola tupla
-        List<string> aux = new List<string>(); 
 
         for(int i = 0; i < query.Length; i ++) {
             if(!IsOperator(query[i])) continue;
@@ -190,15 +188,30 @@ public static class WorkingOperators {
     }
 
     //* Funcion Auxiliar paraCalcular la distancia entre dos palabras del documento
-    public static int DistanceBetweenWords(int x1, int y1, int x2, int y2) {
-        int distance =  Math.Abs(x1 - x2);
-        // Si estan en la misma linea resto sus posiciones
-        if(x1 == x2) return distance + Math.Abs(y1 - y2);
-        
-        // Con x1 <= x2 && y1 <= y2
-        return x2 + Math.Max(0, 15 - x1); // 15 es un valor promedio de la cantidad de palabras por linea
-    }
+    public static int DistanceBetweenWords(int doc, int x1, int y1, int x2, int y2) {
 
+        // Ordenar el par
+        Tuple<int, int>[] pairs = { new Tuple<int, int>(x1, y1), new Tuple<int, int>(x2, y2) };    
+        Array.Sort(pairs);
+        x1 = pairs[0].Item1;
+        y1 = pairs[0].Item2;
+        x2 = pairs[1].Item1;
+        y2 = pairs[1].Item2;
+        // End Order Par
+        
+        if(x1 == x2) 
+            return Math.Abs(x1 - x2);
+
+        int distance = 0;
+        for(int line = x1 + 1; line <= x2 - 1; line ++)
+            distance += Data.CntWordsForLines[doc][line];
+
+        distance += (Data.CntWordsForLines[doc][x1] - y1);
+        distance += x2;
+
+        return distance;
+    }
+    
     //* Funcion Auxiliar para actualizar el score de los documentos para un operador
     public static void ProcessOperator(char op, string word, int doc, Dictionary< Tuple<int, int>, float > MemoryChange, Tuple<float, int>[] sim) {
         switch( op ) {
@@ -333,7 +346,7 @@ public static class WorkingOperators {
                 
                 aux.Add( new Tuple<int, int> ( posiciones[i].Item1, posiciones[i].Item2 ) );
 
-                distance += DistanceBetweenWords(prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
+                distance += DistanceBetweenWords(doc, prevx, prevy, posiciones[i].Item1, posiciones[i].Item2);
                 prevx = posiciones[i].Item1;
                 prevy = posiciones[i].Item2;
             }
