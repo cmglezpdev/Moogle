@@ -97,6 +97,13 @@ public static class AuxiliarMethods{
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
     }
+
+    public static void Swap(ref int a, ref int b) {
+        int aux = a;
+        a = b;
+        b = aux;
+    }
+
     public static string GetWord(string sentence, int pos, string direction) {
         string word = "";
         int n = sentence.Length;
