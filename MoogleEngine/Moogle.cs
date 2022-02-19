@@ -22,7 +22,6 @@ public static class Moogle
         // !Modificar el peso de los documentos en base a cada operador del query
         List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
 
-
         // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
         Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
         // Realizar los cambios correspondientes a cada operador
