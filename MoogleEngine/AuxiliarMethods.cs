@@ -21,7 +21,8 @@ public static class AuxiliarMethods{
         return words.ToArray();
     }
     public static bool Ignore(char x) {
-        return Char.IsPunctuation(x) || WorkingOperators.IsOperator(x) || Char.IsWhiteSpace(x);
+        // return Char.IsPunctuation(x) || WorkingOperators.IsOperator(x) || Char.IsWhiteSpace(x);
+        return !Char.IsLetterOrDigit(x);
     }
 
     // Comprobar que una linea del fichero es o no una linea en blanco
