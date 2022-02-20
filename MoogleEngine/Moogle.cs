@@ -8,10 +8,12 @@ public static class Moogle
     public static SearchResult Query(string query)
     {
         //! Formatear la query 
-        string formatQuery = AuxiliarMethods.FormatQuery(query);
+        string formatQuery = AuxiliarMethods.FormatQuery( query );
 
         // ! Calcular el suggestion por las palabras que no aparecen en el documento
-        string suggestion = GetSuggestion(query);
+        (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery);
+        System.Console.WriteLine("{0}\n{1}", query, suggestion);
+
 
         //! Frecuencia de las palabras de la query
         Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( query );
@@ -43,7 +45,7 @@ public static class Moogle
         NormalizeData(MemoryChange);
 
         // //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
-        if(suggestion == query) suggestion = ""; 
+        // if(suggestion == query) suggestion = ""; 
 
         return new SearchResult(items, suggestion);
     }
@@ -102,95 +104,78 @@ public static class Moogle
         
         return sim;
     }
-    private static string GetSuggestion(string query) {
+    private static (string, string) GetNewQueryAndSuggestion(string query) {
         string suggestion = "";
+        string newQuery  = "";
 
-        string[] words = AuxiliarMethods.GetWordsOfSentence(query);
-        List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
-        
+        string[] words = query.Split(' ');
 
-        for(int i = 0; i < query.Length; i ++) {
-       
-            // Si es un caracter que no forme una palabra entoces la anadimos a la sugerencia
-            if(AuxiliarMethods.Ignore(query[i])) {
-                suggestion += query[i];
+        for(int i = 0; i < words.Length; i ++) {
+            if(AuxiliarMethods.IsLineOperators(words[i])) {
+                suggestion += (words[i] + ' ');
+                newQuery += (words[i] + ' ');
                 continue;
             }
 
-            string w = AuxiliarMethods.GetWordStartIn(query, i);
-            string lemman = Lemmatization.Stemmer(w);
+            newQuery += (words[i] + " ");
+            string lemman = Lemmatization.Stemmer(words[i]);
 
-            //* Si la palabra esta en el documento entonces no hay que modificarla
-            if(Data.IdxWords.ContainsKey(lemman)) {
-                suggestion += w;
-                i += w.Length - 1;
-                continue;
-            }
+            // Si la palabra esta entonces, si tiene pocas apariciones, buscar sinonimos 
+            if(Data.IdxWords.ContainsKey( lemman )) {
+            
+                suggestion += (words[i] + " ");
+                
+                double ThirtyPercent = (double)((3.00/10.00f) * (double)Data.TotalFiles);
+                // Si la cantidad de documentos en las que aparece la palabra es menor al 30% entonces busco un sinonimo
+                if( AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lemman) <= ThirtyPercent ) {
 
-            //* En caso de que no este busco todos los sinonimos de esa palabra en la base de datos
-            string[] Syn = Data.Synonyms.GetSynonymsOf(w);
+                    string[] Syn = Data.Synonyms.GetSynonymsOf(lemman);
+                    List< Tuple<int, string, string> > aux = new List< Tuple<int, string, string> >();
+                    
+                    foreach(string sin in Syn) {
+                        string lem = Lemmatization.Stemmer(sin);
+                        // Si no esta en ningun documento lo omito
+                        if( !Data.IdxWords.ContainsKey(lem) ) continue;
+                        aux.Add(new Tuple<int, string, string>( AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lem), lem, sin ));
+                    }
 
-            float bestScore = (float)int.MinValue;
-            float secondBestScore = (float)int.MinValue;
-            string bestWord = "";
-            string secondBestWord = "";
+                    aux.Sort();
+                    aux.Reverse();
 
-            // Quedarme con el que mayor score tiene entre todos los documentos
-            foreach(string sin in Syn) {
-                string lem = Lemmatization.Stemmer(sin);
+                    if(i - 1 >= 0 && AuxiliarMethods.IsLineOperators(words[i - 1])) {
+                        int CntOfSynonymsForTheQuery = 1;
+                        for(int j = 0; j < aux.Count && j < CntOfSynonymsForTheQuery; j ++) {
+                            if(AuxiliarMethods.IsLineOperators(words[i - 1]))
+                                newQuery += words[i - 1] + " ";
+                            newQuery += words[i] + " ";
+                        }
+                    }
+                
+                } 
+            } else {
 
-                // Si no esta en ningun documento lo omito
-                if( !Data.IdxWords.ContainsKey(lem) ) continue;
+                int bestCost = int.MaxValue;
+                string SugWord = lemman;
 
-                // Calculo el score promedio de esa palabra entre todos los documentos
-                int idx = Data.IdxWords[ lem ];
-                float ScorePromedio = 0.00f;
+                int umbralChange = 2;
+                foreach(var wd in Data.IdxWords) {
+                    int cost = AuxiliarMethods.LevenshteinDistance(lemman, wd.Key);
+                    if(cost > umbralChange) continue;
 
-                for(int doc = 0; doc < Data.TotalFiles; doc ++) 
-                    ScorePromedio += Data.wDocs[doc, idx];
-                ScorePromedio /= Data.TotalWords;
-
-                if(bestScore < ScorePromedio) {
-                    bestScore = ScorePromedio;
-                    bestWord = sin;
-                }
-            }
-
-            // Si encontre un sinonimo para sustituir la palabra que no esta
-            if(bestWord != "") {
-                System.Console.WriteLine(bestWord);
-                suggestion += bestWord;
-                i += w.Length - 1;
-                continue;
-            }
-
-
-            // * Si tampoco esta en la base de datos entonces veo que esta mas escrita
-            foreach(KeyValuePair<string, int> wd in Data.IdxWords) {
-                int cost = AuxiliarMethods.LevenshteinDistance(w, wd.Key);
-
-                float umbralChange = (4.00f / 10.00f) * (float)wd.Key.Length;    // 40% de la palabra es el tope maximo a cambiar
-
-                if(cost < secondBestScore) {
-                    secondBestScore = cost;
-                    secondBestWord = wd.Key;
+                    if(cost < bestCost) {
+                        bestCost = cost;
+                        SugWord = wd.Key;
+                    }
                 }
 
-                if( (float)cost >= umbralChange ) continue;
-
-                if(cost < bestScore) {
-                    bestScore = cost;
-                    bestWord = wd.Key;
-                }
+                suggestion += SugWord + " ";
             }
 
-            System.Console.WriteLine(bestWord);
-            suggestion += (bestWord != "") ? bestWord : secondBestWord;
-             i += w.Length - 1;
+         
        }
 
 
-        return suggestion;
+        return (newQuery, suggestion);
     }
     private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs, string query) {
         List<SearchItem> items = new List<SearchItem>();
