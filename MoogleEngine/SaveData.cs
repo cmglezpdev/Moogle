@@ -33,8 +33,10 @@ static public class Data {
 
 
         //! Guardar todas las palabras de todos los documentos en la matrix
+        Dictionary<string, int> Aux = new Dictionary<string, int>();
         for(int doc = 0; doc < TotalFiles; doc ++)
-            FilesMethods.ReadContentFile(files[doc], doc, IdxWords, PosInDocs);
+            FilesMethods.ReadContentFile(files[doc], doc, Aux);
+        OriginalWordsDocs.Sort();
 
         // //! Redimencionar la lista de palabras de todos los documentos al maximo posible
         TotalWords = IdxWords.Count;

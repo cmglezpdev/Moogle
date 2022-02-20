@@ -21,10 +21,10 @@ public static class FilesMethods {
     public static int GetTotalFiles() {
         return ReadFolder().Length;
     } 
-    public static void ReadContentFile(string file, int idFile, Dictionary<string, int> IdxWords, List<List<info>> PosInDocs ) {
+    public static void ReadContentFile(string file, int idFile, Dictionary<string, int> OWords ) {
         
         // Reservar las palabras que ya estan desde los ficheros pasados
-        int n = PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
+        int n = Data.PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
         for(int i = 0; i < n; i ++)
             Data.PosInDocs[idFile].Add(new info());
 
@@ -45,18 +45,24 @@ public static class FilesMethods {
 
             // Recorrer todas las palabras de la linea actual
             for(int i = 0; i < words.Length; i ++) {
-                string word = Lemmatization.Stemmer( words[i] );
 
-                if(IdxWords.ContainsKey(word)) {
-                    PosInDocs[ idFile ][ IdxWords[word] ].AddAppearance(line, i);
+                // Guardar las palabras originales
+                if(!OWords.ContainsKey(words[i])) {
+                    Data.OriginalWordsDocs.Add(words[i]);
+                }
+
+                // Guardar las raices de las palabras
+                string word = Lemmatization.Stemmer( words[i] );
+                if(Data.IdxWords.ContainsKey(word)) {
+                    Data.PosInDocs[ idFile ][ Data.IdxWords[word] ].AddAppearance(line, i);
                     continue;
                 }
             
-                int newPos = PosInDocs[idFile].Count;
-                PosInDocs[idFile].Add(new info());
-                PosInDocs[idFile][ newPos ].AddAppearance(line, i);
+                int newPos = Data.PosInDocs[idFile].Count;
+               Data.PosInDocs[idFile].Add(new info());
+               Data.PosInDocs[idFile][ newPos ].AddAppearance(line, i);
                 // El nuevo indice es la ultima posicion vacia de la lista de palabras
-                IdxWords[word] = newPos;
+                Data.IdxWords[word] = newPos;
             }
         }
 
