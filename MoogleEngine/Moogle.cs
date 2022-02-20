@@ -45,7 +45,7 @@ public static class Moogle
         NormalizeData(MemoryChange);
 
         // //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
-        // if(suggestion == query) suggestion = ""; 
+        if(suggestion == query) suggestion = ""; 
 
         return new SearchResult(items, suggestion);
     }

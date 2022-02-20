@@ -6,6 +6,7 @@ static public class Data {
     #region Variables
     public static List<List<info>> PosInDocs = new List<List<info>>();         // Matrix con las repeticiones de las palabras en cada documento
     public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();     // Palabras con su indice en la lista
+    public static List<string> OriginalWordsDocs = new List<string>();
     public static string[] files = new string[0];
     public static int TotalFiles = 0;
     public static int TotalWords = 0;
