@@ -23,16 +23,8 @@ class Test{
 
         // TestLemmantization();
 
-            TestSynonymsDB();
-
-        // System.Console.WriteLine(Lemmatization.Stemmer("Hola"));
-        // System.Console.WriteLine(Lemmatization.Stemmer("a"));
-        // System.Console.WriteLine(Lemmatization.Stemmer("todos"));
-
-        string w = "La casa, la vida, y la ! ^ comida! ESTA aqui.";
-
-        string x = AuxiliarMethods.FormatQuery(w);
-        System.Console.WriteLine(x);
+        // TestSynonymsDB();
+        TestBinarySearch();
 
 
         //? Print if all is OK
@@ -177,12 +169,27 @@ class Test{
     
     // }
 
-    static void TestSynonymsDB() {
-        string path = @"D:\MATCOM\Programacion\Proyecto Primer Semestre\moogle-2021\SynonymsDB\synonyms_db.json";
+    // static void TestSynonymsDB() {
+    //     string path = @"D:\MATCOM\Programacion\Proyecto Primer Semestre\moogle-2021\SynonymsDB\synonyms_db.json";
 
-        WorkingSynonyms synonyms = new WorkingSynonyms( path );
-        System.Console.WriteLine(synonyms.GetLengthDB());
+    //     WorkingSynonyms synonyms = new WorkingSynonyms( path );
+    //     System.Console.WriteLine(synonyms.GetLengthDB());
     
+    
+    // }
+
+    static void TestBinarySearch() {
+        List<string> a = new List<string>();
+        a.Add("amigo");
+        a.Add("codeforces");
+        a.Add("cubano");
+        a.Add("culito");
+        a.Add("manana");
+        a.Add("pase");
+    
+        a.Sort();
+
+        System.Console.WriteLine(AuxiliarMethods.BinarySearch(a, "gg"));
     
     }
 

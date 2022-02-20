@@ -234,4 +234,27 @@ public static class AuxiliarMethods{
         return dp[n, m];
     }
 
+    public static int BinarySearch(List<string> list, string word) {
+        return BinarySearch(list, word, 0, list.Count - 1);        
+    }
+    private static int BinarySearch(List<string> list, string word, int l, int r) {
+
+        if(l > r) 
+            return -1;
+
+        if(l == r)
+            return (list[l] == word) ? l : -1;
+    
+        // int piv = l + (r - l)/2;
+        int piv = (l + r) / 2;
+
+        if(list[piv] == word)
+            return piv;
+
+        if( String.Compare(word, list[piv]) == -1 ) // Si la palabras es lexicograficamente menor
+            return BinarySearch(list, word, l, piv);
+        else
+            return BinarySearch(list, word, piv + 1, r);
+    }
+
 }
