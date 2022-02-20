@@ -238,8 +238,9 @@ public static class WorkingOperators {
             return Math.Abs(x1 - x2);
 
         int distance = 0;
-        for(int line = x1 + 1; line <= x2 - 1; line ++)
+        for(int line = x1 + 1; line <= x2 - 1; line ++) {
             distance += Data.CntWordsForLines[doc][line];
+        }
 
         distance += (Data.CntWordsForLines[doc][x1] - y1);
         distance += x2;

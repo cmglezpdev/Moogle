@@ -35,7 +35,10 @@ public static class FilesMethods {
         
         // recorrer todas las lineas del documento
         for(int line = 0; line < TotalLines; line ++) {
-            if(AuxiliarMethods.IsLineWhite(lines[line])) continue;
+            if(AuxiliarMethods.IsLineWhite(lines[line])){
+                Data.CntWordsForLines[idFile].Add(0);
+                continue;  
+            } 
 
             string[] words = AuxiliarMethods.GetWordsOfSentence(lines[line]);
             Data.CntWordsForLines[idFile].Add( words.Length );
