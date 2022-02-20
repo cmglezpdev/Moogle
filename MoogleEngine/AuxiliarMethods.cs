@@ -107,7 +107,6 @@ public static class AuxiliarMethods{
         // return Char.IsPunctuation(x) || WorkingOperators.IsOperator(x) || Char.IsWhiteSpace(x);
         return !Char.IsLetterOrDigit(x);
     }
-
     // Comprobar que una linea del fichero es o no una linea en blanco
     public static bool IsLineWhite(string line) {
         for(int i = 0; i < line.Length; i ++)
@@ -169,7 +168,7 @@ public static class AuxiliarMethods{
         
         return sentence.Substring(start + 1, end - start);
     }
-   public static void Resize(List< List<info> > aux, int idFile, int newLength) {
+    public static void Resize(List< List<info> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
             aux[idFile].Add(new info());
     }
@@ -178,6 +177,17 @@ public static class AuxiliarMethods{
         int aux = a;
         a = b;
         b = aux;
+    }
+    public static int AmountAppareanceOfWordBetweenAllFiles(string word) {
+        if(!Data.IdxWords.ContainsKey(word)) 
+            return 0;
+            
+        int count = 0;
+        int idx = Data.IdxWords[ word ];
+        for(int doc = 0; doc < Data.TotalFiles; doc ++)
+            if(Data.PosInDocs[doc][ idx ].AmountAppareance != 0)
+                count ++;
+        return count;
     }
 
     public static string GetWord(string sentence, int pos, string direction) {

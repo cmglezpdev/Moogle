@@ -23,7 +23,7 @@ class Test{
 
         // TestLemmantization();
 
-            // TestSynonymsDB();
+            TestSynonymsDB();
 
         // System.Console.WriteLine(Lemmatization.Stemmer("Hola"));
         // System.Console.WriteLine(Lemmatization.Stemmer("a"));
@@ -138,54 +138,53 @@ class Test{
     // }
 
 
-    static void TestLemmantization() {
-    
+    // static void TestLemmantization() {
+        
+    //     Stopwatch crono = new Stopwatch();
 
-        Stopwatch crono = new Stopwatch();
+    //     StreamReader Dicc = new StreamReader("Vocabulary-lemantization.txt");
+    //     StreamWriter errores =new StreamWriter("errors.txt");
 
-        StreamReader Dicc = new StreamReader("Vocabulary-lemantization.txt");
-        StreamWriter errores =new StreamWriter("errors.txt");
+    //     string t = Dicc.ReadToEnd();
+    //     string[] text = t.Split('\n');
+    //     Dicc.Close();
+    //     int errors = 0;
 
-        string t = Dicc.ReadToEnd();
-        string[] text = t.Split('\n');
-        Dicc.Close();
-        int errors = 0;
+    //     crono.Start();
 
-        crono.Start();
+    //     for(int i = 0; i < text.Length; i++) {
+    //         // if(text[i] == "") continue;
+    //         string[] x = AuxiliarMethods.GetWordsOfSentence(text[i]);
+    //         if(AuxiliarMethods.IsLineWhite(text[i])) continue;
+    //         string word = x[0];
+    //         string lemman = x[1];
 
-        for(int i = 0; i < text.Length; i++) {
-            // if(text[i] == "") continue;
-            string[] x = AuxiliarMethods.GetWordsOfSentence(text[i]);
-            if(AuxiliarMethods.IsLineWhite(text[i])) continue;
-            string word = x[0];
-            string lemman = x[1];
+    //         string result = Lemmatization.Stemmer(word);
+    //         if(result != lemman) {
+    //             errors ++;
+    //             errores.WriteLine("Error con {0}. Se esperaba {1} y de devolvio {2}.", word, lemman, result);
+    //         }
+    //     }
 
-            string result = Lemmatization.Stemmer(word);
-            if(result != lemman) {
-                errors ++;
-                errores.WriteLine("Error con {0}. Se esperaba {1} y de devolvio {2}.", word, lemman, result);
-            }
-        }
+    //     crono.Stop();
+    //     System.Console.WriteLine("Time: {0}", crono.ElapsedMilliseconds );
 
-        crono.Stop();
-        System.Console.WriteLine("Time: {0}", crono.ElapsedMilliseconds );
-
-      System.Console.WriteLine(errors);
-        if(errors == 0) {
-            Console.ForegroundColor = ConsoleColor.Green;
-            System.Console.WriteLine("PAST!!");
-        }
-    
-    }
-
-    // static void TestSynonymsDB() {
-    //     string path = "../SynonymsDB/synonyms_db.json";
-
-    //     WorkSynonyms synonyms = new WorkSynonyms( path );
-    //     System.Console.WriteLine(synonyms.GetLengthDB());
-    
+    //   System.Console.WriteLine(errors);
+    //     if(errors == 0) {
+    //         Console.ForegroundColor = ConsoleColor.Green;
+    //         System.Console.WriteLine("PAST!!");
+    //     }
     
     // }
+
+    static void TestSynonymsDB() {
+        string path = @"D:\MATCOM\Programacion\Proyecto Primer Semestre\moogle-2021\SynonymsDB\synonyms_db.json";
+
+        WorkingSynonyms synonyms = new WorkingSynonyms( path );
+        System.Console.WriteLine(synonyms.GetLengthDB());
+    
+    
+    }
 
 
 } 

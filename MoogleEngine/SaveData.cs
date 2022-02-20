@@ -11,13 +11,16 @@ static public class Data {
     public static int TotalWords = 0;
     public static float[,] wDocs = new float[0,0];
     public static List< List<int> > CntWordsForLines = new List<List<int>> ();
+    public static WorkingSynonyms Synonyms = new WorkingSynonyms();
+
+
     #endregion
 
 
 
 
 
-    public static void DatesProcessing() {
+    public static void DataProcessing() {
         files = FilesMethods.ReadFolder();
         TotalFiles = files.Length;
         
@@ -41,8 +44,11 @@ static public class Data {
 
         //!  Matriz peso de los documentos
         wDocs = GetWeigthOfDocs();
+
+        //! Cargar la base de datos de sinonimos
+        Synonyms = new WorkingSynonyms("../SynonymsDB/synonyms_db.json");
+
     }
-   
     public static float[,] GetWeigthOfDocs() {
 
         float[,] wDocs = new float[TotalFiles, TotalWords];
