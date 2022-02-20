@@ -202,17 +202,6 @@ public static class AuxiliarMethods{
     public static string ValidOperators(string op) {
         if(op == "") return "";
 
-        // Sort String
-        char[] aux = new char[op.Length];
-        for(int i = 0; i < op.Length; i ++)
-            aux[i] = op[i];
-        Array.Sort(aux);
-
-        op = "";
-        for(int i = 0; i < aux.Length; i ++)
-            op += aux[i];
-        // End Sort String
-
         // Si son operadores simples
         if(op == "!") return op;
         if(op == "^") return op;
