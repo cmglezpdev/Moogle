@@ -30,7 +30,7 @@ public static class AuxiliarMethods{
     
       public static string FormatQuery(string q) {
         string query = q.ToLower();
-        
+
         string[] partsOfQuery = query.Split(' ');   
         int n = partsOfQuery.Length;
 
@@ -201,6 +201,17 @@ public static class AuxiliarMethods{
     // Devuelve vacio si no es valida, y en otro caso simplifica la expresion
     public static string ValidOperators(string op) {
         if(op == "") return "";
+
+        // Sort String
+        char[] aux = new char[op.Length];
+        for(int i = 0; i < op.Length; i ++)
+            aux[i] = op[i];
+        Array.Sort(aux);
+
+        op = "";
+        for(int i = 0; i < aux.Length; i ++)
+            op += aux[i];
+        // End Sort String
 
         // Si son operadores simples
         if(op == "!") return op;
