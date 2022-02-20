@@ -21,7 +21,7 @@ public static class FilesMethods {
     public static int GetTotalFiles() {
         return ReadFolder().Length;
     } 
-    public static void ReadContentFile(string file, int idFile, Dictionary<string, int> OWords ) {
+    public static void ReadContentFile(string file, int idFile, Dictionary<string, bool> OWords ) {
         
         // Reservar las palabras que ya estan desde los ficheros pasados
         int n = Data.PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
@@ -49,6 +49,7 @@ public static class FilesMethods {
                 // Guardar las palabras originales
                 if(!OWords.ContainsKey(words[i])) {
                     Data.OriginalWordsDocs.Add(words[i]);
+                    OWords[words[i]] = true;
                 }
 
                 // Guardar las raices de las palabras
