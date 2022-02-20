@@ -125,11 +125,11 @@ public static class Moogle
             
                 suggestion += (words[i] + " ");
                 
-                double ThirtyPercent = (double)((3.00/10.00f) * (double)Data.TotalFiles);
+                double TwentyPercent = (double)((3.00/10.00f) * (double)Data.TotalFiles);
                 // Si la cantidad de documentos en las que aparece la palabra es menor al 30% entonces busco un sinonimo
-                if( AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lemman) <= ThirtyPercent ) {
+                if( AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lemman) <= TwentyPercent ) {
 
-                    string[] Syn = Data.Synonyms.GetSynonymsOf(lemman);
+                    string[] Syn = Data.Synonyms.GetSynonymsOf(words[i]);
                     List< Tuple<int, string, string> > aux = new List< Tuple<int, string, string> >();
                     
                     foreach(string sin in Syn) {
@@ -155,16 +155,16 @@ public static class Moogle
             } else {
 
                 int bestCost = int.MaxValue;
-                string SugWord = lemman;
+                string SugWord = words[i];
 
                 int umbralChange = 2;
-                foreach(var wd in Data.IdxWords) {
-                    int cost = AuxiliarMethods.LevenshteinDistance(lemman, wd.Key);
+                foreach(var wd in Data.OriginalWordsDocs) {
+                    int cost = AuxiliarMethods.LevenshteinDistance(words[i], wd);
                     if(cost > umbralChange) continue;
 
                     if(cost < bestCost) {
                         bestCost = cost;
-                        SugWord = wd.Key;
+                        SugWord = wd;
                     }
                 }
 
