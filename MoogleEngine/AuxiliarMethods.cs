@@ -68,7 +68,7 @@ public static class AuxiliarMethods{
         for(int i = 0; i < n; i ++) {
             string part = partsOfQuery[i];
             if(!IsLineOperators(part)) continue;
-            format.Replace(part, ValidOperators(part));
+            format.Replace(part, WorkingOperators.ValidOperators(part));
         }
 
 
@@ -198,39 +198,7 @@ public static class AuxiliarMethods{
 
         return word;
     }
-    // Devuelve vacio si no es valida, y en otro caso simplifica la expresion
-    public static string ValidOperators(string op) {
-        if(op == "") return "";
-
-        // Si son operadores simples
-        if(op == "!") return op;
-        if(op == "^") return op;
-        if(op == "*") return op;
-        if(op == "~") return op;
-
-        // Si todos son iguales 
-        bool allEquival = true;
-        for(int i = 1; i < op.Length; i ++)
-            if(op[i] != op[i - 1]) {
-                allEquival = false;
-                break;
-            }
-            
-        if(allEquival == true) {
-            if(op[0] != '*') return op[0].ToString();
-            return op;
-        }
-
-        // Si entre los operadores aparece ~ entoces no es valido
-        for(int i = 1; i < op.Length; i ++) 
-            if(op[i] == '~') return "";
-        
-        // Si aparece ! entoces los demas operadores no importan
-        for(int i = 0; i < op.Length && op[0] != '~'; i ++)
-            if(op[i] == '!') return "!";
-
-        return op;
-    }
+ 
     public static int LevenshteinDistance(string a, string b) {
 
         int n = a.Length,

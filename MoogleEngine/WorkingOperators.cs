@@ -39,7 +39,7 @@ public static class WorkingOperators {
                     wo = Lemmatization.Stemmer(wo);
 
             // Validar los operadores segun mi criterio
-            string operators = AuxiliarMethods.ValidOperators(op);
+            string operators = ValidOperators(op);
             if(operators == "") continue; // Si los operadores no son validos
             
             // Si no es un operador de cercania puedo guardar la palabra con sus operadores
@@ -82,6 +82,41 @@ public static class WorkingOperators {
 
         return o;
     }
+
+   // Devuelve vacio si no es valida, y en otro caso simplifica la expresion
+    public static string ValidOperators(string op) {
+        if(op == "") return "";
+
+        // Si son operadores simples
+        if(op == "!") return op;
+        if(op == "^") return op;
+        if(op == "*") return op;
+        if(op == "~") return op;
+
+        // Si todos son iguales 
+        bool allEquival = true;
+        for(int i = 1; i < op.Length; i ++)
+            if(op[i] != op[i - 1]) {
+                allEquival = false;
+                break;
+            }
+            
+        if(allEquival == true) {
+            if(op[0] != '*') return op[0].ToString();
+            return op;
+        }
+
+        // Si entre los operadores aparece ~ entoces no es valido
+        for(int i = 1; i < op.Length; i ++) 
+            if(op[i] == '~') return "";
+        
+        // Si aparece ! entoces los demas operadores no importan
+        for(int i = 0; i < op.Length && op[0] != '~'; i ++)
+            if(op[i] == '!') return "!";
+
+        return op;
+    }
+
 
     //* Procesar todos los operadores de la query para cada documento
     public static void ChangeForOperators( List< Tuple<string, string> > operators, Dictionary< Tuple<int, int>, float > MemoryChange,  Tuple<float, int>[] sim) {
