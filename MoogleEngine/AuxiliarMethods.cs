@@ -28,7 +28,9 @@ public static class AuxiliarMethods{
         return words.ToArray();
     }
     
-      public static string FormatQuery(string query) {
+      public static string FormatQuery(string q) {
+        string query = q.ToLower();
+        
         string[] partsOfQuery = query.Split(' ');   
         int n = partsOfQuery.Length;
 
@@ -92,7 +94,7 @@ public static class AuxiliarMethods{
 
     public static bool IsLineOperators(string l) {
         if(l == "") return false;
-        
+
         foreach(char c in l) {
             if(!WorkingOperators.IsOperator(c))
                 return false;
