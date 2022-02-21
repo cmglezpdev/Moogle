@@ -36,11 +36,11 @@ public static class AuxiliarMethods{
 
         StringBuilder format = new StringBuilder(partsOfQuery[0]);
         for(int i = 1; i < n; i ++) {
-            int len = partsOfQuery[i - 1].Length;
+            int lastPos = partsOfQuery[i - 1].Length - 1;
 
-            if( (Char.IsLetterOrDigit(partsOfQuery[i - 1][len - 1]) && Char.IsLetterOrDigit(partsOfQuery[i][0])) ||
-              (Char.IsLetterOrDigit(partsOfQuery[i - 1][len - 1]) && WorkingOperators.IsOperator(partsOfQuery[i][0])) ||
-              (WorkingOperators.IsOperator(partsOfQuery[i - 1][len - 1]) && Char.IsLetterOrDigit(partsOfQuery[i][0])) ) {
+            if( (Char.IsLetterOrDigit(partsOfQuery[i - 1][lastPos]) && Char.IsLetterOrDigit(partsOfQuery[i][0])) ||
+              (Char.IsLetterOrDigit(partsOfQuery[i - 1][lastPos]) && WorkingOperators.IsOperator(partsOfQuery[i][0])) ||
+              (WorkingOperators.IsOperator(partsOfQuery[i - 1][lastPos]) && Char.IsLetterOrDigit(partsOfQuery[i][0])) ) {
                 format.Append(" " + partsOfQuery[i]);
                 continue;
             }
@@ -72,14 +72,14 @@ public static class AuxiliarMethods{
         }
 
 
+        // Eliminar si hay dos espacios en blanco adyacentes
         for(int i = 1; i < format.Length; i ++) {
-            // Eliminar si hay dos espacios en blanco adyacentes
             if(Char.IsWhiteSpace(format[i]) && Char.IsWhiteSpace(format[i - 1])) {
                 format.Remove(i, 1);
                 i --;
             }
         }
-
+        if(format[ format.Length - 1 ] == ' ') format.Remove(format.Length - 1, 1);
 
         return format.ToString();
     }

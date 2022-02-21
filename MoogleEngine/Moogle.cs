@@ -174,6 +174,8 @@ public static class Moogle
          
        }
 
+        if(suggestion[ suggestion.Length - 1 ] == ' ') suggestion = suggestion.Substring(0, suggestion.Length - 1);
+        if(newQuery[ newQuery.Length - 1 ] == ' ') newQuery = newQuery.Substring(0, newQuery.Length - 1);
 
         return (newQuery, suggestion);
     }
@@ -272,9 +274,13 @@ public static class Moogle
                 missingWords.Insert(0, "<del><i>");
                 missingWords.Append("</i></del>");
             }
+            // string linkFile = "../../Content/" + FilesMethods.GetNameFile(Data.files[doc]) + ".txt";
+            string linkFile = Data.files[doc].Substring(3, Data.files[doc].Length - 3);
+            System.Console.WriteLine();
+            System.Console.WriteLine(linkFile);
+            System.Console.WriteLine();
 
-
-            items.Add(new SearchItem(title, snippet, score, missingWords.ToString()) );
+            items.Add(new SearchItem(title, snippet, score, missingWords.ToString(), linkFile) );
         }
 
         return items.ToArray();
