@@ -120,7 +120,7 @@ public static class Moogle
             newQuery += (words[i] + " ");
             string lemman = Lemmatization.Stemmer(words[i]);
 
-            // Si la palabra esta entonces, si tiene pocas apariciones, buscar sinonimos 
+            //? Si la palabra esta entonces, si tiene pocas apariciones, buscar sinonimos 
             if(Data.IdxWords.ContainsKey( lemman )) {
             
                 suggestion += (words[i] + " ");
@@ -154,6 +154,7 @@ public static class Moogle
                 } 
             } else {
 
+                // ? Comprobar si esta mal escrita
                 int bestCost = int.MaxValue;
                 string SugWord = words[i];
 
