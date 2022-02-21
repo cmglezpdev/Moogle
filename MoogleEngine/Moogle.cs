@@ -7,13 +7,13 @@ public static class Moogle
 
     public static SearchResult Query(string query)
     {
+        // System.Console.WriteLine(query);
+
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
 
         // ! Calcular el suggestion por las palabras que no aparecen en el documento
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery);
-        System.Console.WriteLine("{0}\n{1}", query, suggestion);
-
 
         //! Frecuencia de las palabras de la query
         Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( query );
@@ -125,7 +125,7 @@ public static class Moogle
             
                 suggestion += (words[i] + " ");
                 
-                double TwentyPercent = (double)((3.00/10.00f) * (double)Data.TotalFiles);
+                double TwentyPercent = (double)((2.00/10.00f) * (double)Data.TotalFiles);
                 // Si la cantidad de documentos en las que aparece la palabra es menor al 30% entonces busco un sinonimo
                 if( AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lemman) <= TwentyPercent ) {
 
@@ -147,7 +147,7 @@ public static class Moogle
                         for(int j = 0; j < aux.Count && j < CntOfSynonymsForTheQuery; j ++) {
                             if(AuxiliarMethods.IsLineOperators(words[i - 1]))
                                 newQuery += words[i - 1] + " ";
-                            newQuery += words[i] + " ";
+                            newQuery += aux[i] + " ";
                         }
                     }
                 
