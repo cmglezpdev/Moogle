@@ -1,19 +1,34 @@
-@page "/Content/{Path}"
+@page "/Content/{NameDoc}"
 
-<PageTitle>@Path</PageTitle>
+<PageTitle>@NameDoc</PageTitle>
 
-<h1>@Path</h1>
+<h1>@NameDoc</h1>
 
+<p>@((MarkupString)ShowDocument.ShowDoc($"../Content/{NameDoc}.txt"))</p>
 
-<p>@((MarkupString)ShowDocument.ShowDoc( $"../Content/{Path}.txt" ))</p>
+@* <div class="top-pages"><div class="pages">
+    <button class="pages__btn_prev btn btn-primary" onclick="ShowPrev">Anterior</button>
+    <button class="pages__btn_next btn btn-primary" onclick="ShowNext">Siguiente</button>
+</div></div> *@
 
-<div>
-<button>Prev</button>
-<input type="number" name="paguinador" id="">
-<button>Post</button>
-</div>
 
 @code {
     [Parameter]
-   public string? Path {get; set;}
+   public string? NameDoc {get; set;}
 }
+
+
+
+<style>
+
+.top-pages{
+    display: flex;
+    justify-content: center;
+}
+.pages {
+    display: flex;
+    justify-content: space-between;
+    width: 300px;
+}
+
+</style>
