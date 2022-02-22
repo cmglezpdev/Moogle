@@ -17,7 +17,7 @@
 @foreach (var item in result.Items()) {
     <li>
         <div class="item">
-            <a href=@item.LinkFile class="title" target="__blank"><strong>@item.Title</strong></a>
+            <a href= "/Content/@item.Title" class="title" target="__blank"><strong>@item.Title</strong></a>
             <p>... @((MarkupString)item.Snippet) ...</p>
             @if( !string.IsNullOrEmpty(item.MissingWords) ){
                 <p><strong>No aparece: </strong>@((MarkupString)item.MissingWords)</p>

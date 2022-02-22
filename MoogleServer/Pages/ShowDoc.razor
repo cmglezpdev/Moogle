@@ -1,0 +1,13 @@
+@page "/Content/{Path}"
+
+<PageTitle>@Path</PageTitle>
+
+<h1>@Path</h1>
+
+
+<p>@ShowDocument.ShowDoc( $"./Content/{Path}.txt" )</p>
+
+@code {
+    [Parameter]
+   public string? Path {get; set;}
+}

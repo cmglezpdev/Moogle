@@ -275,13 +275,8 @@ public static class Moogle
                 missingWords.Insert(0, "<del><i>");
                 missingWords.Append("</i></del>");
             }
-            // string linkFile = "../../Content/" + FilesMethods.GetNameFile(Data.files[doc]) + ".txt";
-            string linkFile = Data.files[doc].Substring(3, Data.files[doc].Length - 3);
-            System.Console.WriteLine();
-            System.Console.WriteLine(linkFile);
-            System.Console.WriteLine();
 
-            items.Add(new SearchItem(title, snippet, score, missingWords.ToString(), linkFile) );
+            items.Add(new SearchItem(title, snippet, score, missingWords.ToString(), Data.files[doc]) );
         }
 
         return items.ToArray();
