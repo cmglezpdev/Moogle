@@ -4,17 +4,24 @@ static public class Data {
 
 
     #region Variables
-    public static List<List<info>> PosInDocs = new List<List<info>>();        
-    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>(); 
+    // Matriz con las apariciones de las palabras en cada documento
+    public static List<List<info>> PosInDocs = new List<List<info>>();
+    // Indice de las palabras en el orden que fueron apareciendo 
+    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();
+    // Todas las palabras entre todos los documentos 
     public static List<string> OriginalWordsDocs = new List<string>();
+    // Direccion de todos los documentos de la carpeta Content
     public static string[] files = new string[0];
+    // Cantidad total de Documentos
     public static int TotalFiles = 0;
+    // Cantidad total de palabras
     public static int TotalWords = 0;
+    // Matriz peso de cada palabra en todos los documentos
     public static float[,] wDocs = new float[0,0];
+    // Cantidad de palabras por linea de cada documento
     public static List< List<int> > CntWordsForLines = new List<List<int>> ();
+    // Estructura que guarda la base de datos de sinonimos
     public static WorkingSynonyms Synonyms = new WorkingSynonyms();
-
-
     #endregion
 
 

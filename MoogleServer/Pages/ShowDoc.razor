@@ -5,7 +5,13 @@
 <h1>@Path</h1>
 
 
-<p>@ShowDocument.ShowDoc( $"./Content/{Path}.txt" )</p>
+<p>@((MarkupString)ShowDocument.ShowDoc( $"../Content/{Path}.txt" ))</p>
+
+<div>
+<button>Prev</button>
+<input type="number" name="paguinador" id="">
+<button>Post</button>
+</div>
 
 @code {
     [Parameter]

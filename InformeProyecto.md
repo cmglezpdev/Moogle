@@ -40,15 +40,29 @@ Al arrancar el servidor se ejecuta el metodo `DataProcessing` el cual se encarga
 Esta clase contine otro conjunto de datos que se consideran relevantes para el proceso de las consultas:
 ```cs
     #region Variables
-    // Matrix con las repeticiones de las palabras en cada documento
+    // Matriz con las apariciones de las palabras en cada documento
     public static List<List<info>> PosInDocs = new List<List<info>>();
-    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();     // Palabras con su indice en la lista
+    // Indice de las palabras en el orden que fueron apareciendo 
+    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();
+    // Todas las palabras entre todos los documentos 
     public static List<string> OriginalWordsDocs = new List<string>();
+    // Direccion de todos los documentos de la carpeta Content
     public static string[] files = new string[0];
+    // Cantidad total de Documentos
     public static int TotalFiles = 0;
+    // Cantidad total de palabras
     public static int TotalWords = 0;
+    // Matriz peso de cada palabra en todos los documentos
     public static float[,] wDocs = new float[0,0];
+    // Cantidad de palabras por linea de cada documento
     public static List< List<int> > CntWordsForLines = new List<List<int>> ();
+    // Estructura que guarda la base de datos de sinonimos
     public static WorkingSynonyms Synonyms = new WorkingSynonyms();
     #endregion
 ```
+Para calcular la relevancia de las palabras en sus respectivos documentos se usa el la el metodo del `TF-IDF` que contiene el `struct` info del documento WordInfo.
+
+
+#### Procesamiento de la Query
+Una vez que el usuario realiza una consulta se ejecuta el metodo `Query` de la clase `Moogle`. Este metodo contiene todo el flujo que se sigue hasta enviar los resultados al server.
+Lo primero que se hace es llamar al metodo `FormatQuery` de la clase `AuxiliarMethods`, el cual me "formatea" la query para que en su uso previo sea facil de extraer con solo dividir la query entre espacios en blanco; ademas de que mediante el metodo `ValidOperators`, si un conjuno de operadores esta mal escrito o no tiene sentido o tienes cosas de mas el te devuelve uno que "intenta" deducir lo que quisistes decir. De esta forma, si el usuario escribe `"Todos los !*ALGoritmos de ordenación~existentes"`, 
