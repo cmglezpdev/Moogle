@@ -23,11 +23,6 @@ public static class FilesMethods {
     } 
     public static void ReadContentFile(string file, int idFile, Dictionary<string, bool> OWords ) {
         
-        // Reservar las palabras que ya estan desde los ficheros pasados
-        int n = Data.PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
-        for(int i = 0; i < n; i ++)
-            Data.PosInDocs[idFile].Add(new info());
-
         string archive = File.ReadAllText(file);
         string[] lines = archive.Split('\n');
 
@@ -54,16 +49,13 @@ public static class FilesMethods {
 
                 // Guardar las raices de las palabras
                 string word = Lemmatization.Stemmer( words[i] );
-                if(Data.IdxWords.ContainsKey(word)) {
-                    Data.PosInDocs[ idFile ][ Data.IdxWords[word] ].AddAppearance(line, i);
+                if(Data.PosInDocs[idFile].ContainsKey(word)) {
+                    Data.PosInDocs[ idFile ][ word ].AddAppearance(line, i);
                     continue;
                 }
             
-                int newPos = Data.PosInDocs[idFile].Count;
-               Data.PosInDocs[idFile].Add(new info());
-               Data.PosInDocs[idFile][ newPos ].AddAppearance(line, i);
-                // El nuevo indice es la ultima posicion vacia de la lista de palabras
-                Data.IdxWords[word] = newPos;
+               Data.PosInDocs[idFile][word] = new info();
+               Data.PosInDocs[idFile][ word ].AddAppearance(line, i);
             }
         }
 

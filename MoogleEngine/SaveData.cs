@@ -5,10 +5,8 @@ static public class Data {
 
     #region Variables
     // Matriz con las apariciones de las palabras en cada documento
-    public static List<List<info>> PosInDocs = new List<List<info>>();
+    public static Dictionary<int, Dictionary<string, info> > PosInDocs = new Dictionary<int, Dictionary<string, info>> ();
     // Indice de las palabras en el orden que fueron apareciendo 
-    public static Dictionary<string, int> IdxWords = new Dictionary<string, int>();
-    // Todas las palabras entre todos los documentos 
     public static List<string> OriginalWordsDocs = new List<string>();
     // Direccion de todos los documentos de la carpeta Content
     public static string[] files = new string[0];
@@ -34,7 +32,6 @@ static public class Data {
         
         //! Redimencionar la matrix de las apariciones en la cantidad de documentos que son
         for(int doc = 0; doc < TotalFiles; doc ++) {
-            PosInDocs.Add(new List<info> ());
             CntWordsForLines.Add( new List<int>() );
         }
 
