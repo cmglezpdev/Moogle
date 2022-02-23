@@ -7,7 +7,6 @@ public static class WorkingOperators {
     public static bool IsOperator(char o) {
         return (o == '!' || o == '^' || o == '~' || o == '*');
     }
-    
     //* Devuelve los operadores que hay en un string en la posicion pos
     public static string GetOperators(string sentence, int pos) {
         string operators = "";
@@ -19,7 +18,6 @@ public static class WorkingOperators {
 
         return operators;
     }
-
     //* Devolver lista de pares en forma de <operadores, palabra>
     public static List< Tuple<string, string> > GetOperators(string query) {
         List<Tuple<string, string>> o = new List<Tuple<string, string>> ();        StringBuilder auxQ = new StringBuilder();
@@ -82,8 +80,7 @@ public static class WorkingOperators {
 
         return o;
     }
-
-   // Devuelve vacio si no es valida, y en otro caso simplifica la expresion
+   //* Devuelve vacio si no es valida, y en otro caso simplifica la expresion a una valida
     public static string ValidOperators(string op) {
         if(op == "") return "";
 
@@ -116,8 +113,6 @@ public static class WorkingOperators {
 
         return op;
     }
-
-
     //* Procesar todos los operadores de la query para cada documento
     public static void ChangeForOperators( List< Tuple<string, string> > operators,  Tuple<float, int>[] sim) {
 
@@ -221,7 +216,6 @@ public static class WorkingOperators {
 
         }
     }
-
     //* Funcion Auxiliar paraCalcular la distancia entre dos palabras del documento
     public static int DistanceBetweenWords(int doc, int x1, int y1, int x2, int y2) {
 
@@ -247,7 +241,6 @@ public static class WorkingOperators {
 
         return distance;
     }
-    
     //* Funcion Auxiliar para actualizar el score de los documentos para un operador
     public static void ProcessOperator(char op, string word, int doc, Tuple<float, int>[] sim) {
         switch( op ) {
@@ -282,11 +275,7 @@ public static class WorkingOperators {
             default: break;
         }
     }
-
-
-
-
-
+    //* Funcion Auxiliar para Calcula a cercania del conjunto de palabras por cada documento
     public static (float, Tuple<int, int>[]) ProcessCloseness( string[] wordsForCloseness, int doc ) {
 
         // Guardar todas las posiciones de las palabras en un array para ordenarlos 

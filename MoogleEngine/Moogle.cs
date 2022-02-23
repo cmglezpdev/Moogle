@@ -51,7 +51,7 @@ public static class Moogle
 
 
     #region Methods
-    
+    //* Devuleve la Frequencia de las palabras de la query 
     private static Dictionary<string, int> GetFreqWordsInQuery( string query ) {
         //! Buscar la frecuencia de las palabras de la query
         string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
@@ -67,6 +67,23 @@ public static class Moogle
     
         return FreqWordsQuery;
     } 
+    // * Actualiza la frecuencia de las palabras de la query que son afectadas por el operador *
+    private static void UpdateFreqForOperatorRelevance(Dictionary<string, int> Freq, string query) {
+        string[] partsOfQuery = query.Split(' ');
+        for(int i = 0; i < partsOfQuery.Length; i ++) {
+            string v = partsOfQuery[i];
+            System.Console.WriteLine(v);
+            if(!AuxiliarMethods.IsLineOperators(v)) continue;
+
+            int count = 0;
+            foreach(char c in v) if(c == '*') count ++;
+            if(i + 1 < partsOfQuery.Length) {
+                Freq[ Lemmatization.Stemmer(partsOfQuery[i + 1]) ] += count;
+                System.Console.WriteLine( "{0} {1}", Freq[Lemmatization.Stemmer(partsOfQuery[i + 1])], Lemmatization.Stemmer(partsOfQuery[i + 1]) );
+            }
+        }
+    }
+    //* Devuleve el vector con los pesos(score) de las palabras del documento
     public static float[] GetWeigthOfQuery(ref Dictionary<string, int> FreqWordsQuery) {
             
         int MaxFreq = 0;
@@ -87,6 +104,7 @@ public static class Moogle
 
         return wQuery;
     }
+    //* Devuelve la similitud del vector peso de la query con el de los documentos
     public static Tuple<float, int>[] GetSimBetweenQueryDocs( float[] wQuery, float[,] wDocs){
 
         Tuple<float, int>[] sim = new Tuple<float, int>[Data.TotalFiles];
@@ -101,6 +119,7 @@ public static class Moogle
         
         return sim;
     }
+    //* Devuelve una query y una sugerencia nueva apoyandoce de los sinonimos y si la palabra esta mal escrita
     private static (string, string) GetNewQueryAndSuggestion(string query) {
         string suggestion = "";
         string newQuery  = "";
@@ -177,6 +196,7 @@ public static class Moogle
 
         return (newQuery, suggestion);
     }
+    //* Agrupa los resultados de las busquedas en un array
     private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs, string query) {
         List<SearchItem> items = new List<SearchItem>();
         string[] wordsOfQuery = AuxiliarMethods.GetWordsOfSentence(query);
@@ -277,26 +297,6 @@ public static class Moogle
         }
 
         return items.ToArray();
-    }
-    private static void NormalizeData( Dictionary< Tuple<int, int>, float > MemoryChange) {
-        foreach(KeyValuePair< Tuple<int, int>, float > mc in MemoryChange) 
-            Data.wDocs[ mc.Key.Item1, mc.Key.Item2 ] = mc.Value;
-    }
-
-    private static void UpdateFreqForOperatorRelevance(Dictionary<string, int> Freq, string query) {
-        string[] partsOfQuery = query.Split(' ');
-        for(int i = 0; i < partsOfQuery.Length; i ++) {
-            string v = partsOfQuery[i];
-            System.Console.WriteLine(v);
-            if(!AuxiliarMethods.IsLineOperators(v)) continue;
-
-            int count = 0;
-            foreach(char c in v) if(c == '*') count ++;
-            if(i + 1 < partsOfQuery.Length) {
-                Freq[ Lemmatization.Stemmer(partsOfQuery[i + 1]) ] += count;
-                System.Console.WriteLine( "{0} {1}", Freq[Lemmatization.Stemmer(partsOfQuery[i + 1])], Lemmatization.Stemmer(partsOfQuery[i + 1]) );
-            }
-        }
     }
 
     #endregion
