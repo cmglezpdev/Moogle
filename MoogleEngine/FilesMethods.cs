@@ -25,6 +25,7 @@ public static class FilesMethods {
         
         string archive = File.ReadAllText(file);
         string[] lines = archive.Split('\n');
+        Data.PosInDocs[idFile] = new Dictionary<string, info>();
 
         int TotalLines = lines.Length;
         
@@ -180,10 +181,6 @@ public static class FilesMethods {
     public static string GetContext(int idFile, int numLine, int numWord, int length) {
         return GetLeftContext(idFile, numLine, numWord, length / 2, true) + 
                GetRightContext(idFile, numLine, numWord, length / 2, false);
-    }
-    public static float GetScore(float[] iWDoc, float[] wQuery) {
-        // Si la query no continene operadores
-        return info.Sim(ref iWDoc, ref wQuery);
     }
 
 }

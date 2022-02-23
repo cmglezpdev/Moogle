@@ -125,7 +125,7 @@ public static class WorkingOperators {
                 // Si es una palabra que no esta en ningun documento..
                 // El operador tiene que ser diferente al de cercania porque en ese operador se guarda
                 // mas de una palabra y ese string nunca va a estar en el diccionario
-                if(opers != "~" && !Data.IdxWords.ContainsKey(word)) continue; 
+                if(opers != "~" && !AuxiliarMethods.IsWordInDocs(word)) continue; 
                 
                 // recorrer los operadores e ir aplicando uno por uno   
                 foreach(char op in opers) {
@@ -154,7 +154,7 @@ public static class WorkingOperators {
                             //? Poner en las palabras para la cercania las que no tengan operador
                             for(int wi = 0; wi < SubWords.Length; wi ++) {
                                 
-                                if(!Data.IdxWords.ContainsKey(SubWords[wi])) continue;
+                                if(!AuxiliarMethods.IsWordInDocs(SubWords[wi])) continue;
                                 
                                 // Si no es una palabra de las que tienen operadores entonces la agrego a la lista si aparece en el documento
                                 bool found = false;
@@ -166,7 +166,7 @@ public static class WorkingOperators {
                                 
                                 if( found ) continue;
                                 
-                                if( Data.PosInDocs[doc][ Data.IdxWords[ SubWords[wi] ] ].AmountAppareance > 0 )
+                                if( Data.PosInDocs[doc].ContainsKey(SubWords[wi]) )
                                     wordsForCloseness.Add(SubWords[wi]);
                             }
 
@@ -176,15 +176,15 @@ public static class WorkingOperators {
                                 string o = OpersAndWords[i].Item1;
                                 string w = OpersAndWords[i].Item2;
                                 
-                                if(!Data.IdxWords.ContainsKey(w)) continue;
+                                if(!AuxiliarMethods.IsWordInDocs(w)) continue;
 
                                 // Si la palabra no esta en el documento entonces la omitimos para la cercania
-                                if( Data.PosInDocs[doc][ Data.IdxWords[w] ].AmountAppareance == 0 )
+                                if( !Data.PosInDocs[doc].ContainsKey(w) )
                                     continue;
 
                                 if(o == "!") {
                                     // Si la palabra aparece en el documento entonces el operador de cercania de todas las palabras queda invalidado
-                                    if( Data.PosInDocs[doc][ Data.IdxWords[w] ].AmountAppareance > 0 ) {
+                                    if( Data.PosInDocs[doc].ContainsKey(w) ) {
                                          ProcessOperator('!', w, doc, sim);
                                         break;
                                     }
@@ -247,14 +247,14 @@ public static class WorkingOperators {
             //?  La palabra no puede aparecer en ningun documento que sea devuelto
             case '!':
                 // Si la palabra esta en el documento entonces igualamos score a cero para que ese documento no salga
-                if( Data.wDocs[doc, Data.IdxWords[word]] > 0.00f )  
+                if(Data.PosInDocs[doc].ContainsKey(word))
                     sim[doc] = new Tuple<float, int> (0.00f, doc);
                 break;
 
             //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
             case '^': 
                 // Si la palabra no esta en el doc entonces igualamos el score a cero para que ese documento no salga
-                if(Data.wDocs[doc, Data.IdxWords[word]] == 0.00f)
+                if(!Data.PosInDocs[doc].ContainsKey(word))
                     sim[doc] = new Tuple<float, int> (0.00f, doc);
                 break;
 
@@ -294,9 +294,9 @@ public static class WorkingOperators {
 
 
         foreach(string words in wordsForCloseness) {
-            int n = Data.PosInDocs[doc][ Data.IdxWords[words] ].AmountAppareance;
+            int n = Data.PosInDocs[doc][ words ].AmountAppareance;
             for(int i = 0; i < n; i ++) {
-                (int x, int y) = Data.PosInDocs[doc][ Data.IdxWords[words] ].nthAppareance(i);
+                (int x, int y) = Data.PosInDocs[doc][ words ].nthAppareance(i);
                 posiciones.Add( new Tuple<int, int, string>( x, y, words ) );
             }
         }

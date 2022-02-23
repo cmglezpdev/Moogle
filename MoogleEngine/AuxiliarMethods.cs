@@ -3,6 +3,27 @@ namespace MoogleEngine;
 
 public static class AuxiliarMethods{
 
+    public struct two{
+        private int first;
+        private int second;
+        public two() {
+            this.first = this.second = 0;
+        }
+        public two(int x, int y) {
+            this.first = x;
+            this.second = y;
+        }
+    
+        public int First {
+            get{ return this.first;}
+            set{this.first = value;}
+        }
+        public int Second {
+            get{ return this.second;}
+            set{this.second = value;}
+        }
+  
+    }
 
     // Extraer todas las palabras de una oracion
     public static string[] GetWordsOfSentence(string sentence) {
@@ -264,6 +285,14 @@ public static class AuxiliarMethods{
             return BinarySearch(list, word, l, piv);
         else
             return BinarySearch(list, word, piv + 1, r);
+    }
+
+    public static bool IsWordInDocs(string word) {
+        for(int i = 0; i < Data.TotalFiles; i ++) {
+            if(Data.PosInDocs[i].ContainsKey(word))
+                return true;
+        }
+        return false;
     }
 
 }

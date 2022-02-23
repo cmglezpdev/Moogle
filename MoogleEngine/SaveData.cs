@@ -41,29 +41,26 @@ static public class Data {
             FilesMethods.ReadContentFile(files[doc], doc, Aux);
         OriginalWordsDocs.Sort();
 
-        //!  Matriz peso de los documentos
-        wDocs = GetWeigthOfDocs();
+        //!  Calcular peso de los documentos
+       GetWeigthOfDocs();
 
         //! Cargar la base de datos de sinonimos
         Synonyms = new WorkingSynonyms("../SynonymsDB/synonyms_db.json");
 
     }
-    public static float[,] GetWeigthOfDocs() {
+    public static void GetWeigthOfDocs() {
 
-        float[,] wDocs = new float[TotalFiles, TotalWords];
-        
         for(int doc = 0; doc < TotalFiles; doc ++) {
             // Frecuencia maxima en el documento
             int MaxFreq = 0;
             foreach(var i in PosInDocs[doc]) 
                 MaxFreq = Math.Max(MaxFreq, PosInDocs[doc][i.Key].AmountAppareance);
-
+            
             // Calcular el peso de cada palabra en el documento
             foreach(var i in PosInDocs[doc])
-                PosInDocs[doc][i.Key].TFIDF(i.Key, doc, MaxFreq);
+                PosInDocs[doc][i.Key].WeigthWord = info.TFIDF(i.Key, MaxFreq, i.Value.AmountAppareance);
         }
 
-        return wDocs;
     }
 
 }
