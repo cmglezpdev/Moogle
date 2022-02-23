@@ -119,7 +119,7 @@ public static class WorkingOperators {
 
 
     //* Procesar todos los operadores de la query para cada documento
-    public static void ChangeForOperators( List< Tuple<string, string> > operators, Dictionary< Tuple<int, int>, float > MemoryChange,  Tuple<float, int>[] sim) {
+    public static void ChangeForOperators( List< Tuple<string, string> > operators,  Tuple<float, int>[] sim) {
 
         for(int doc = 0; doc < Data.TotalFiles; doc ++){
 
@@ -138,15 +138,15 @@ public static class WorkingOperators {
                     switch( op ) {
                         //?  La palabra no puede aparecer en ningun documento que sea devuelto 
                         case '!':
-                            ProcessOperator('!', word, doc, MemoryChange, sim);
+                            ProcessOperator('!', word, doc, sim);
                             break;
                         //?  La palabra tiene que aparecer en cualquier documento que sea devuleto
                         case '^': 
-                            ProcessOperator('^', word, doc, MemoryChange, sim);
+                            ProcessOperator('^', word, doc, sim);
                             break;
                         //?  Aumentar la relevancia del documento que tiene esa palabra
                         case '*':
-                            ProcessOperator('*', word, doc, MemoryChange, sim);
+                            ProcessOperator('*', word, doc, sim);
                             break; 
                         
                         //? Aumentar la relevancia del documento mientras mas cercanas esten las palabras
@@ -190,7 +190,7 @@ public static class WorkingOperators {
                                 if(o == "!") {
                                     // Si la palabra aparece en el documento entonces el operador de cercania de todas las palabras queda invalidado
                                     if( Data.PosInDocs[doc][ Data.IdxWords[w] ].AmountAppareance > 0 ) {
-                                         ProcessOperator('!', w, doc, MemoryChange, sim);
+                                         ProcessOperator('!', w, doc, sim);
                                         break;
                                     }
                                      continue;                                    
@@ -198,7 +198,7 @@ public static class WorkingOperators {
 
                                 // Solo nos queda por aplicar los operadores ^ y * en caso de que los tenga
                                 foreach(char x in o) 
-                                    ProcessOperator(x, w, doc, MemoryChange, sim);
+                                    ProcessOperator(x, w, doc, sim);
 
                                 // anadimos las palabras a una lista para calcular la cercania
                                 wordsForCloseness.Add(w);
@@ -211,7 +211,7 @@ public static class WorkingOperators {
                             foreach(string x in wordsForCloseness)
                                 aux += x + " ";
 
-                            ProcessOperator('~', aux, doc, MemoryChange, sim);
+                            ProcessOperator('~', aux, doc, sim);
                         break;
 
                         default: break;
@@ -249,7 +249,7 @@ public static class WorkingOperators {
     }
     
     //* Funcion Auxiliar para actualizar el score de los documentos para un operador
-    public static void ProcessOperator(char op, string word, int doc, Dictionary< Tuple<int, int>, float > MemoryChange, Tuple<float, int>[] sim) {
+    public static void ProcessOperator(char op, string word, int doc, Tuple<float, int>[] sim) {
         switch( op ) {
             //?  La palabra no puede aparecer en ningun documento que sea devuelto
             case '!':
@@ -267,12 +267,7 @@ public static class WorkingOperators {
 
             // //?  Aumentar la relevancia del documento que tiene esa palabra
             case '*':
-                // Si la palabra aparece en el doc entonces aumentamos un 20% su socre
-                if(Data.wDocs[doc, Data.IdxWords[word] ] > 0.00f) {
-                    Data.wDocs[doc, Data.IdxWords[word]] += Data.wDocs[doc, Data.IdxWords[word]] * 1f/5f; // Actualizar el peso de la palabra especificamente
-                    MemoryChange[ new Tuple<int, int>(doc, Data.IdxWords[word]) ] = sim[doc].Item1;
-                    sim[doc] = new Tuple<float, int>( sim[doc].Item1 + sim[doc].Item1 * 1f/5f, sim[doc].Item2 ); // Actualizar el peso del documento
-                }
+                // No hacemos nada, ya que aumentamos la relevancia(cantidad de apariciones en la query) en pasos previos
                 break;   
 
             //? Calcular la cercania 

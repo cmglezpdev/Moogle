@@ -7,16 +7,19 @@ public static class Moogle
 
     public static SearchResult Query(string query)
     {
-        // System.Console.WriteLine(query);
-
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
+        System.Console.WriteLine();
+        System.Console.WriteLine(formatQuery);
+        System.Console.WriteLine();
 
         // ! Calcular el suggestion por las palabras que no aparecen en el documento
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery);
 
         //! Frecuencia de las palabras de la query
         Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( query );
+        //! Metodo que lo unico que hace es aumentar la cantidad de apariciones de la palabra por cada operador * que aparezca
+        UpdateFreqForOperatorRelevance(FreqWordsQuery, query); 
 
         //! Matriz peso del query
         float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
@@ -27,11 +30,8 @@ public static class Moogle
         // !Modificar el peso de los documentos en base a cada operador del query
         List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
 
-        // Guardar los cambios que se le hacen a los pesos de los documentos para despues volverlos al valor inicial
-        Dictionary< Tuple<int, int>, float > MemoryChange = new Dictionary<Tuple<int, int>, float>();
-        
         //! Realizar los cambios correspondientes a cada operador
-        WorkingOperators.ChangeForOperators( operators, MemoryChange, sim);
+        WorkingOperators.ChangeForOperators( operators, sim);
 
 
         //! Ordenar los scores por scores
@@ -40,9 +40,6 @@ public static class Moogle
 
         //! Construir el resultado
         SearchItem[] items = BuildResult( sim, FreqWordsQuery, Data.wDocs, query);
-
-        //! Devolver a los valores originales a los scores que ya fueron modificados 
-        NormalizeData(MemoryChange);
 
         // //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
         if(suggestion == query) suggestion = ""; 
@@ -70,7 +67,7 @@ public static class Moogle
     
         return FreqWordsQuery;
     } 
-    private static float[] GetWeigthOfQuery(ref Dictionary<string, int> FreqWordsQuery) {
+    public static float[] GetWeigthOfQuery(ref Dictionary<string, int> FreqWordsQuery) {
             
         int MaxFreq = 0;
         foreach(KeyValuePair<string, int> PairWordFreq in FreqWordsQuery)
@@ -90,7 +87,7 @@ public static class Moogle
 
         return wQuery;
     }
-    private static Tuple<float, int>[] GetSimBetweenQueryDocs( float[] wQuery, float[,] wDocs){
+    public static Tuple<float, int>[] GetSimBetweenQueryDocs( float[] wQuery, float[,] wDocs){
 
         Tuple<float, int>[] sim = new Tuple<float, int>[Data.TotalFiles];
         for(int doc = 0; doc < Data.TotalFiles; doc ++) {
@@ -284,6 +281,22 @@ public static class Moogle
     private static void NormalizeData( Dictionary< Tuple<int, int>, float > MemoryChange) {
         foreach(KeyValuePair< Tuple<int, int>, float > mc in MemoryChange) 
             Data.wDocs[ mc.Key.Item1, mc.Key.Item2 ] = mc.Value;
+    }
+
+    private static void UpdateFreqForOperatorRelevance(Dictionary<string, int> Freq, string query) {
+        string[] partsOfQuery = query.Split(' ');
+        for(int i = 0; i < partsOfQuery.Length; i ++) {
+            string v = partsOfQuery[i];
+            System.Console.WriteLine(v);
+            if(!AuxiliarMethods.IsLineOperators(v)) continue;
+
+            int count = 0;
+            foreach(char c in v) if(c == '*') count ++;
+            if(i + 1 < partsOfQuery.Length) {
+                Freq[ Lemmatization.Stemmer(partsOfQuery[i + 1]) ] += count;
+                System.Console.WriteLine( "{0} {1}", Freq[Lemmatization.Stemmer(partsOfQuery[i + 1])], Lemmatization.Stemmer(partsOfQuery[i + 1]) );
+            }
+        }
     }
 
     #endregion

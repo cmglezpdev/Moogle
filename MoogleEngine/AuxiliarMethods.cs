@@ -58,6 +58,9 @@ public static class AuxiliarMethods{
             if(Char.IsLetterOrDigit(format[i - 1]) && WorkingOperators.IsOperator(format[i])) {
                 format.Insert(i, ' ');
             }
+            if(WorkingOperators.IsOperator(format[i - 1]) && Char.IsLetterOrDigit(format[i])) {
+                format.Insert(i, ' ');
+            }
 
         }
 
