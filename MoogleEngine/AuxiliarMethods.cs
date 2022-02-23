@@ -31,10 +31,19 @@ public static class AuxiliarMethods{
       public static string FormatQuery(string q) {
         string query = q.ToLower();
 
-        string[] partsOfQuery = query.Split(' ');   
-        int n = partsOfQuery.Length;
+        string[] aux = query.Split(' ');
+        string[] partsOfQuery = new string[aux.Length];
+        
+        int n = 0;
+        // Eliminar las cadenas vacias que me deja el Split
+        for(int i = 0; i < aux.Length; i ++) {
+            if(aux[i] == "") continue;
+            partsOfQuery[n ++] = aux[i];
+        }   
+        Array.Resize(ref partsOfQuery, n);
 
         StringBuilder format = new StringBuilder(partsOfQuery[0]);
+        // Insertar y eliminar los espacios en blanco donde van
         for(int i = 1; i < n; i ++) {
             int lastPos = partsOfQuery[i - 1].Length - 1;
 
@@ -48,8 +57,8 @@ public static class AuxiliarMethods{
             format.Append(partsOfQuery[i]);
         }
 
+        // cambiar los signos de puntuacion por un espacio e insetar espacion en donde los necesite
         for(int i = 1; i < format.Length; i ++) {
-            // Si es un signo de puntuacion lo elimino e inserto un espacio en blanco
             if(Char.IsPunctuation(format[i]) && !WorkingOperators.IsOperator(format[i])) {
                 format.Remove(i, 1);
                 format.Insert(i, ' ');
