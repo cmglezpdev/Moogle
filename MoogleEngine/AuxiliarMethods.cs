@@ -191,15 +191,12 @@ public static class AuxiliarMethods{
         b = aux;
     }
     public static int AmountAppareanceOfWordBetweenAllFiles(string word) {
-        if(!Data.IdxWords.ContainsKey(word)) 
-            return 0;
-            
         int count = 0;
-        int idx = Data.IdxWords[ word ];
-        for(int doc = 0; doc < Data.TotalFiles; doc ++)
-            if(Data.PosInDocs[doc][ idx ].AmountAppareance != 0)
-                count ++;
-        return count;
+        for(int i = 0; i < Data.TotalFiles; i ++) {
+            if(Data.PosInDocs[i].ContainsKey(word)) count ++;
+        }
+        
+        return count;   
     }
 
     public static string GetWord(string sentence, int pos, string direction) {
