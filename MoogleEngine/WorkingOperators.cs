@@ -202,10 +202,10 @@ public static class WorkingOperators {
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
                             
-                            string aux = "";
+                            string aux = ""; // Anadir la cantidad de palabras originales de la cercania
                             foreach(string x in wordsForCloseness)
                                 aux += x + " ";
-
+                            aux += SubWords.Length.ToString();
                             ProcessOperator('~', aux, doc, sim);
                         break;
 
@@ -265,10 +265,16 @@ public static class WorkingOperators {
 
             //? Calcular la cercania 
             case '~':
-                string[] wordsForCloseness = AuxiliarMethods.GetWordsOfSentence(word);                
-                (float minDistance, Tuple<int, int>[] aux) = ProcessCloseness(wordsForCloseness, doc);
-                float score = sim[doc].Item1;
-                sim[doc] = new Tuple<float, int> ( score + 1.00f / (float)minDistance, doc);
+                string[] aux = AuxiliarMethods.GetWordsOfSentence(word);
+                int CntWordsOriginalsForCloseness = int.Parse(aux[ aux.Length - 1 ]);
+
+                string[] wordsForCloseness = new String[ aux.Length - 1 ];
+                for(int i = 0; i < aux.Length - 1; i ++)
+                    wordsForCloseness[i] = aux[i];
+
+                (float minDistance, _) = ProcessCloseness(wordsForCloseness, doc);
+                float score = ((float)wordsForCloseness.Length / (float)CntWordsOriginalsForCloseness) / sim[doc].Item1; // Mientras mas palabras tengan mas score tendera
+                sim[doc] = new Tuple<float, int> ( score + 100.00f / (float)minDistance, doc); // Minetras mas cercano mas score tendra
 
                 break;
 

@@ -9,9 +9,6 @@ public static class Moogle
     {
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
-        System.Console.WriteLine();
-        System.Console.WriteLine(formatQuery);
-        System.Console.WriteLine();
 
         // ! Calcular el suggestion por las palabras que no aparecen en el documento
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery);
@@ -72,14 +69,12 @@ public static class Moogle
         string[] partsOfQuery = query.Split(' ');
         for(int i = 0; i < partsOfQuery.Length; i ++) {
             string v = partsOfQuery[i];
-            System.Console.WriteLine(v);
             if(!AuxiliarMethods.IsLineOperators(v)) continue;
 
             int count = 0;
             foreach(char c in v) if(c == '*') count ++;
             if(i + 1 < partsOfQuery.Length) {
                 Freq[ Lemmatization.Stemmer(partsOfQuery[i + 1]) ] += count;
-                System.Console.WriteLine( "{0} {1}", Freq[Lemmatization.Stemmer(partsOfQuery[i + 1])], Lemmatization.Stemmer(partsOfQuery[i + 1]) );
             }
         }
     }
