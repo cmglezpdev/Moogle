@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 public static class Moogle
 {
-
     public static SearchResult Query(string query)
     {
         Stopwatch crono = new Stopwatch();
@@ -25,6 +24,11 @@ public static class Moogle
 
         //! Matriz peso del query
         float[] wQuery = GetWeigthOfQuery( ref FreqWordsQuery );
+        //! Modificar el peso de las palabras que fueron anadiddas por los sinonimos
+        foreach(var v in SynonymsToModif) {
+            System.Console.WriteLine("here!!!");
+            wQuery[  Data.IdxWords[v.Item1] ] -= (v.Item2 / 100f * wQuery[ Data.IdxWords[v.Item1] ]);
+        }
 
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(wQuery, Data.wDocs);
@@ -34,7 +38,6 @@ public static class Moogle
 
         //! Realizar los cambios correspondientes a cada operador
         WorkingOperators.ChangeForOperators( operators, sim);
-
 
         //! Ordenar los scores por scores
         Array.Sort(sim);
