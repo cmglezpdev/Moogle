@@ -29,17 +29,18 @@ public struct info {
     
 
 
-    public static float TFIDF(int IndexWord, int MaxFreq, int wFreq, ref List<List<info>> PosInDocs) {
+    public float TFIDF(string word, int doc, int MaxFreq) {
         float tfidf = 0.00f;
 
         if(MaxFreq == 0)  // El documento esta en blanco 
             return tfidf;
 
-        float tf = (float)wFreq / (float)MaxFreq;
-        int ni = 0, n = PosInDocs.Count;
+        float tf = (float)this.AmountAppareance / (float)MaxFreq;
+        int ni = 0, n = Data.TotalFiles;
 
-        for(int i = 0; i < n; i ++) 
-           if(PosInDocs[i][IndexWord].AmountAppareance > 0) ni ++;
+        for(int i = 0; i < n; i ++) {
+           if(Data.PosInDocs[doc].ContainsKey(word)) ni ++;
+        }
         
         double division = (double)n / (double)ni;
         float idf = (float)Math.Log10(division);

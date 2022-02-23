@@ -30,24 +30,16 @@ static public class Data {
         files = FilesMethods.ReadFolder();
         TotalFiles = files.Length;
         
-        //! Redimencionar la matrix de las apariciones en la cantidad de documentos que son
+        //! Redimencionar la matrix a la cantidad de documentos que son
         for(int doc = 0; doc < TotalFiles; doc ++) {
             CntWordsForLines.Add( new List<int>() );
         }
 
-
-        //! Guardar todas las palabras de todos los documentos en la matrix
+        //! Guardar todas las palabras de todos los documentos
         Dictionary<string, bool> Aux = new Dictionary<string, bool>();
         for(int doc = 0; doc < TotalFiles; doc ++)
             FilesMethods.ReadContentFile(files[doc], doc, Aux);
         OriginalWordsDocs.Sort();
-
-        // //! Redimencionar la lista de palabras de todos los documentos al maximo posible
-        TotalWords = IdxWords.Count;
-        for(int doc = 0; doc < TotalFiles; doc ++) {
-            int n = PosInDocs[doc].Count;
-            AuxiliarMethods.Resize(PosInDocs, doc, TotalWords - n);
-        }
 
         //!  Matriz peso de los documentos
         wDocs = GetWeigthOfDocs();
@@ -63,13 +55,12 @@ static public class Data {
         for(int doc = 0; doc < TotalFiles; doc ++) {
             // Frecuencia maxima en el documento
             int MaxFreq = 0;
-            for(int i = 0; i < TotalWords; i ++) 
-                MaxFreq = Math.Max(MaxFreq, PosInDocs[doc][i].AmountAppareance);
+            foreach(var i in PosInDocs[doc]) 
+                MaxFreq = Math.Max(MaxFreq, PosInDocs[doc][i.Key].AmountAppareance);
 
             // Calcular el peso de cada palabra en el documento
-            for(int IdxW = 0; IdxW < TotalWords; IdxW ++) {
-                wDocs[doc, IdxW] = info.TFIDF(IdxW, MaxFreq, PosInDocs[doc][IdxW].AmountAppareance, ref PosInDocs);
-            } 
+            foreach(var i in PosInDocs[doc])
+                PosInDocs[doc][i.Key].TFIDF(i.Key, doc, MaxFreq);
         }
 
         return wDocs;
