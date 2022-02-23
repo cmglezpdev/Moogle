@@ -1,17 +1,22 @@
 ﻿namespace MoogleEngine;
 using System.Text.Json;
 using System.Text;
+using System.Diagnostics;
 
 public static class Moogle
 {
 
     public static SearchResult Query(string query)
     {
+        Stopwatch crono = new Stopwatch();
+        crono.Start();
+
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
 
-        // ! Calcular el suggestion por las palabras que no aparecen en el documento
-        (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery);
+        //! Calcular el suggestion por las palabras que no aparecen en el documento
+        List< Tuple<string, int> > SynonymsToModif = new List<Tuple<string, int>> ();
+        (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery, SynonymsToModif);
 
         //! Frecuencia de las palabras de la query
         Dictionary<string, int> FreqWordsQuery = GetFreqWordsInQuery( query );
@@ -38,9 +43,9 @@ public static class Moogle
         //! Construir el resultado
         SearchItem[] items = BuildResult( sim, FreqWordsQuery, Data.wDocs, query);
 
-        // //! Si no ubieron palabras mal escritas entonces no hay que mostrar sugerencia
-        if(suggestion == query) suggestion = ""; 
-
+        System.Console.WriteLine(crono.ElapsedMilliseconds);
+        crono.Stop();
+        
         return new SearchResult(items, suggestion);
     }
 
@@ -115,11 +120,13 @@ public static class Moogle
         return sim;
     }
     //* Devuelve una query y una sugerencia nueva apoyandoce de los sinonimos y si la palabra esta mal escrita
-    private static (string, string) GetNewQueryAndSuggestion(string query) {
+    private static (string, string) GetNewQueryAndSuggestion(string query, List<Tuple<string, int>> SynomymsToModif) {
         string suggestion = "";
         string newQuery  = "";
 
         string[] words = query.Split(' ');
+        // Se vuelve true si hay que devolver alguna sugerencia
+        bool foundSuggestion = false;
 
         for(int i = 0; i < words.Length; i ++) {
             if(AuxiliarMethods.IsLineOperators(words[i])) {
@@ -127,70 +134,113 @@ public static class Moogle
                 newQuery += (words[i] + ' ');
                 continue;
             }
-
-            newQuery += (words[i] + " ");
             string lemman = Lemmatization.Stemmer(words[i]);
 
-            //? Si la palabra esta entonces, si tiene pocas apariciones, buscar sinonimos 
-            if(Data.IdxWords.ContainsKey( lemman )) {
+            if(Data.IdxWords.ContainsKey(lemman)) {
+                suggestion += (words[i] + ' ');
+                newQuery += (words[i] + ' ');
             
-                suggestion += (words[i] + " ");
-                
+                // Si tiene pocas apariciones busco un sinonimo
                 double TwentyPercent = (double)((2.00/10.00f) * (double)Data.TotalFiles);
-                // Si la cantidad de documentos en las que aparece la palabra es menor al 30% entonces busco un sinonimo
                 if( AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lemman) <= TwentyPercent ) {
-
+                    // Si tiene el operador ! o el operador ~ no necesito el sinonimo
+                    if( i - 1 >= 0 && (words[i - 1] == "!" || words[i - 1][0] == '~') ) 
+                        continue;
+                   
                     string[] Syn = Data.Synonyms.GetSynonymsOf(words[i]);
-                    List< Tuple<int, string, string> > aux = new List< Tuple<int, string, string> >();
-                    
-                    foreach(string sin in Syn) {
-                        string lem = Lemmatization.Stemmer(sin);
-                        // Si no esta en ningun documento lo omito
+                    if(Syn.Length == 0 ) continue;
+        
+                    string bestSyn = "";
+                    int bestAppar = 0;
+                    foreach(string s in Syn) {
+                        string lem = Lemmatization.Stemmer(s);
                         if( !Data.IdxWords.ContainsKey(lem) ) continue;
-                        aux.Add(new Tuple<int, string, string>( AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lem), lem, sin ));
-                    }
-
-                    aux.Sort();
-                    aux.Reverse();
-
-                    if(i - 1 >= 0 && AuxiliarMethods.IsLineOperators(words[i - 1])) {
-                        int CntOfSynonymsForTheQuery = 1;
-                        for(int j = 0; j < aux.Count && j < CntOfSynonymsForTheQuery; j ++) {
-                            if(AuxiliarMethods.IsLineOperators(words[i - 1]))
-                                newQuery += words[i - 1] + " ";
-                            newQuery += aux[i] + " ";
+                        int aa = AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lem);
+                        if(aa >= bestAppar) {
+                            bestAppar = aa;
+                            bestSyn = s;
                         }
                     }
-                
-                } 
-            } else {
 
-                // ? Comprobar si esta mal escrita
-                int bestCost = int.MaxValue;
-                string SugWord = words[i];
-
-                int umbralChange = 2;
-                foreach(var wd in Data.OriginalWordsDocs) {
-                    int cost = AuxiliarMethods.LevenshteinDistance(words[i], wd);
-                    if(cost > umbralChange) continue;
-
-                    if(cost < bestCost) {
-                        bestCost = cost;
-                        SugWord = wd;
-                    }
+                    if(i - 1 >= 0 && AuxiliarMethods.IsLineOperators(words[i - 1]))
+                        newQuery += (words[i - 1] + " ");
+                    newQuery += (bestSyn = " ");
+                    // Anado la palabra a la lista para bajarle el score mas adelante
+                    SynomymsToModif.Add(new Tuple<string, int>(bestSyn, 20));
                 }
-
-                suggestion += SugWord + " ";
             }
+            else {
+                // Si no aparece compruebo si tiene algun sinonimo
+                if( i - 1 >= 0 && (words[i - 1] == "!" || words[i - 1][0] == '~') ) 
+                     continue;
+                string[] Syn = Data.Synonyms.GetSynonymsOf(words[i]);
+                if(Syn.Length > 0 ) {
+                    // Existe sinonimo, asi que busco uno
+                    string bestSyn = words[i];
+                    int bestAppar = 0;
+                    foreach(string s in Syn) {
+                        string lem = Lemmatization.Stemmer(s);
+                        if( !Data.IdxWords.ContainsKey(lem) ) continue;
+                        int aa = AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lem);
+                        if(aa >= bestAppar) {
+                            bestAppar = aa;
+                            bestSyn = s;
+                        }
+                    }
+                    
+                    if( bestSyn != words[i] && i - 1 >= 0 && AuxiliarMethods.IsLineOperators(words[i - 1]))
+                        newQuery += (words[i - 1] + " ");
+                    newQuery += (bestSyn + ' ');
+                    // Anado la palabra a la lista para bajarle el score mas adelante
+                    SynomymsToModif.Add(new Tuple<string, int>(bestSyn, 50));
+                }
+                else {
+                    if( i - 1 >= 0 && (words[i - 1] == "!" || words[i - 1][0] == '~') ) 
+                        continue;
+                    // Si no tiene sinonimos entonces veo si esta mal escrita
+                    foundSuggestion = true;
+                    // System.Console.WriteLine("Here!!");
+                    newQuery += (words[i] + " ");
+                    // Comprobar si esta mal escrita
+                    int bestCost = int.MaxValue;
+                    string SugWord = words[i];
+                    int AmountAppareance = 0;
 
-         
-       }
+                    int umbralChange = 2;
+                    foreach(var wd in Data.OriginalWordsDocs) {
+                        int cost = AuxiliarMethods.LevenshteinDistance(words[i], wd);
+                        if(cost > umbralChange) continue;
 
-        if(suggestion[ suggestion.Length - 1 ] == ' ') suggestion = suggestion.Substring(0, suggestion.Length - 1);
+                        if(cost < bestCost) {
+                            // Quedarme tambien con la de mayor apariciones
+                            int aa = AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lemman);
+                            if(aa >= AmountAppareance) {
+                                bestCost = cost;
+                                SugWord = wd;
+                            }
+                        }
+                    }
+
+                    suggestion += SugWord + " ";
+                }
+            }
+        }
+        System.Console.WriteLine(foundSuggestion);
+
+        if( foundSuggestion ) {
+             if(suggestion[ suggestion.Length - 1 ] == ' ') suggestion = suggestion.Substring(0, suggestion.Length - 1);
+        }
+        else suggestion = "";
+        
         if(newQuery[ newQuery.Length - 1 ] == ' ') newQuery = newQuery.Substring(0, newQuery.Length - 1);
 
         return (newQuery, suggestion);
     }
+
+
+
+
+
     //* Agrupa los resultados de las busquedas en un array
     private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, int> FreqWordsQuery, float[,] wDocs, string query) {
         List<SearchItem> items = new List<SearchItem>();
