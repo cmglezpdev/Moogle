@@ -36,10 +36,6 @@ public static class Moogle
             FreqAndWeigthWordsQuery[lem] = new Tuple<int, float>( freq , weight - (v.Item2 / 100f * weight));
         }
 
-        // foreach (var item in FreqAndWeigthWordsQuery) {
-        //     System.Console.WriteLine(item);
-        // }
-
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(FreqAndWeigthWordsQuery);
 
@@ -50,13 +46,13 @@ public static class Moogle
         //! Realizar los cambios correspondientes a cada operador
         WorkingOperators.ChangeForOperators( operators, sim);
 
-        //! Ordenar los scores por scores
-        Array.Sort(sim);
-        Array.Reverse(sim);
+        // //! Ordenar los scores por scores
+        // Array.Sort(sim);
+        // Array.Reverse(sim);
 
         //! Construir el resultado
         SearchItem[] items = BuildResult( sim, FreqAndWeigthWordsQuery, query);
-
+        
         // System.Console.WriteLine(crono.ElapsedMilliseconds);
         // crono.Stop();
 
@@ -246,7 +242,7 @@ public static class Moogle
         string[] wordsOfQuery = AuxiliarMethods.GetWordsOfSentence(query);
 
         for(int i = 0; i < Data.TotalFiles; i ++) {
-           // Si ninguna de las palabras estan en el documento     
+           // Si este documento no hay que mostrarlo   
            if(sim[i].Item1 == 0.00f) continue;
 
             float score = 0.00f;
