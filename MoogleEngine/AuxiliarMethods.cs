@@ -95,15 +95,8 @@ public static class AuxiliarMethods{
 
         return format.ToString();
     }
-    
-    public static bool IsWord(string l) {
-        foreach(char c in l) {
-            if(!Char.IsLetterOrDigit(c))
-                return false;
-        }
-        return true;
-    }
 
+    //! True si el string es una cadena de operadores
     public static bool IsLineOperators(string l) {
         if(l == "") return false;
 
@@ -115,16 +108,20 @@ public static class AuxiliarMethods{
     }
 
 
+    //! True si el caracter no pertenece a una palabra
     public static bool Ignore(char x) {
         return !Char.IsLetterOrDigit(x);
     }
-    // Comprobar que una linea del fichero es o no una linea en blanco
+   
+    //! Comprobar que una linea del fichero es o no una linea en blanco
     public static bool IsLineWhite(string line) {
         for(int i = 0; i < line.Length; i ++)
             if(!Char.IsWhiteSpace(line[i])) 
                 return false;
         return true;
     }
+   
+    //! Llevar una palabra a minusculas y sin tildes
     public static string NormalizeWord(string word) {
         string w = word.ToLower();
         string newWord = "";
@@ -154,7 +151,8 @@ public static class AuxiliarMethods{
 
         return newWord;
     }
-   // La palabra que empieza a partir de esa posicion
+   
+   //! La palabra que empieza a partir de esa posicion
     public static string GetWordStartIn(string sentence, int start) {
         if(start >= sentence.Length)
             throw new Exception("Posicion no valida");
@@ -165,7 +163,8 @@ public static class AuxiliarMethods{
         
         return sentence.Substring(start, end - start);
     }
-    // La palabra que finaliza en una posicion
+    
+    //! La palabra que finaliza en una posicion
     public static string GetWordEndIn(string sentence, int end) {
          if(end >= sentence.Length)
             throw new Exception("Position not valid!!");
@@ -176,16 +175,8 @@ public static class AuxiliarMethods{
         
         return sentence.Substring(start + 1, end - start);
     }
-    public static void Resize(List< List<WordInfo> > aux, int idFile, int newLength) {
-        for(int i = 0; i < newLength; i ++)
-            aux[idFile].Add(new WordInfo());
-    }
 
-    public static void Swap(ref int a, ref int b) {
-        int aux = a;
-        a = b;
-        b = aux;
-    }
+    // !La acantidad de documentos en el que aparece la palabra
     public static int AmountAppareanceOfWordBetweenAllFiles(string word) {
         int count = 0;
         for(int i = 0; i < Data.TotalFiles; i ++) {
@@ -195,6 +186,16 @@ public static class AuxiliarMethods{
         return count;   
     }
 
+    //! True si la palabra esta entre los documentos
+    public static bool IsWordInDocs(string word) {
+        for(int i = 0; i < Data.TotalFiles; i ++) {
+            if(Data.PosInDocs[i].ContainsKey(word))
+                return true;
+        }
+        return false;
+    }
+
+    //! Devuelve la palabra que esta a ala derecha o a la izquiera de esa posicion
     public static string GetWord(string sentence, int pos, string direction) {
         string word = "";
         int n = sentence.Length;
@@ -213,9 +214,10 @@ public static class AuxiliarMethods{
 
         return word;
     }
- 
+    
+    //! Algoritmo de Levenshtein
     public static int LevenshteinDistance(string a, string b) {
-
+        
         int n = a.Length,
             m = b.Length;
 
@@ -238,36 +240,4 @@ public static class AuxiliarMethods{
 
         return dp[n, m];
     }
-
-    public static int BinarySearch(List<string> list, string word) {
-        return BinarySearch(list, word, 0, list.Count - 1);        
-    }
-    private static int BinarySearch(List<string> list, string word, int l, int r) {
-
-        if(l > r) 
-            return -1;
-
-        if(l == r)
-            return (list[l] == word) ? l : -1;
-    
-        // int piv = l + (r - l)/2;
-        int piv = (l + r) / 2;
-
-        if(list[piv] == word)
-            return piv;
-
-        if( String.Compare(word, list[piv]) == -1 ) // Si la palabras es lexicograficamente menor
-            return BinarySearch(list, word, l, piv);
-        else
-            return BinarySearch(list, word, piv + 1, r);
-    }
-
-    public static bool IsWordInDocs(string word) {
-        for(int i = 0; i < Data.TotalFiles; i ++) {
-            if(Data.PosInDocs[i].ContainsKey(word))
-                return true;
-        }
-        return false;
-    }
-
 }
