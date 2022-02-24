@@ -33,6 +33,7 @@ public class WordInfo {
     }
 
 
+    //! Calcular el TF-IDF de una palabra en un documento
     public static float TFIDF(string word, int MaxFreq, int AmountAppareance) {
         float tfidf = 0.00f;
 
@@ -46,6 +47,8 @@ public class WordInfo {
            if(Data.PosInDocs[i].ContainsKey(word)) ni ++;
         }
         
+        if(ni == 0) return 0;
+
         double division = (double)n / (double)ni;
         float idf = (float)Math.Log10(division);
         tfidf = tf * idf;
@@ -53,17 +56,18 @@ public class WordInfo {
     }
 
 
-    // RANKING DE LOS DOCUMENTOS
+    //! RANKING DE LOS DOCUMENTOS
     public static float Sim(int doc, Dictionary<string, Tuple<int, float>> wquery) {
         float MultVectors = 0.00f;
         foreach(var i in wquery) {
-            if( Data.PosInDocs[doc].ContainsKey(i.Key) )
+            if( Data.PosInDocs[doc].ContainsKey(i.Key) ) 
                 MultVectors += ( i.Value.Item2 * Data.PosInDocs[doc][i.Key].WeigthWord );
         }     
 
         float NormD = 0.00f, NormQ = 0.00f;
         foreach(var i in wquery)
             NormQ += (i.Value.Item2 * i.Value.Item2);
+
         foreach(var i in Data.PosInDocs[doc]) 
             NormD += ( Data.PosInDocs[doc][i.Key].WeigthWord * Data.PosInDocs[doc][i.Key].WeigthWord);
 

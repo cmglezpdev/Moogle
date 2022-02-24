@@ -9,20 +9,14 @@ public static class Lemmatization {
     
         int r1, r2, rv;
         (r1, r2, rv) = Get_R1_R2_RV(word);
-        // System.Console.WriteLine($"{r1} {r2} {rv}");
         int n = word.Length;
         
         string word1 = Step0(word, n - r1, n - r2, n - rv);
-        // System.Console.WriteLine(word1);
         if(word == word1) word1 = Step1(word, n - r1, n - r2, n - rv);
-        // System.Console.WriteLine(word1);
         if(word == word1) word1 = Step2a(word, n - r1, n - r2, n - rv);
-        // System.Console.WriteLine(word1);
         if(word == word1) word1 = Step2b(word, n - r1, n - r2, n - rv);
-        // System.Console.WriteLine(word1);
 
         word1 = Step3(word1, n - r1, n - r2, n - rv);
-        // System.Console.WriteLine(word1);
 
         return AuxiliarMethods.NormalizeWord(word1); 
     }

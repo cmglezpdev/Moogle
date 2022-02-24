@@ -22,19 +22,23 @@ public static class Moogle
         //! Frecuencia de las palabras de la query y su peso(en este paso el peso es cero todavia)
         Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery = GetFreqWordsInQuery( query );
         //! Metodo que lo unico que hace es aumentar la cantidad de apariciones de la palabra por cada operador * que aparezca
-    
         UpdateFreqForOperatorRelevance(FreqAndWeigthWordsQuery, query); 
-
+        
         //! Calcular peso del query
         GetWeigthOfQuery( FreqAndWeigthWordsQuery );
-    
+
 
         //! Modificar el peso de las palabras que fueron anadidas por los sinonimos
         foreach(var v in SynonymsToModif) {
-            int freq = FreqAndWeigthWordsQuery[v.Item1].Item1;
-            float weight = FreqAndWeigthWordsQuery[v.Item1].Item2;
-            FreqAndWeigthWordsQuery[v.Item1] = new Tuple<int, float>( freq , weight - (v.Item2 / 100f * weight));
+            string lem = Lemmatization.Stemmer(v.Item1);
+            int freq = FreqAndWeigthWordsQuery[lem].Item1;
+            float weight = FreqAndWeigthWordsQuery[lem].Item2;
+            FreqAndWeigthWordsQuery[lem] = new Tuple<int, float>( freq , weight - (v.Item2 / 100f * weight));
         }
+
+        // foreach (var item in FreqAndWeigthWordsQuery) {
+        //     System.Console.WriteLine(item);
+        // }
 
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(FreqAndWeigthWordsQuery);
@@ -161,7 +165,7 @@ public static class Moogle
 
                     if(i - 1 >= 0 && AuxiliarMethods.IsLineOperators(words[i - 1]))
                         newQuery += (words[i - 1] + " ");
-                    newQuery += (bestSyn = " ");
+                    newQuery += (bestSyn + " ");
                     // Anado la palabra a la lista para bajarle el score mas adelante
                     SynomymsToModif.Add(new Tuple<string, int>(bestSyn, 20));
                 }
