@@ -26,9 +26,7 @@ class Test{
         // TestSynonymsDB();
         // TestBinarySearch();
 
-        System.Console.WriteLine(Lemmatization.Stemmer("académicamente"));
-
-
+        System.Console.WriteLine(WorkingOperators.ValidOperators("^^**"));
 
 
         //? Print if all is OK
