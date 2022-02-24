@@ -4,6 +4,7 @@ namespace MoogleEngine;
 
 public static class FilesMethods {
 
+    //! Devuleve el nombre de un fichero a partir del path
     public static string GetNameFile(string file) {
         int StartName = file.Length - 1;
         for( ; StartName >= 0 && file[StartName] != '/'; StartName --); StartName ++;
@@ -13,23 +14,20 @@ public static class FilesMethods {
 
         return file.Substring(StartName, file.Length - StartName - (file.Length - idxExtention));
     }
+
+    //! Sacar todos los documentos .txt(tomare la ruta de acceso)
     public static string[] ReadFolder() {
         // Leer todos los archivos .txt de la carpeta Content
         string[] files = Directory.GetFiles(@"../Content/", "*.txt", SearchOption.AllDirectories);
         return files;
     }
-    public static int GetTotalFiles() {
-        return ReadFolder().Length;
-    } 
+    
+    //! Lee todo el contenido de un documento
     public static void ReadContentFile(string file, int idFile, Dictionary<string, bool> OWords ) {
         
-        // Reservar las palabras que ya estan desde los ficheros pasados
-        int n = Data.PosInDocs[Math.Max(0, idFile - 1)].Count; // palabras hasta el fichero anterior
-        for(int i = 0; i < n; i ++)
-            Data.PosInDocs[idFile].Add(new info());
-
         string archive = File.ReadAllText(file);
         string[] lines = archive.Split('\n');
+        Data.PosInDocs[idFile] = new Dictionary<string, WordInfo>();
 
         int TotalLines = lines.Length;
         
@@ -54,28 +52,31 @@ public static class FilesMethods {
 
                 // Guardar las raices de las palabras
                 string word = Lemmatization.Stemmer( words[i] );
-                if(Data.IdxWords.ContainsKey(word)) {
-                    Data.PosInDocs[ idFile ][ Data.IdxWords[word] ].AddAppearance(line, i);
+                if(Data.PosInDocs[idFile].ContainsKey(word)) {
+                    Data.PosInDocs[ idFile ][ word ].AddAppearance(line, i);
                     continue;
                 }
             
-                int newPos = Data.PosInDocs[idFile].Count;
-               Data.PosInDocs[idFile].Add(new info());
-               Data.PosInDocs[idFile][ newPos ].AddAppearance(line, i);
-                // El nuevo indice es la ultima posicion vacia de la lista de palabras
-                Data.IdxWords[word] = newPos;
+               Data.PosInDocs[idFile][word] = new WordInfo();
+               Data.PosInDocs[idFile][ word ].AddAppearance(line, i);
             }
         }
 
     } 
+
+    //! Devuelve el path del documento por su ID
     public static string GetFileByID(int idFile) {
         if(idFile < 0 || idFile >= Data.TotalFiles) 
             throw new Exception("The File does't exists!");
         return Data.files[idFile];
     }
+
+    //! Cantidad de palabras de una oración 
     public static int GetAmountWordsInSentence(string line) {
         return AuxiliarMethods.GetWordsOfSentence(line).Length;
     }
+
+    //! Devuelve el contexto izquierdo
     public static string GetLeftContext(int idFile, int numLine, int numWord, int length, bool addWord) { 
         //todo:: Tanto numLine como numWord empieza desde cero
         
@@ -126,6 +127,8 @@ public static class FilesMethods {
 
         return context.ToString();
     }
+    
+    //! Devuelve el conexto derecho 
     public static string GetRightContext(int idFile, int numLine, int numWord, int length, bool addWord) { 
         //todo:: Tanto numLine como numWord empieza desde cero
 
@@ -144,7 +147,7 @@ public static class FilesMethods {
             if(i == numLine) continue; // Si es la linea donde esta la palabra
                 
             // Anadiremos lineas hasta que se complete el length
-            k += GetAmountWordsInSentence(line);
+            k += Data.CntWordsForLines[idFile][numLine];
         }
 
 
@@ -185,13 +188,11 @@ public static class FilesMethods {
 
         return context.ToString();
     }
+
+    //! Devuelve el contexto izquiero + el derecho(contexto total)
     public static string GetContext(int idFile, int numLine, int numWord, int length) {
         return GetLeftContext(idFile, numLine, numWord, length / 2, true) + 
                GetRightContext(idFile, numLine, numWord, length / 2, false);
-    }
-    public static float GetScore(float[] iWDoc, float[] wQuery) {
-        // Si la query no continene operadores
-        return info.Sim(ref iWDoc, ref wQuery);
     }
 
 }
