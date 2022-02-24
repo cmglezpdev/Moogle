@@ -1,12 +1,12 @@
 namespace MoogleEngine;
 
-public class info {
+public class WordInfo {
     
     private List<int> numLine = new List<int> ();
     private List<int> numWord = new List<int> ();
     private float weight = 0;
 
-    public info() {
+    public WordInfo() {
         this.numLine = new List<int>();
         this.numWord = new List<int>();
         this.weight = 0f;

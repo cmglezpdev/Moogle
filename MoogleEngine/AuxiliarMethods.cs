@@ -198,9 +198,9 @@ public static class AuxiliarMethods{
         
         return sentence.Substring(start + 1, end - start);
     }
-    public static void Resize(List< List<info> > aux, int idFile, int newLength) {
+    public static void Resize(List< List<WordInfo> > aux, int idFile, int newLength) {
         for(int i = 0; i < newLength; i ++)
-            aux[idFile].Add(new info());
+            aux[idFile].Add(new WordInfo());
     }
 
     public static void Swap(ref int a, ref int b) {

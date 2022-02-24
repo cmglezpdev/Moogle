@@ -6,8 +6,8 @@ public static class Moogle
 {
     public static SearchResult Query(string query)
     {
-        Stopwatch crono = new Stopwatch();
-        crono.Start();
+        // Stopwatch crono = new Stopwatch();
+        // crono.Start();
 
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
@@ -16,24 +16,19 @@ public static class Moogle
         List< Tuple<string, int> > SynonymsToModif = new List<Tuple<string, int>> ();
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery, SynonymsToModif);
 
-        // System.Console.WriteLine(query);
-        // System.Console.WriteLine(suggestion);
-        System.Console.WriteLine("espanola");
-        System.Console.WriteLine("novela");
-        System.Console.WriteLine("reales");
-        System.Console.WriteLine("cuarteles");
-        System.Console.WriteLine("doncellas");
-        System.Console.WriteLine("cubanos");
-        System.Console.WriteLine("arboles");
+        System.Console.WriteLine(query);
+        System.Console.WriteLine(suggestion);
 
-
-        //! Frecuencia de las palabras de la query y su peso(en este paso es cero todavia)
+        //! Frecuencia de las palabras de la query y su peso(en este paso el peso es cero todavia)
         Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery = GetFreqWordsInQuery( query );
         //! Metodo que lo unico que hace es aumentar la cantidad de apariciones de la palabra por cada operador * que aparezca
+    
         UpdateFreqForOperatorRelevance(FreqAndWeigthWordsQuery, query); 
 
         //! Calcular peso del query
         GetWeigthOfQuery( FreqAndWeigthWordsQuery );
+    
+
         //! Modificar el peso de las palabras que fueron anadidas por los sinonimos
         foreach(var v in SynonymsToModif) {
             int freq = FreqAndWeigthWordsQuery[v.Item1].Item1;
@@ -43,6 +38,7 @@ public static class Moogle
 
         //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(FreqAndWeigthWordsQuery);
+
 
         // !Modificar el peso de los documentos en base a cada operador del query
         List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);
@@ -57,8 +53,8 @@ public static class Moogle
         //! Construir el resultado
         SearchItem[] items = BuildResult( sim, FreqAndWeigthWordsQuery, Data.wDocs, query);
 
-        System.Console.WriteLine(crono.ElapsedMilliseconds);
-        crono.Stop();
+        // System.Console.WriteLine(crono.ElapsedMilliseconds);
+        // crono.Stop();
 
         return new SearchResult(items, suggestion);
     }
@@ -106,7 +102,7 @@ public static class Moogle
 
         // Ir por todas las palabras de la query
         foreach(var wq in FreqWordsQuery) {
-            FreqWordsQuery[wq.Key] = new Tuple<int, float> ( FreqWordsQuery[wq.Key].Item1, info.TFIDF(wq.Key, MaxFreq, wq.Value.Item1)  );
+            FreqWordsQuery[wq.Key] = new Tuple<int, float> ( FreqWordsQuery[wq.Key].Item1, WordInfo.TFIDF(wq.Key, MaxFreq, wq.Value.Item1)  );
         }
     }
     //* Devuelve la similitud del vector peso de la query con el de los documentos
@@ -114,7 +110,7 @@ public static class Moogle
 
         Tuple<float, int>[] sim = new Tuple<float, int>[Data.TotalFiles];
         for(int doc = 0; doc < Data.TotalFiles; doc ++) {       
-            float score = info.Sim(doc, FreqAndWeigthWordsQuery);
+            float score = WordInfo.Sim(doc, FreqAndWeigthWordsQuery);
             sim[doc] = new Tuple<float, int>(score, doc);
         }
         

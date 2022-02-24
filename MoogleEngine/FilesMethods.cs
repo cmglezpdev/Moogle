@@ -25,7 +25,7 @@ public static class FilesMethods {
         
         string archive = File.ReadAllText(file);
         string[] lines = archive.Split('\n');
-        Data.PosInDocs[idFile] = new Dictionary<string, info>();
+        Data.PosInDocs[idFile] = new Dictionary<string, WordInfo>();
 
         int TotalLines = lines.Length;
         
@@ -55,7 +55,7 @@ public static class FilesMethods {
                     continue;
                 }
             
-               Data.PosInDocs[idFile][word] = new info();
+               Data.PosInDocs[idFile][word] = new WordInfo();
                Data.PosInDocs[idFile][ word ].AddAppearance(line, i);
             }
         }

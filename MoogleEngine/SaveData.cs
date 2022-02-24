@@ -5,7 +5,7 @@ static public class Data {
 
     #region Variables
     // Matriz con las apariciones de las palabras en cada documento
-    public static Dictionary<int, Dictionary<string, info> > PosInDocs = new Dictionary<int, Dictionary<string, info>> ();
+    public static Dictionary<int, Dictionary<string, WordInfo> > PosInDocs = new Dictionary<int, Dictionary<string, WordInfo>> ();
     // Indice de las palabras en el orden que fueron apareciendo 
     public static List<string> OriginalWordsDocs = new List<string>();
     // Direccion de todos los documentos de la carpeta Content
@@ -58,7 +58,7 @@ static public class Data {
             
             // Calcular el peso de cada palabra en el documento
             foreach(var i in PosInDocs[doc])
-                PosInDocs[doc][i.Key].WeigthWord = info.TFIDF(i.Key, MaxFreq, i.Value.AmountAppareance);
+                PosInDocs[doc][i.Key].WeigthWord = WordInfo.TFIDF(i.Key, MaxFreq, i.Value.AmountAppareance);
         }
 
     }
