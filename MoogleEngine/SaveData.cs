@@ -15,8 +15,6 @@ static public class Data {
     // Cantidad total de palabras
     public static int TotalWords = 0;
     // Matriz peso de cada palabra en todos los documentos
-    public static float[,] wDocs = new float[0,0];
-    // Cantidad de palabras por linea de cada documento
     public static List< List<int> > CntWordsForLines = new List<List<int>> ();
     // Estructura que guarda la base de datos de sinonimos
     public static WorkingSynonyms Synonyms = new WorkingSynonyms();

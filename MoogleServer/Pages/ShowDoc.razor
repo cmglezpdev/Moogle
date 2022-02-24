@@ -6,12 +6,6 @@
 
 <p>@((MarkupString)ShowDocument.ShowDoc($"../Content/{NameDoc}.txt"))</p>
 
-@* <div class="top-pages"><div class="pages">
-    <button class="pages__btn_prev btn btn-primary" onclick="ShowPrev">Anterior</button>
-    <button class="pages__btn_next btn btn-primary" onclick="ShowNext">Siguiente</button>
-</div></div> *@
-
-
 @code {
     [Parameter]
    public string? NameDoc {get; set;}

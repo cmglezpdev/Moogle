@@ -51,7 +51,7 @@ public static class Moogle
         Array.Reverse(sim);
 
         //! Construir el resultado
-        SearchItem[] items = BuildResult( sim, FreqAndWeigthWordsQuery, Data.wDocs, query);
+        SearchItem[] items = BuildResult( sim, FreqAndWeigthWordsQuery, query);
 
         // System.Console.WriteLine(crono.ElapsedMilliseconds);
         // crono.Stop();
@@ -237,7 +237,7 @@ public static class Moogle
 
 
     //* Agrupa los resultados de las busquedas en un array
-    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, Tuple<int, float>> FreqWordsQuery, float[,] wDocs, string query) {
+    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, Tuple<int, float>> FreqWordsQuery, string query) {
         List<SearchItem> items = new List<SearchItem>();
         string[] wordsOfQuery = AuxiliarMethods.GetWordsOfSentence(query);
 

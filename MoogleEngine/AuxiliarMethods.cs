@@ -3,29 +3,7 @@ namespace MoogleEngine;
 
 public static class AuxiliarMethods{
 
-    public struct two{
-        private int first;
-        private int second;
-        public two() {
-            this.first = this.second = 0;
-        }
-        public two(int x, int y) {
-            this.first = x;
-            this.second = y;
-        }
-    
-        public int First {
-            get{ return this.first;}
-            set{this.first = value;}
-        }
-        public int Second {
-            get{ return this.second;}
-            set{this.second = value;}
-        }
-  
-    }
-
-    // Extraer todas las palabras de una oracion
+    //! Extraer todas las palabras de una oracion
     public static string[] GetWordsOfSentence(string sentence) {
 
         string[] aux = sentence.Split(' ');
@@ -49,6 +27,7 @@ public static class AuxiliarMethods{
         return words.ToArray();
     }
     
+    //! Formatear la Query convenientemente para trabajar mejor con ella
       public static string FormatQuery(string q) {
         string query = q.ToLower();
 
@@ -137,7 +116,6 @@ public static class AuxiliarMethods{
 
 
     public static bool Ignore(char x) {
-        // return Char.IsPunctuation(x) || WorkingOperators.IsOperator(x) || Char.IsWhiteSpace(x);
         return !Char.IsLetterOrDigit(x);
     }
     // Comprobar que una linea del fichero es o no una linea en blanco
