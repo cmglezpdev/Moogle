@@ -16,6 +16,17 @@ public static class Moogle
         List< Tuple<string, int> > SynonymsToModif = new List<Tuple<string, int>> ();
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery, SynonymsToModif);
 
+        // System.Console.WriteLine(query);
+        // System.Console.WriteLine(suggestion);
+        System.Console.WriteLine("espanola");
+        System.Console.WriteLine("novela");
+        System.Console.WriteLine("reales");
+        System.Console.WriteLine("cuarteles");
+        System.Console.WriteLine("doncellas");
+        System.Console.WriteLine("cubanos");
+        System.Console.WriteLine("arboles");
+
+
         //! Frecuencia de las palabras de la query y su peso(en este paso es cero todavia)
         Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery = GetFreqWordsInQuery( query );
         //! Metodo que lo unico que hace es aumentar la cantidad de apariciones de la palabra por cada operador * que aparezca
@@ -23,7 +34,7 @@ public static class Moogle
 
         //! Calcular peso del query
         GetWeigthOfQuery( FreqAndWeigthWordsQuery );
-        //! Modificar el peso de las palabras que fueron anadiddas por los sinonimos
+        //! Modificar el peso de las palabras que fueron anadidas por los sinonimos
         foreach(var v in SynonymsToModif) {
             int freq = FreqAndWeigthWordsQuery[v.Item1].Item1;
             float weight = FreqAndWeigthWordsQuery[v.Item1].Item2;
@@ -48,7 +59,7 @@ public static class Moogle
 
         System.Console.WriteLine(crono.ElapsedMilliseconds);
         crono.Stop();
-        
+
         return new SearchResult(items, suggestion);
     }
 
@@ -203,7 +214,7 @@ public static class Moogle
 
                         if(cost < bestCost) {
                             // Quedarme tambien con la de mayor apariciones
-                            int aa = AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles(lemman);
+                            int aa = AuxiliarMethods.AmountAppareanceOfWordBetweenAllFiles( Lemmatization.Stemmer(wd) );
                             if(aa >= AmountAppareance) {
                                 bestCost = cost;
                                 SugWord = wd;
@@ -215,7 +226,6 @@ public static class Moogle
                 }
             }
         }
-
         if( foundSuggestion ) {
              if(suggestion[ suggestion.Length - 1 ] == ' ') suggestion = suggestion.Substring(0, suggestion.Length - 1);
         }
@@ -313,11 +323,7 @@ public static class Moogle
             // Comprobar cuales son las palabras de la query que faltan en el documento
             StringBuilder missingWords = new StringBuilder();
             foreach(string w in wordsOfQuery) {
-                if(!AuxiliarMethods.IsWordInDocs( Lemmatization.Stemmer( w ) )) {
-                    missingWords.Append(w + ", ");
-                    continue;
-                }
-                if(!AuxiliarMethods.IsWordInDocs(Lemmatization.Stemmer(w)))
+                if(!Data.PosInDocs[i].ContainsKey(Lemmatization.Stemmer(w)))
                     missingWords.Append(w + ", ");
             }
 

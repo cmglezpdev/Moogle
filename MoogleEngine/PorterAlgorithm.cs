@@ -5,22 +5,26 @@ namespace MoogleEngine;
 public static class Lemmatization {
 
     public static string Stemmer(string w) {
-        string word = AuxiliarMethods.NormalizeWord(w);
-
+        string word = w.ToLower();
+    
         int r1, r2, rv;
         (r1, r2, rv) = Get_R1_R2_RV(word);
+        // System.Console.WriteLine($"{r1} {r2} {rv}");
         int n = word.Length;
         
         string word1 = Step0(word, n - r1, n - r2, n - rv);
+        // System.Console.WriteLine(word1);
         if(word == word1) word1 = Step1(word, n - r1, n - r2, n - rv);
+        // System.Console.WriteLine(word1);
         if(word == word1) word1 = Step2a(word, n - r1, n - r2, n - rv);
+        // System.Console.WriteLine(word1);
         if(word == word1) word1 = Step2b(word, n - r1, n - r2, n - rv);
-
-
+        // System.Console.WriteLine(word1);
 
         word1 = Step3(word1, n - r1, n - r2, n - rv);
+        // System.Console.WriteLine(word1);
 
-        return word1; 
+        return AuxiliarMethods.NormalizeWord(word1); 
     }
 
 
@@ -30,7 +34,7 @@ public static class Lemmatization {
         r1 = r2 = rv = 0;
 
             // Calcular R1: El substring que esta despues de la primera no-vocal precedida por una vocal
-        for(int i  = 1; i < n; i ++) 
+        for(int i = 1; i < n; i ++) 
             if( !IsVocal(word[i])  && IsVocal(word[i - 1])) {
                 r1 = n - (i + 1); // tamano 
                 break;
@@ -73,10 +77,10 @@ public static class Lemmatization {
     // ? Step 0: Attached pronoun
     private static string Step0(string word, int r1, int r2, int rv) {
         int n = word.Length;
-        string newWord = "";
+        string newWord = word;
         int index = -1;
 
-        for(int i = 4; i >= 2; i --) {
+        for(int i = 5; i >= 2; i --) {
             if(i > n || n - i < rv) continue; // Si es mas grande que la palabra o es mas grande que rv
             if( !step0.Contains( word.Substring(n - i, i) ) ) continue;    
 
@@ -153,20 +157,29 @@ public static class Lemmatization {
         } else
 
         if(step1_6.Contains(suff)) {
-            if(n - k >= r1 && (n - k - 2 >= 0 && word.Substring(n - k - 2, 2) == "iv"))
-                return word.Substring(0, n - k);
+            if(n - k < r1) return word;
+            if(n - k - 2 >= 0 && word.Substring(n - k - 2, 2) == "iv") {
+                if(n - k - 2 >= r2)
+                    return word.Substring(0, n - k - 2);
+            }
 
             if(n - k >= r2) {
-                if(n - k - 2 >= r2 && word.Substring(n - k - 2, 2) == "at")
-                    return word.Substring(0, n - k - 2);
-                return word.Substring(0, n - k);
+                if(n - k - 2 >= 0 && word.Substring(n - k - 2, 2) == "at") {
+                    if(n- k - 2 >= r2)
+                        return word.Substring(0, n - k - 2);
+                }
             }
 
-            if(n - k - 2 >= r2) {
+            if(n - k - 2 >= 0) {
                 string s = word.Substring(n - k - 2, 2);
-                 if(s == "os" || s == "ad" || s == "ic")
-                    return word.Substring(0, n - k - 2);
+                 if(s == "os" || s == "ad" || s == "ic") {
+                    if(n - k - 2 >= r2)
+                        return word.Substring(0, n - k - 2);
+                 }
             }
+
+            if(n - k >= r1)
+                return word.Substring(0, n - k);
 
         } else
 
@@ -194,7 +207,7 @@ public static class Lemmatization {
             } 
                
         } else
-        if(step1_8.Contains(suff)) {
+        if(step1_9.Contains(suff)) {
             if(n - k >= r2) {
                 if(n - k - 2 >= r2 && word.Substring(n - k - 2, 2) == "at")
                     return word.Substring(0, n - k - 2);
@@ -226,21 +239,21 @@ public static class Lemmatization {
     private static string Step2b(string word, int r1, int r2, int rv) {
         int n = word.Length;
 
-        for(int i = 4; i >= 2; i --) {
-            if(n - i < rv) continue; 
-            string suffix = word.Substring(n - i, i);
-            if( !step2b1.Contains(suffix) ) continue;
-
-            if(n - i - 2 >= 0 && word.Substring(n - i - 2, 2) == "gu")
-                return word.Substring(0, n - i - 1);
-        }
-
         for(int i = 7; i >= 2; i --) {
             if(n - i < rv) continue;
             string suffix = word.Substring(n - i, i);
-            if( !step2b2.Contains(suffix) ) continue;
+            if( step2b1.Contains(suffix) || step2b2.Contains(suffix) ) {
+
+                if(step2b2.Contains(suffix))
+                    return word.Substring(0, n - i);
+                if(step2b1.Contains(suffix)) {
+                    if(n - i - 2 >= 0 && word.Substring(n - i - 2, 2) == "gu")
+                        return word.Substring(0, n - i - 1);
+                    return word.Substring(0, n - i);
+                }
+                    
+            }
             
-            return  word.Substring(0, n - i);
         }
 
 
@@ -285,35 +298,27 @@ public static class Lemmatization {
 
 #region DataForPorterAlgoritm
     
-    private static char[] vowels = { 'a', 'e', 'i', 'o', 'u'};
+    private static char[] vowels = { 'a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú', 'ü'};
 
     private static string[] step0 = { "me", "se", "sela", "selo", "selas", "selos", "la", "le", "lo", "las", "les", "los", "nos" }; 
-    private static string[] stepAfter0 = { "ando", "iendo", "ar", "er", "ir", "yendo" };
+    private static string[] stepAfter0 = { "yendo", "iéndo", "ándo", "ár", "ér", "ír", "ando", "iendo", "ar", "er", "ir" };
    
-    private static string[] step1_1 = { "anza", "anzas", "ico", "ica", "icos", "icas", "ismo", "ismos", "able", "ables", "ible", "ibles",
-                                       "ista", "istas", "oso", "osa", "osos", "osas", "amiento", "amientos", "imiento", "imientos" };
-    private static string[] step1_2 = { "adora", "ador", "ación", "acion", "adoras", "adores", "aciones", "ante", "antes", "ancia", "ancias" };
-    private static string[] step1_3 = { "logia", "logias" };
-    private static string[] step1_4 = { "ucion", "uciones" };
-    private static string[] step1_5 = { "encia", "encias" };
+    private static string[] step1_1 = { "anza", "anzas", "ico", "ica", "icos", "icas", "ismo", "ismos", "able", "ables", "ible", "ibles", "ista", "istas", "oso", "osa", "osos", "osas", "amiento", "amientos", "imiento", "imientos" };
+    private static string[] step1_2 = { "adora", "ador", "ación", "adoras", "adores", "aciones", "ante", "antes", "ancia", "ancias" };
+    private static string[] step1_3 = { "logía", "logías" };
+    private static string[] step1_4 = { "ución", "uciones" };
+    private static string[] step1_5 = {"encia", "encias" };
     private static string[] step1_6 = { "amente" };
     private static string[] step1_7 = { "mente" };
     private static string[] step1_8 = { "idad", "idades" };
     private static string[] step1_9 = { "iva", "ivo", "ivas", "ivos" };
 
-    private static string[] step2a = { "ya", "ye", "yan", "yen", "yeron", "yendo", "yo", "yas", "yes", "yais", "yamos" };
-    private static string[] step2b1 = {"en", "es", "eis", "emos"};
-    private static string[] step2b2 = { "arian", "arias", "aran", "aras", "ariais", "aria", "areis", "ariamos", "aremos", "ara", "are",
-                                       "erian", "erias", "eran", "eras", "eriais", "eria", "ereis", "eriamos", "eremos", "era", "ere",
-                                       "irian", "irias", "iran", "iras", "iriais", "iria", "ireis", "iriamos", "iremos", "ira", "ire",
-                                       "aba", "ada", "ida", "ia", "ara", "iera", "ad", "ed", "id", "ase", "iese", "aste", "iste", "an",
-                                       "aban", "ian", "aran", "ieran", "asen", "iesen", "aron", "ieron", "ado", "ido", "ando", "iendo",
-                                       "io", "ar", "er", "ir", "as", "abas", "adas", "idas", "ias", "aras", "ieras", "ases", "ieses", "is",
-                                       "ais", "abais", "iais", "arais", "ierais", "aseis", "ieseis", "asteis", "isteis", "ados", "idos", "amos",
-                                       "abamos", "iamos", "imos", "aramos", "ieramos", "iesemos", "asemos"};
+    private static string[] step2a = { "ya", "ye", "yan", "yen", "yeron", "yendo", "yo", "yó", "yas", "yes", "yais", "yamos" };
+    private static string[] step2b1 = {"en", "es", "éis", "emos"};
+    private static string[] step2b2 = {"arían", "arías", "arán", "arás", "aríais", "aría", "aréis", "aríamos", "aremos", "ará", "aré", "erían", "erías", "erán", "erás", "eríais", "ería", "eréis", "eríamos", "eremos", "erá", "eré", "irían", "irías", "irán", "irás", "iríais", "iría", "iréis", "iríamos", "iremos", "irá", "iré", "aba", "ada", "ida", "ía", "ara", "iera", "ad", "ed", "id", "ase", "iese", "aste", "iste", "an", "aban", "ían", "aran", "ieran", "asen", "iesen", "aron", "ieron", "ado", "ido", "ando", "iendo", "ió", "ar", "er", "ir", "as", "abas", "adas", "idas", "ías", "aras", "ieras", "ases", "ieses", "ís", "áis", "abais", "íais", "arais", "ierais", "aseis", "ieseis", "asteis", "isteis", "ados", "idos", "amos", "ábamos", "íamos", "imos", "áramos", "iéramos", "iésemos", "ásemos"};
 
-    private static string[] step3a = {"os", "a", "o", "i"};
-    private static string[] step3b = {"e"};
+    private static string[] step3a = {"os", "a", "o", "á", "í", "ó"};
+    private static string[] step3b = {"e","é"};
 
 #endregion
 

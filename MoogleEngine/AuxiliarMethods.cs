@@ -166,10 +166,7 @@ public static class AuxiliarMethods{
                     break;
                 case 'ú':
                     newWord += 'u';
-                    break;
-                case 'ü':
-                    newWord += 'u';
-                    break;            
+                    break;         
                 default: 
                     newWord += caracter;
                     break;
