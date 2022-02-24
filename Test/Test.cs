@@ -24,7 +24,9 @@ class Test{
         // TestLemmantization();
 
         // TestSynonymsDB();
-        TestBinarySearch();
+        // TestBinarySearch();
+
+        System.Console.WriteLine(WorkingOperators.ValidOperators("^^**"));
 
 
         //? Print if all is OK
