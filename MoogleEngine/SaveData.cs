@@ -37,7 +37,6 @@ static public class Data {
         Dictionary<string, bool> Aux = new Dictionary<string, bool>();
         for(int doc = 0; doc < TotalFiles; doc ++)
             FilesMethods.ReadContentFile(files[doc], doc, Aux);
-        OriginalWordsDocs.Sort();
 
         //!  Calcular peso de los documentos
        GetWeigthOfDocs();
@@ -46,6 +45,8 @@ static public class Data {
         Synonyms = new WorkingSynonyms("../SynonymsDB/synonyms_db.json");
 
     }
+
+    //! Calcular el peso del todas las palabras en cada documento
     public static void GetWeigthOfDocs() {
 
         for(int doc = 0; doc < TotalFiles; doc ++) {
