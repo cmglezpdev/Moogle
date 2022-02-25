@@ -1,4 +1,4 @@
-s# Moogle!
+# Moogle!
 ##### Documentación del Codigo Solución
 
 ![](moogle.png)
@@ -12,7 +12,8 @@ El obetivo de este buscador es poder realizar consultas de tipo texto en un conj
 Para realizar las consultas se usa el Modelo de Espacio Vectorial (Vectorial Space Model), organizando y mostrando los resultados inteligentemente.
 
 La aplicacion esta dividida en dos grandes Componentes:
-     -`MoogleServer:` es un servidor web que renderiza la interfaz gráfica y sirve los resultados.
+
+    - `MoogleServer:` es un servidor web que renderiza la interfaz gráfica y sirve los resultados.
     - `MoogleEngine:` contiene toda la logica que usa la aplicación para realizar las busquedas.
   
 Antes de entrar en detalles del funcionamiento de la aplicación, veamos una pequeña introducción de como funciona el proyecto y que tecnicas uso para realizar las busquedas.
@@ -23,19 +24,23 @@ Antes de entrar en detalles del funcionamiento de la aplicación, veamos una peq
 ## Implentación MoogleEngine
 
 Este componente cuenta con 10 clases que contienten los algoritmos necesarios para realizar las consultas:
--`SearchItems:` Contiene la informacion de cada documento que se quiere mostrar en los resultados de una búsqueda.
--`SearchResult:` Contiene una lista de `SearchItems` y una sugerencia de consulta para mostrar en los resultados .
--`Moogle:` En ella aparece un metodo Query, la cual tendra todo el proceso(apoyandoce de las demas clases) desde que se recibe la query hasta que se mandan los resultados para renderizarlos.
--`SaveData:` Es una clase en la que se guardaran todos los datos extraidos de los docuentos, o los datos que son necesarios para realizar las consultas.
--`WordInfo:` Es una clase que guarda la informacion de cada palabra del documento.
--`FilesMethods:` Conjunto de metodos relacionados con el procesamiento de los documentos.
--`AuxiliarMethods:` Conjunto de metodos auxiliares que tienen un uso global.
--`WorkingOperators:` Conjunto de Metodos para el procesamiento de los operadores que aparezcan en la consulta del usuario.
--`WorkingSynonyms:` Clase dedicada al procesamiento de una base de datos de sinonimos de las palabras en español.
--`PorterAlogrithm:` Algoritmo para calcular las raices de las palarbas del español.
+
+     -`SearchItems:` Contiene la informacion de cada documento que se quiere mostrar en los resultados de una búsqueda.
+     -`SearchResult:` Contiene una lista de `SearchItems` y una sugerencia de consulta para mostrar en los resultados .
+     -`Moogle:` En ella aparece un metodo Query, la cual tendra todo el proceso(apoyandoce de las demas clases) desde que se recibe la query hasta que se mandan los resultados para renderizarlos.
+     -`SaveData:` Es una clase en la que se guardaran todos los datos extraidos de los docuentos, o los datos que son necesarios para realizar las consultas.
+     -`WordInfo:` Es una clase que guarda la informacion de cada palabra del documento.
+     -`FilesMethods:` Conjunto de metodos relacionados con el procesamiento de los documentos.
+     -`AuxiliarMethods:` Conjunto de metodos auxiliares que tienen un uso global.
+     -`WorkingOperators:` Conjunto de Metodos para el procesamiento de los operadores que aparezcan en la consulta del usuario.
+     -`WorkingSynonyms:` Clase dedicada al procesamiento de una base de datos de sinonimos de las palabras en español.
+     -`PorterAlogrithm:` Algoritmo para calcular las raices de las palarbas del español.
 
 #### Procesamiento de Palabras del Corpus
 Al arrancar el servidor se ejecuta el metodo `DataProcessing` el cual se encarga de leer todos los documentos y crea un diccionario `PosInDocs` donde a cada documento le corresponde otro diccionario con el conjunto de palabras de ese documento en sus respectivas raices y por cada palabra una instancia de la clase `WordInfo` que contiene las apariciones de la palabra en el documento y el score de la misma. Cabe destacar que lo que veraderamente se guarda son las raices de cada palabra(usando el algoritmo de Porter), para asi poder hacer busquedas mas "generalizadas" y obtener mayores resultados.
+```cs
+Dictionary<int, Dictionary<string, WordInfo> > PosInDocs;
+```
 Para calcular la relevancia de las palabras en sus respectivos documentos se usa el la el metodo del `TF-IDF` que contiene la clase `WordInfo`.
 Tambien de carga la base de datos de sinonimos a la clase `WorkingSynonyms`.
 
@@ -89,7 +94,7 @@ Por ultimo se pasa a construir un resultado, esto se hace con el metodo `BuildRe
 
 Ya por ultimo se envia ese arreglo al server para que sea renderizado.
 
-##BIBLIOGRAFIA
+## BIBLIOGRAFIA
 - <strong>Modelo espacio vectorial:</strong> https://docs.google.com/presentation/d/1iX-R1hhP_jCp0AyitrNf-Dp8-rAbcx6-/edit?usp=sharing&ouid=114373319558566279595&rtpof=true&sd=true
 - <strong>Algoritmo de Porter:</strong> http://snowball.tartarus.org/algorithms/spanish/stemmer.html
 - <strong>Algoritmo de Levenshtein:</strong> https://en.wikipedia.org/wiki/Levenshtein_distance
