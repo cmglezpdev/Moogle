@@ -6,8 +6,8 @@ public static class Moogle
 {
     public static SearchResult Query(string query)
     {
-        // Stopwatch crono = new Stopwatch();
-        // crono.Start();
+        Stopwatch crono = new Stopwatch();
+        crono.Start();
 
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
@@ -47,8 +47,8 @@ public static class Moogle
         SearchItem[] items = BuildResult( sim, FreqAndWeigthWordsQuery, query);
         SearchItem.Sort(items);
 
-        // System.Console.WriteLine(crono.ElapsedMilliseconds);
-        // crono.Stop();
+        System.Console.WriteLine(crono.ElapsedMilliseconds);
+        crono.Stop();
 
         return new SearchResult(items, suggestion);
     }
@@ -57,7 +57,7 @@ public static class Moogle
 
 
     #region Methods
-    //* Devuleve la Frequencia de las palabras de la query 
+    //! Devuleve la Frequencia de las palabras de la query 
     private static Dictionary<string, Tuple<int, float>> GetFreqWordsInQuery( string query ) {
         //! Buscar la frecuencia de las palabras de la query
         string[] WordsQuery = AuxiliarMethods.GetWordsOfSentence(query);
@@ -73,7 +73,8 @@ public static class Moogle
     
         return FreqWordsQuery;
     } 
-    // * Actualiza la frecuencia de las palabras de la query que son afectadas por el operador *
+    
+    //! Actualiza la frecuencia de las palabras de la query que son afectadas por el operador *
     private static void UpdateFreqForOperatorRelevance(Dictionary<string, Tuple<int, float>> Freq, string query) {
         string[] partsOfQuery = query.Split(' ');
         for(int i = 0; i < partsOfQuery.Length; i ++) {
@@ -87,7 +88,8 @@ public static class Moogle
             }
         }
     }
-    //* Devuleve el vector con los pesos(score) de las palabras del documento
+    
+    //! Devuleve el vector con los pesos(score) de las palabras del documento
     public static void GetWeigthOfQuery( Dictionary<string, Tuple<int, float>> FreqWordsQuery) {
             
         int MaxFreq = 0;
@@ -99,7 +101,8 @@ public static class Moogle
             FreqWordsQuery[wq.Key] = new Tuple<int, float> ( FreqWordsQuery[wq.Key].Item1, WordInfo.TFIDF(wq.Key, MaxFreq, wq.Value.Item1)  );
         }
     }
-    //* Devuelve la similitud del vector peso de la query con el de los documentos
+    
+    //! Devuelve la similitud del vector peso de la query con el de los documentos
     public static Tuple<float, int>[] GetSimBetweenQueryDocs( Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery ){
 
         Tuple<float, int>[] sim = new Tuple<float, int>[Data.TotalFiles];
@@ -110,7 +113,8 @@ public static class Moogle
         
         return sim;
     }
-    //* Devuelve una query y una sugerencia nueva apoyandoce de los sinonimos y si la palabra esta mal escrita
+    
+    //!  Devuelve una query y una sugerencia nueva apoyandose de los sinonimos y si la palabra esta mal escrita
     private static (string, string) GetNewQueryAndSuggestion(string query, List<Tuple<string, int>> SynomymsToModif) {
         string suggestion = "";
         string newQuery  = "";
@@ -227,11 +231,7 @@ public static class Moogle
         return (newQuery, suggestion);
     }
 
-
-
-
-
-    //* Agrupa los resultados de las busquedas en un array
+    //! Agrupa los resultados de las busquedas en un array
     private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, Tuple<int, float>> FreqWordsQuery, string query) {
         List<SearchItem> items = new List<SearchItem>();
         string[] wordsOfQuery = AuxiliarMethods.GetWordsOfSentence(query);
