@@ -23,6 +23,5 @@ public class SearchResult
     public IEnumerable<SearchItem> Items() {
         return this.items;
     }
-
     public int Count { get { return this.items.Length; } }
 }

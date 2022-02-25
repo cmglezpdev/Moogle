@@ -21,12 +21,13 @@ class Test{
         // TestGetRightContext();
         // TestGetOperators();
         // BuildStepsForPorter();
-        TestLemmantization();
+        // TestLemmantization();
 
         // TestSynonymsDB();
         // TestBinarySearch();
 
-        System.Console.WriteLine(WorkingOperators.ValidOperators("^^**"));
+
+        // System.Console.WriteLine(WorkingOperators.ValidOperators("^^**"));
 
 
         //? Print if all is OK

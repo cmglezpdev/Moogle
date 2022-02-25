@@ -16,9 +16,6 @@ public static class Moogle
         List< Tuple<string, int> > SynonymsToModif = new List<Tuple<string, int>> ();
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery, SynonymsToModif);
 
-        System.Console.WriteLine(query);
-        System.Console.WriteLine(suggestion);
-
         //! Frecuencia de las palabras de la query y su peso(en este paso el peso es cero todavia)
         Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery = GetFreqWordsInQuery( query );
         //! Metodo que lo unico que hace es aumentar la cantidad de apariciones de la palabra por cada operador * que aparezca
@@ -46,13 +43,10 @@ public static class Moogle
         //! Realizar los cambios correspondientes a cada operador
         WorkingOperators.ChangeForOperators( operators, sim);
 
-        // //! Ordenar los scores por scores
-        // Array.Sort(sim);
-        // Array.Reverse(sim);
-
         //! Construir el resultado
         SearchItem[] items = BuildResult( sim, FreqAndWeigthWordsQuery, query);
-        
+        SearchItem.Sort(items);
+
         // System.Console.WriteLine(crono.ElapsedMilliseconds);
         // crono.Stop();
 
@@ -188,6 +182,7 @@ public static class Moogle
                     if( bestSyn != words[i] && i - 1 >= 0 && AuxiliarMethods.IsLineOperators(words[i - 1]))
                         newQuery += (words[i - 1] + " ");
                     newQuery += (bestSyn + ' ');
+                    suggestion += (bestSyn + ' ');
                     // Anado la palabra a la lista para bajarle el score mas adelante
                     SynomymsToModif.Add(new Tuple<string, int>(bestSyn, 50));
                 }
@@ -245,15 +240,14 @@ public static class Moogle
            // Si este documento no hay que mostrarlo   
            if(sim[i].Item1 == 0.00f) continue;
 
-            float score = 0.00f;
+            float score =sim[i].Item1;
             int doc = sim[i].Item2;
 
             List<string> wordsForCloseness = new List<string>();
 
-            // Sacar la palabra con mayor score de la query
             foreach(var wq in FreqWordsQuery) {
-                // Si la palabra no esta entre los documentos
-                if(!AuxiliarMethods.IsWordInDocs(wq.Key)) continue;
+            //     // Si la palabra no esta entre los documentos
+            //     if(!AuxiliarMethods.IsWordInDocs(wq.Key)) continue;
                 // Si la palabra no aparece en ese documento
                 if(!Data.PosInDocs[doc].ContainsKey(wq.Key)) continue;
 
