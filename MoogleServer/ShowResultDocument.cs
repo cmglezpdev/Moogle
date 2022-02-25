@@ -7,15 +7,12 @@ public static class ShowDocument {
         StreamReader reader = new StreamReader(file);
 
         string document = "";
-        int TotalPrintLines = 100;
-        int currentLine = 0;
         string line = "";
         
         do{
             line = reader.ReadLine()!;
             document += ( line + "<br>" );
-            currentLine ++;
-        } while(currentLine < TotalPrintLines && line != null);
+        } while(line != null);
 
 
         return document;
