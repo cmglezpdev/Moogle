@@ -51,7 +51,7 @@ Lo primero que se hace es llamar al metodo `FormatQuery` de la clase `AuxiliarMe
 Despues Se llama al metodo `GetNewQueryAndSuggestion` de la clase `Moogle`, el cual retorna dos elementos, uno es la nueva query y la otra la sugerencia. La nueva query no es mas que la misma que introdujo el usuario, pero en caso de que una palabra aparezca muy poco, o en caso de que no aparezca, pero algun sinonimo si, algunos sinonimos con la mayor cantidad de apariciones entre todos los documentos seran anadidos a la nueva query para que tambien sean buscados. En caso de que la palabra no se encuentra y tampoco existan sinonimos, es muy probable que este mal escrita. Usando el algoritmo de Levenshtein calculamos la cantidad de transformaciones que hay que hacerle a la palabra para transformarla en otra. Usando este algoritmo entre la palabra que no aparece y las palabras originales de los documentos, nos quedamos con las que menos transformaciones necesite(sin sobrepasar un maximo definido por nosotros), y la agregamos a la sugerencia.
 En caso de que la query original sea lo suficientemente buena, no existira sugerencia.
 
-A continuacion un pequeño diagrama simulando el proceso explicado anteriormente.
+A continuación un pequeño diagrama simulando el proceso explicado anteriormente.
 ![](DiagramaNewQueryAndSuggestion.svg)
 
 Durante el proceso anterior, todos esos sinonimos que fueron añadidos, se les disminuirá el score, ya que son palabras importantes pero no las introdujo el propio usuario.
