@@ -22,14 +22,9 @@ Cuando un usuario va a realizar una busqueda, este puede hacer uso de varios ope
 - **Operador de cercanía:** Un símbolo `~` entre dos o más términos indica que esos términos deben **aparecer cerca**, o sea, que mientras más cercanos estén en el documento mayor será la relevancia. Por ejemplo, para la búsqueda `"algoritmos ~ ordenación"`, mientras más cerca están las palabras `"algoritmo"` y `"ordenación"`, más alto debe ser el `score` de ese documento.
 - **Operador de relevancia:** Cualquier cantidad de símbolos `*` delante de un término indican que ese término es más importante, por lo que su influencia en el `score` debe ser mayor que la tendría normalmente (este efecto será acumulativo por cada `*`, por ejemplo `"algoritmos de **ordenación"` indica que la palabra `"ordenación"` tiene dos veces más prioridad que `"algoritmos"`).
 
-#### Algoritmos y estrategias usadas
+#### Modelo Vectorial
 
-Esta aplicacion usa varios métodos y algoritmos para realizar desde la indexación de los datos hasta la busqueda de la información. A continuación una lista de los algoritmos empleados:
-Si no conoce algun algoritmo puede darle click al nombre y obtener una explicación breve.
-
-1. [Modelo Espacio Vectorial](./Report/Vectorial-Space-Model.md): Modelo para calcular el grado de similitud entre dos documentos.
-2. [Algoritmo de Porter](./Report/Porter-Algorithm.md): Para buscar las raices de las palabras.
-3. [Algoritmo de Levenshtein](./Report/Levenshtein.md): para calcular la cantidad mínima de transformaciones para convertir un palabra en otro.
+Para realizar las consultas y mostrar los resultados, la aplicación usa el Modelo Vectorial. Si no sabes lo que es puedes dar [click aqui](./Report/Vectorial-Space-Model.md) y leer la explicación.
 
 ## Explicación General
 
@@ -55,7 +50,7 @@ Este componente cuenta con 10 clases que contienten los algoritmos necesarios pa
 -[`WorkingSynonyms:`](#WorkingSynonyms) Clase dedicada al procesamiento de una base de datos de sinónimos en formato JSON de las palabras en español.
 -[`PorterAlogrithm:`](#PorterAlogrithm) Clase con el Stemmer para calcular las raices de las palarbas del español.
 
-Para más información sobre alguna clase dde click sobre el nombre o de [click aquí](#Class)
+Par favor, recomiendo que lea la explicación general del proyecto y luego de [click aqui](./Report/Clases.md) y lea la explicación de cada uno de los métodos de las clases, y luego vuelva a leer la explicación general del proyecto para una mayor comprención.
 
 #### Procesamiento de Palabras del Corpus
 
