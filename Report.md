@@ -2,7 +2,7 @@
 
 ## Documentación del Codigo Solución
 
-![Moogle](./moogle.png)
+![Moogle](./Report/Img/moogle.png)
 
 > Proyecto de Programación I. Facultad de Matemática y Computación. Universidad de La Habana. Curso 2021.
 >
@@ -73,7 +73,7 @@ En caso de que la query original sea lo suficientemente buena, no existira suger
 
 A continuación un pequeño diagrama simulando el proceso explicado anteriormente.
 
-![Diagrama](DiagramaNewQueryAndSuggestion.svg)
+![Diagrama](./Report/Img/DiagramaNewQueryAndSuggestion.svg)
 
 Durante el proceso anterior, todos esos sinonimos que fueron añadidos, se les disminuirá el score, ya que son palabras importantes pero no las introdujo el propio usuario.
 
