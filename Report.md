@@ -108,3 +108,4 @@ Ya por último se envía ese arreglo al server para que sea renderizado.
 - **Modelo espacio vectorial:** https://docs.google.com/presentation/d/1iX-R1hhP_jCp0AyitrNf-Dp8-rAbcx6-/edit?usp=sharing&ouid=114373319558566279595&rtpof=true&sd=true
 - **Algoritmo de Porter:** http://snowball.tartarus.org/algorithms/spanish/stemmer.html
 - **Algoritmo de Levenshtein:** https://en.wikipedia.org/wiki/Levenshtein_distance
+- **Algoritmo de Levenshtein:** https://programmerclick.com/article/932313235/

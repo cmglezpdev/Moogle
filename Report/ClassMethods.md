@@ -247,9 +247,15 @@ public static int LevenshteinDistance(string a, string b) {
 ```
 
 Este ultimo metodo, el algoritmo de Levenshtein se usa para calcular la cantidad de transformaciones que hay que hacerle a una palabra para transformarla en otra. Este metodo es un algoritmo recursivo(aunque aqui esta implementado con programación dinamica e iterativamente), que se basa en la idea de que a una palabra se le pueden hacer tres tipos de operaciones: Insertar un caracter en una posición, eliminar un caracter de una posición, o sustituir un caracter por otro.
-Usando estas trasnformaciones lo que hace es preguntar para cada dos pares de carácteres i, j de palabras diferentes que, si son diferentes, cual el el cost
+Usando estas transformaciones podemos decir que d(i, j) es la distacia minima de transformar la palabra de taman i en la de tamaño j.
+Luego si comparamos las dos palabras vamos de caracter en caracter preguntando:
 
-## ARREGLAR AQUI
+- Si los dos caracteres son iguales, entonces no hay que transformar ese caracter, por lo tanto retorna (i - 1, j - 1).
+- Si son diferentes entonces tenemos que realizar una transformacion(retorna 1). Luego nos quedarnos con el mínimo de:
+  
+  - Eliminar el elemento: (i - 1, j) + 1.
+  - Insertar un elemento: (i, j - 1) + 1.
+  - Sustituir el elemento: (i - 1, j - 1) + 1.
 
 ## WorkingOperators
 
