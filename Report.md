@@ -50,7 +50,7 @@ Este componente cuenta con 10 clases que contienten los algoritmos necesarios pa
 -[`WorkingSynonyms:`](#WorkingSynonyms) Clase dedicada al procesamiento de una base de datos de sinónimos en formato JSON de las palabras en español.
 -[`PorterAlogrithm:`](#PorterAlogrithm) Clase con el Stemmer para calcular las raices de las palarbas del español.
 
-Par favor, recomiendo que lea la explicación general del proyecto y luego de [click aqui](./Report/Clases.md) y lea la explicación de cada uno de los métodos de las clases, y luego vuelva a leer la explicación general del proyecto para una mayor comprención.
+Par favor, recomiendo que lea la explicación general del proyecto y luego de [click aqui](./Report/ClassMethods.md) y lea la explicación de cada uno de los métodos de las clases, y luego vuelva a leer la explicación general del proyecto para una mayor comprención.
 
 #### Procesamiento de Palabras del Corpus
 
