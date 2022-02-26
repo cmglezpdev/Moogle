@@ -133,7 +133,7 @@ public int AmountAppareance{
 }
 public (int, int) nthAppareance(int n);
 //! Calcular el TF-IDF de una palabra en un documento
-public static float TFIDF(string word, int MaxFreq, int AmountAppareance);\
+public static float TFIDF(string word, int MaxFreq, int AmountAppareance);
 //! RANKING DE LOS DOCUMENTOS
 public static float Sim(int doc, Dictionary<string, Tuple<int, float>> wquery);
 ```
@@ -169,7 +169,7 @@ public static string GetLeftContext(int idFile, int numLine, int numWord, int le
 // Devuelve el conexto derecho 
 public static string GetRightContext(int idFile, int numLine, int numWord, int length, bool addWord);
 // Devuelve el contexto izquiero + el derecho(contexto total)
-public static string GetContext(int idFile, int numLine, int numWord, int length) ;
+public static string GetContext(int idFile, int numLine, int numWord, int length);
 ```
 
 Estos tres metodos lo que hacen es, dado el **length** del snippet(Contexto de la posición **<numLine, numWord>**), los primeros dos metodos van a esa posición en el documento y extraen **length / 2** palabras cada uno a la izquiera y a la derecha de la posición respectivamente. Luego el tercer metodo une estos dos contextos y retornan el snippet
@@ -323,7 +323,7 @@ public int LengthDB {
 public string[] GetSynonymsOf( string word );
 ```
 
-Se crea una clase synonyms con una propiedad de tipo List<string[]> para guardar la estructura del JSON de los Sinonimos. Luego tenemos dos constructores, una propiedad que es el tamaño del diccionario y un metodo que dado una palabra, devuelve una lista de sinonimos de la misma.
+Se crea una clase synonyms con una propiedad de tipo `List<string[]>` para guardar la estructura del JSON de los Sinonimos. Luego tenemos dos constructores, una propiedad que es el tamaño del diccionario y un metodo que dado una palabra, devuelve una lista de sinonimos de la misma.
 
 ## PorterAlgorithm
 
