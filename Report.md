@@ -39,7 +39,7 @@ Durante el proyecto hago uso de un metodo llamado **Algoritmo de Porter** para p
 
 Este componente cuenta con 10 clases que contienten los algoritmos necesarios para realizar las consultas:
 
-- [`SearchItems:`](#SearchItems) Contiene la informacion de cada documento que se quiere mostrar en los resultados de una búsqueda.
+- [`SearchItems:`](#SearchItems) Contiene la información de la busqueda de un documento que va a ser renderizado.
 - [`SearchResult:`](#SearchResult) Contiene una lista de `SearchItems` y una sugerencia de consulta para mostrar en los resultados.
 - [`Moogle:`](#Moogle) En ella aparece un metodo Query, la cual tendra todo el proceso(apoyandose de las demas clases) desde que se recibe la query hasta que se mandan los resultados para renderizarlos.
 - [`SaveData:`](#SaveData) Es una clase en la que se guardarán todos los datos extraídos de los documentos, o los datos que son necesarios para realizar las consultas.
