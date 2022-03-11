@@ -31,7 +31,7 @@ public static class Moogle
             FreqAndWeigthWordsQuery[lem] = new Tuple<int, float>( freq , weight - (v.Item2 / 100f * weight));
         }
 
-        //! Calcular el rank entre las paguinas midiendo la similitud de la query con el documento
+        //! Calcular el rank entre las paginas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(FreqAndWeigthWordsQuery);
 
 
@@ -252,7 +252,7 @@ public static class Moogle
 
 
             (_, Tuple<int, int>[] positions) = WorkingOperators.ProcessCloseness(wordsForCloseness.ToArray(), doc);
-            int LengthSnippet = 100;
+            int LengthSnippet = 200;
             Array.Sort(positions);
 
 
