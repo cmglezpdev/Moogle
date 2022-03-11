@@ -217,8 +217,6 @@ public static string GetWordEndIn(string sentence, int end);
 public static int AmountAppareanceOfWordBetweenAllFiles(string word);
 // True si la palabra esta entre los documentos
 public static bool IsWordInDocs(string word);
-// Devuelve la palabra que esta a la derecha o a la izquiera de esa posicion
-public static string GetWord(string sentence, int pos, string direction);
 //! Algoritmo de Levenshtein
 public static int LevenshteinDistance(string a, string b) {
     

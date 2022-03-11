@@ -194,26 +194,6 @@ public static class AuxiliarMethods{
         }
         return false;
     }
-
-    //! Devuelve la palabra que esta a ala derecha o a la izquiera de esa posicion
-    public static string GetWord(string sentence, int pos, string direction) {
-        string word = "";
-        int n = sentence.Length;
-
-        switch( direction ) {
-            case "right":
-                for(int i = pos; i < n && !AuxiliarMethods.Ignore(sentence[i]); i ++)
-                    word += sentence[i];
-                break;
-            
-            case "left":
-                for(int i = pos; i >= 0 && !AuxiliarMethods.Ignore(sentence[i]); i --)
-                    word = sentence[i] + word;
-                break;
-        }
-
-        return word;
-    }
     
     //! Algoritmo de Levenshtein
     public static int LevenshteinDistance(string a, string b) {
