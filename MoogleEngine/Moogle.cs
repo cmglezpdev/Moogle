@@ -6,8 +6,6 @@ public static class Moogle
 {
     public static SearchResult Query(string query)
     {
-        Stopwatch crono = new Stopwatch();
-        crono.Start();
 
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
@@ -46,9 +44,6 @@ public static class Moogle
         //! Construir el resultado
         SearchItem[] items = BuildResult( sim, FreqAndWeigthWordsQuery, query);
         SearchItem.Sort(items);
-
-        System.Console.WriteLine(crono.ElapsedMilliseconds);
-        crono.Stop();
 
         return new SearchResult(items, suggestion);
     }
