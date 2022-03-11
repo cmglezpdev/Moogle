@@ -71,11 +71,6 @@ public static class FilesMethods {
         return Data.files[idFile];
     }
 
-    //! Cantidad de palabras de una oración 
-    public static int GetAmountWordsInSentence(string line) {
-        return AuxiliarMethods.GetWordsOfSentence(line).Length;
-    }
-
     //! Devuelve el contexto izquierdo
     public static string GetLeftContext(int idFile, int numLine, int numWord, int length, bool addWord) { 
         //todo:: Tanto numLine como numWord empieza desde cero

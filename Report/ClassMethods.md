@@ -153,8 +153,6 @@ public static string GetNameFile(string file);
 public static string[] ReadFolder() ;
 // Devuelve el path del documento por su ID
 public static string GetFileByID(int idFile);
-//! Cantidad de palabras de una oración 
-public static int GetAmountWordsInSentence(string line);
 ```
 
 ```cs
