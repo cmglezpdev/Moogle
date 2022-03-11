@@ -12,7 +12,6 @@ public static class Moogle
         List< Tuple<string, int> > SynonymsToModif = new List<Tuple<string, int>> ();
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery, SynonymsToModif);
 
-
         //! Frecuencia de las palabras de la query y su peso(en este paso el peso es cero todavia)
         Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery = GetFreqWordsInQuery( query );
         //! Metodo que lo unico que hace es aumentar la cantidad de apariciones de la palabra por cada operador * que aparezca
