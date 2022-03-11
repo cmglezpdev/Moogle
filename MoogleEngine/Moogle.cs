@@ -1,18 +1,17 @@
 ﻿namespace MoogleEngine;
 using System.Text;
-using System.Diagnostics;
 
 public static class Moogle
 {
     public static SearchResult Query(string query)
     {
-
         //! Formatear la query 
         string formatQuery = AuxiliarMethods.FormatQuery( query );
 
         //! Calcular el suggestion por las palabras que no aparecen en el documento
         List< Tuple<string, int> > SynonymsToModif = new List<Tuple<string, int>> ();
         (query, string suggestion) = GetNewQueryAndSuggestion(formatQuery, SynonymsToModif);
+
 
         //! Frecuencia de las palabras de la query y su peso(en este paso el peso es cero todavia)
         Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery = GetFreqWordsInQuery( query );
@@ -33,7 +32,6 @@ public static class Moogle
 
         //! Calcular el rank entre las paginas midiendo la similitud de la query con el documento
         Tuple<float, int>[] sim = GetSimBetweenQueryDocs(FreqAndWeigthWordsQuery);
-
 
         // !Modificar el peso de los documentos en base a cada operador del query
         List< Tuple<string, string> > operators = WorkingOperators.GetOperators(query);

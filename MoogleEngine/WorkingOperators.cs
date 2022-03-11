@@ -32,10 +32,11 @@ public static class WorkingOperators {
             
             // Si esos operadores son los últimos entonces no le corresponden a ninguna palabra
             if(i == n - 1)  continue;
+            string next_word = Lemmatization.Stemmer( parts[i + 1] );
 
             // Si son los operadores menos el de cercania simplemente anadimos la palabra con sus operadores
             if( op[0] != '~' ) {
-                operators.Add( new Tuple<string, string> (op, parts[i + 1]) );
+                operators.Add( new Tuple<string, string> (op, next_word) );
                 continue;
             }
 
@@ -43,36 +44,36 @@ public static class WorkingOperators {
             // Si es la primera palabra entonces ignoramos la cercania y nos quedamos con los demas operadores que afecten a la palabra
             if(i == 0) {
                 if( op.Length > 1 ) // Si tiene mas operadores los guardamos junto con la palabra 
-                    operators.Add( new Tuple<string, string> (op.Substring(1, op.Length - 1), parts[i + 1]) );
+                    operators.Add( new Tuple<string, string> (op.Substring(1, op.Length - 1), next_word) );
                 continue;
             }
 
-            // Sino cojemos las dos palabras de su alrededor que son afectadas por el operador
-            string prev_word = parts[i - 1];
+            // Sino tomamos las dos palabras de su alrededor que son afectadas por el operador
+            string prev_word = Lemmatization.Stemmer( parts[i - 1] );
 
             // Si ya hemos guardando operadores vemos si lo ultimo que tenemos agregado es un operador de cercania
             Tuple<string, string> last = new Tuple<string, string>("", "");
             if(operators.Count != 0) last = operators.Last();
 
             // Si es el de cercania entonces tomamos el ultimo de la cadena
-            string aux_word = (last.Item1 == "~") ? aux_word = last.Item2.Split(' ').Last() : aux_word = last.Item2; // ultima palabra agregada al conjunto de <operadores, palabra>
+            string aux_word = (last.Item1 == "~") ?  Lemmatization.Stemmer( last.Item2.Split(' ').Last() ) : Lemmatization.Stemmer( last.Item2 ); // ultima palabra agregada al conjunto de <operadores, palabra>
 
             //  Si son palabras diferentes entonces anadimos un nuevo elemento a la lista de operadores <"~", prev_word + " " + operadores + " " + parts[i + 1]>
             string oper_aux = parts[i].Substring(1, parts[i].Length - 1);
             
             if( aux_word != prev_word ) {
-               operators.Add(new Tuple<string, string> ("~", prev_word + ' ' + oper_aux + ((oper_aux.Length != 0) ? " " : "")  + parts[i + 1]));
+               operators.Add(new Tuple<string, string> ("~", prev_word + ' ' + oper_aux + ((oper_aux.Length != 0) ? " " : "")  + Lemmatization.Stemmer( parts[i + 1] )));
             } 
             else {
                 operators.RemoveAt(operators.Count - 1);
                 // Si pertenece a un operador de cercania la anadimos directamente 
                 if( last.Item1 == "~" ) {
                     operators.Add( new Tuple<string, string>( "~", last.Item2 + " " + oper_aux + oper_aux + 
-                                                            ((oper_aux.Length != 0) ? " " : "")  + parts[i + 1] ) );
+                                                            ((oper_aux.Length != 0) ? " " : "")  + Lemmatization.Stemmer( parts[i + 1] ) ) );
                 } 
                 else {
                     operators.Add( new Tuple<string, string>( "~", last.Item1 + " " + last.Item2 + " " + oper_aux + 
-                                                            ((oper_aux.Length != 0) ? " " : "") + parts[i + 1] ) );
+                                                            ((oper_aux.Length != 0) ? " " : "") + Lemmatization.Stemmer( parts[i + 1] ) ) );
                 }
 
             }
@@ -131,22 +132,6 @@ public static class WorkingOperators {
         return newOper.ToString();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //* Procesar todos los operadores de la query para cada documento
     public static void ChangeForOperators( List< Tuple<string, string> > operators,  Tuple<float, int>[] sim) {
 
@@ -183,22 +168,16 @@ public static class WorkingOperators {
 
                             List<string> wordsForCloseness = new List<string>();
                             List< Tuple<string, string> > OpersAndWords = GetOperators(word); 
-                            string[] SubWords = AuxiliarMethods.GetWordsOfSentence(word);
+                            string[] SubWords = word.Split(' ');
 
                             //? Poner en las palabras para la cercania las que no tengan operador
                             for(int wi = 0; wi < SubWords.Length; wi ++) {
                                 
-                                if(!AuxiliarMethods.IsWordInDocs(SubWords[wi])) continue;
+                                if( AuxiliarMethods.IsLineOperators(SubWords[wi]) ) continue;
+                                if( !AuxiliarMethods.IsWordInDocs(SubWords[wi]) ) continue;
                                 
-                                // Si no es una palabra de las que tienen operadores entonces la agrego a la lista si aparece en el documento
-                                bool found = false;
-                                foreach(Tuple<string, string> g in OpersAndWords) 
-                                    if(g.Item2 == SubWords[wi]) {
-                                        found = true;
-                                        break;
-                                    }
-                                
-                                if( found ) continue;
+                                // Si no tiene operadores entonces la agrego a la lista si aparece en el documento
+                                if(wi > 0 && AuxiliarMethods.IsLineOperators(SubWords[wi - 1]) ) continue;
                                 
                                 if( Data.PosInDocs[doc].ContainsKey(SubWords[wi]) )
                                     wordsForCloseness.Add(SubWords[wi]);
@@ -236,6 +215,14 @@ public static class WorkingOperators {
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
                             
+
+                            foreach (var x in wordsForCloseness)
+                            {
+                                System.Console.WriteLine(x);
+                            }
+
+
+
                             string aux = ""; // Anadir la cantidad de palabras originales de la cercania
                             foreach(string x in wordsForCloseness)
                                 aux += x + " ";

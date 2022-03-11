@@ -235,10 +235,10 @@ class Test{
 
     static void TestGetOperators() {
 
-        string sentence = "Me ~ viene tu ~~**nombre **^*^^^*y tu *!*cara";
-        sentence = AuxiliarMethods.FormatQuery(sentence);
-
-        List< Tuple<string, string> > operadores = WorkingOperators.GetOperators(sentence);
+        string sentence = "~ **Me ~ viene tu ~~**nombre **^*^^^*y tu **cara";
+        stirng news = AuxiliarMethods.FormatQuery(sentence);
+        System.Console.WriteLine(news);
+        List< Tuple<string, string> > operadores = WorkingOperators.GetOperators(news);
 
         foreach(var x in operadores) {
             System.Console.WriteLine(x.ToString());
