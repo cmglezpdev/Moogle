@@ -48,7 +48,7 @@ public static class WorkingOperators {
 
             // Cojo la palabra anterior
             if(i - 1 < 0) continue; // Si no hay palabra anterior el operador no tiene logica
-            string prev_word = 
+            string prev_word = "";
 
         }
 
@@ -121,29 +121,66 @@ public static class WorkingOperators {
         if(op == "*") return op;
         if(op == "~") return op;
 
-        // Si todos son iguales 
-        bool allEquival = true;
-        for(int i = 1; i < op.Length; i ++)
-            if(op[i] != op[i - 1]) {
-                allEquival = false;
-                break;
-            }
-            
-        if(allEquival == true) {
-            if(op[0] != '*') return op[0].ToString();
-            return op;
-        }
+        int[] cnt = new int[257];
+        int n = op.Length;
 
-        // Si entre los operadores aparece ~ entoces no es valido
-        for(int i = 1; i < op.Length; i ++) 
-            if(op[i] == '~') return "";
+        foreach ( char c in op) cnt[ (int)c ] ++;
+
+        // Si el signo de ~ esta entre los operadores pero no al inicio entonces los operadores no tienen logica
+        if( op[0] != '~' && cnt[ (int)'~' ] != 0 ) return "";
         
-        // Si aparece ! entoces los demas operadores no importan
-        for(int i = 0; i < op.Length && op[0] != '~'; i ++)
-            if(op[i] == '!') return "!";
+        // Si estan los operadores ^ y ! entonces los operadores no tienen logica
+        if( cnt[ (int)'^' ] != 0 && cnt[ (int)'!' ] != 0 ) return "";
 
-        return op;
+        // Si el operador de ~ aparece con el operador !
+        if( cnt[ (int)'~' ] != 0 && cnt[ (int)'!' ] != 0 ) return "";
+
+        // Si aparece ! entonces no importa los otros operadores, el documento no debe de aparecer
+        if(cnt[ (int)'!' ] != 0 ) return "!";
+        
+
+
+        // Ahora poner una aparicion de cada operador, excepto el * que se ponen todos
+        cnt[ (int)'~' ] = cnt[ (int)'!' ] = cnt[ (int)'*' ] = cnt[ (int)'^' ] = 0;
+        StringBuilder newOper = new StringBuilder();
+        int fristPositionAsteriscos = -1;
+
+        for(int i = 0; i < n; i ++) {
+            int id = (int)op[i];
+            cnt[id] ++;
+
+            if(op[i] == '*') {
+                if(fristPositionAsteriscos == - 1) {
+                    newOper.Append( '*' );
+                    fristPositionAsteriscos = newOper.Length - 1;
+                    continue;
+                }
+                newOper.Insert(fristPositionAsteriscos, '*');
+            }
+            if(cnt[ id ] > 1) continue; 
+            
+            newOper.Append( op[i] );
+        }
+        
+        return newOper.ToString();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //* Procesar todos los operadores de la query para cada documento
     public static void ChangeForOperators( List< Tuple<string, string> > operators,  Tuple<float, int>[] sim) {
 
