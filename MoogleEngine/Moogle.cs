@@ -187,7 +187,6 @@ public static class Moogle
                         continue;
                     // Si no tiene sinonimos entonces veo si esta mal escrita
                     foundSuggestion = true;
-                    // System.Console.WriteLine("Here!!");
                     newQuery += (words[i] + " ");
                     // Comprobar si esta mal escrita
                     int bestCost = int.MaxValue;

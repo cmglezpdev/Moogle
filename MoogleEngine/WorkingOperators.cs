@@ -214,14 +214,7 @@ public static class WorkingOperators {
 
                             if(wordsForCloseness.Count <= 1) // Si no hay al menos dos palabras para la cercania
                                 continue;
-                            
-
-                            foreach (var x in wordsForCloseness)
-                            {
-                                System.Console.WriteLine(x);
-                            }
-
-
+                        
 
                             string aux = ""; // Anadir la cantidad de palabras originales de la cercania
                             foreach(string x in wordsForCloseness)
