@@ -37,7 +37,6 @@
     align-items: center;
     width: 480px;
     margin: 10px auto;
-    /* border: 1px solid blue; */
 }
 
 .input-search {
@@ -62,6 +61,15 @@
     text-align: left;
     width: 32px;
     height: 32px;
+}
+
+.btn-remove-search {
+    z-index: 50;
+    margin-left: -50px;
+    padding: 5px 6px;
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
 }
 
 .item :nth-child(3) {
