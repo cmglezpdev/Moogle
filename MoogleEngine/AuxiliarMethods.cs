@@ -28,7 +28,7 @@ public static class AuxiliarMethods{
     }
     
     //! Formatear la Query convenientemente para trabajar mejor con ella
-      public static string FormatQuery(string q) {
+    public static string FormatQuery(string q) {
         string query = q.ToLower();
 
         string[] aux = query.Split(' ');

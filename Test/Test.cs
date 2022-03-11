@@ -26,7 +26,7 @@ class Test{
         // TestSynonymsDB();
         // TestBinarySearch();
 
-        System.Console.WriteLine(WorkingOperators.ValidOperators("~^**^^*^^**^^^^*****"));
+        // System.Console.WriteLine(WorkingOperators.ValidOperators("~^**^^*^^**^^^^*****"));
 
 
         //? Print if all is OK

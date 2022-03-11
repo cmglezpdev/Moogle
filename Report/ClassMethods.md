@@ -270,6 +270,14 @@ public static string GetOperators(string sentence, int pos);
 public static string ValidOperators(string op);
 ```
 
+Este último método se guía por las siguientes reglas para decir si un conjunto de operadores es valido o no, y en caso afirmativo reducirlo correctamente:
+
+1. Si son operadores simples se devuelven esos mismos.
+2. Si `~` está entre los operadores pero no al inicio(esto quiere decir que hay operadores a ambos lados de `~`) entonces el conjunto de operadores no es válido.
+3. Si estan los operadores `!` y `^` entonces el conjunto de operadores no es válido.
+
+Por último se recorre todo el conjunto de operadores eliminando todas las apariciones que sobran( excepto el `*` )
+
 ```cs
 //* Procesar todos los operadores de la query para cada documento
 public static void ChangeForOperators( List< Tuple<string, string> > operators,  Tuple<float, int>[] sim);

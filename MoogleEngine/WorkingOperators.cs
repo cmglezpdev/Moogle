@@ -23,37 +23,6 @@ public static class WorkingOperators {
         List<Tuple<string, string>> o = new List<Tuple<string, string>> ();        StringBuilder auxQ = new StringBuilder();
         int n = query.Length;
 
-
-        string[] words = query.Split(' ');
-
-        for(int i = 0; i < words.Length; i ++) {
-            
-            if( !AuxiliarMethods.IsLineOperators(words[i]) ) 
-                 continue;
-
-            // Si al operador no le corresponde una palabra( si esta al final de la query )
-            if(i + 1 > words.Length) continue;
-
-            string operators = words[i];
-            string word = words[i + 1];
-
-            // Si el primer operador no es el de cercania
-            if(operators[0] != '~') {
-                o.Add(new Tuple<string, string>(operators, word));
-                i ++;
-                continue;
-            }
-
-            // En caso de que sea el de cercania
-
-            // Cojo la palabra anterior
-            if(i - 1 < 0) continue; // Si no hay palabra anterior el operador no tiene logica
-            string prev_word = "";
-
-        }
-
-
-
         // for(int i = 0; i < query.Length; i ++) {
         //     if(!IsOperator(query[i])) continue;
 
