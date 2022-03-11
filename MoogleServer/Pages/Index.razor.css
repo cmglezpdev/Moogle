@@ -29,13 +29,39 @@
     cursor: pointer;
 }
 
+
+
+.home-search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 480px;
+    margin: 10px auto;
+    /* border: 1px solid blue; */
+}
+
 .input-search {
-    width: 400px;
+    width: 480px;
+    padding: 6px !important;
+    border: 1px solid black;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
 }
 
 .input-search:focus{
-    outline: 3px solid rgb(73, 171, 236);
-    border: 2px solid #fff;
+    outline: none;
+}
+.btn-search {
+    padding: 2px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border: 1px solid black;
+}
+
+.btn-search .search-icon {
+    text-align: left;
+    width: 32px;
+    height: 32px;
 }
 
 .item :nth-child(3) {
