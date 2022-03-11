@@ -8,73 +8,73 @@
 
 .item {
     background-color: rgb(202, 223, 242);
-    border: 1px solid #000;
     border-radius: 10px;
-    padding: 20px 10px;
+    border: 1px solid #000;
     margin: 10px;
+    padding: 20px 10px;
 }
 
 .item .title {
-    text-decoration: none;
+    background-color: rgb(129, 129, 236);
+    color: rgb(45, 45, 247);
     display: block;
     font-size: 20px;
-    color: rgb(45, 45, 247);
-    background-color: rgb(129, 129, 236);
     margin-bottom: 10px;
+    text-decoration: none;
 }
 
 .item .title:hover {
-    color: rgb(10, 10, 146);
     background-color: rgb(86, 86, 243);
+    color: rgb(10, 10, 146);
     cursor: pointer;
 }
 
 
 
 .home-search {
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
-    width: 480px;
     margin: 10px auto;
+    width: 480px;
 }
 
 .input-search {
-    width: 480px;
-    padding: 6px !important;
-    border: 1px solid black;
-    border-top-left-radius: 7px;
     border-bottom-left-radius: 7px;
+    border-top-left-radius: 7px;
+    border: 1px solid black;
+    padding: 6px !important;
+    width: 480px;
 }
 
 .input-search:focus{
     outline: none;
 }
 .btn-search {
-    padding: 2px;
-    border-top-right-radius: 7px;
     border-bottom-right-radius: 7px;
+    border-top-right-radius: 7px;
     border: 1px solid black;
+    padding: 2px;
 }
 
 .btn-search .search-icon {
+    height: 32px;
     text-align: left;
     width: 32px;
-    height: 32px;
 }
 
 .btn-remove-search {
-    z-index: 50;
-    margin-left: -50px;
-    padding: 5px 6px;
     background-color: transparent;
     border: none;
     font-weight: bold;
+    margin-left: -50px;
+    padding: 5px 6px;
+    z-index: 50;
 }
 
 .item :nth-child(3) {
-    text-align: left;
     padding-left: 20px;
+    text-align: left;
 }
 
 .suggestion{
@@ -82,6 +82,6 @@
 }
 
 .no-results h5{
-    font-weight: bold;
     font-size: 23px;
+    font-weight: bold;
 }
