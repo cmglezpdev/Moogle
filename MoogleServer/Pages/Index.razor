@@ -37,21 +37,25 @@
         </li>
     }
 } else {
-    <div class="no-results">
-        <img src="/No_Results.jpg" width="350px" height="350px">
-        <h5>La busqueda no ha dado resultados😢!!</h5>
-    </div>
+    if(searched) {
+        <div class="no-results">
+            <img src="/No_Results.jpg" width="350px" height="350px">
+            <h5>La busqueda no ha dado resultados😢!!</h5>
+        </div>
+    }
 }
 
 </ul>
 
 @code {
     private string query = "";
+    private bool searched = false;
     private SearchResult result = new SearchResult();
 
     private void RunQuery() {
         if( string.IsNullOrEmpty(query) ) 
             return;
+        searched = true;
         result = Moogle.Query(query);
     }
 
