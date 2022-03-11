@@ -19,7 +19,7 @@ class Test{
         // TestGetNameFile();
         // TestGetLeftContext();
         // TestGetRightContext();
-        // TestGetOperators();
+        TestGetOperators();
         // BuildStepsForPorter();
         // TestLemmantization();
 
@@ -27,7 +27,6 @@ class Test{
         // TestBinarySearch();
 
         // System.Console.WriteLine(WorkingOperators.ValidOperators("~^**^^*^^**^^^^*****"));
-
 
         //? Print if all is OK
         Console.ForegroundColor = ConsoleColor.Green;
@@ -232,11 +231,18 @@ class Test{
             // System.Console.WriteLine(secuence);
         }
 
+    }
 
+    static void TestGetOperators() {
 
+        string sentence = "Me ~ viene tu ~~**nombre **^*^^^*y tu *!*cara";
+        sentence = AuxiliarMethods.FormatQuery(sentence);
 
+        List< Tuple<string, string> > operadores = WorkingOperators.GetOperators(sentence);
 
-
+        foreach(var x in operadores) {
+            System.Console.WriteLine(x.ToString());
+        }
 
     }
 

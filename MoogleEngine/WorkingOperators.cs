@@ -20,65 +20,66 @@ public static class WorkingOperators {
     }
     //* Devolver lista de pares en forma de <operadores, palabra>
     public static List< Tuple<string, string> > GetOperators(string query) {
-        List<Tuple<string, string>> o = new List<Tuple<string, string>> ();        StringBuilder auxQ = new StringBuilder();
-        int n = query.Length;
+        List<Tuple<string, string>> operators = new List<Tuple<string, string>> ();        
+        string[] parts = query.Split(' ');
+        int n = parts.Length;
 
-        // for(int i = 0; i < query.Length; i ++) {
-        //     if(!IsOperator(query[i])) continue;
 
-        //     // Sacar los operadores delante de la palabra en la posicion i
-        //     string op = GetOperators(query, i);
-        //     int j = i;
-        //     while(++j < n && AuxiliarMethods.Ignore(query[j]));
-        //     if(j >= n) break;
-        //     // Sacar la palabra que esta a la derecha de la posicion j
-        //     string wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, j, "right"));
-        //     int auxLen = wo.Length;
-        //             wo = Lemmatization.Stemmer(wo);
+        for(int i = 0; i < n; i ++) {
+            if( !AuxiliarMethods.IsLineOperators(parts[i]) ) continue;
 
-        //     // Validar los operadores segun mi criterio
-        //     string operators = ValidOperators(op);
-        //     if(operators == "") continue; // Si los operadores no son validos
+            string op = parts[i];
             
-        //     // Si no es un operador de cercania puedo guardar la palabra con sus operadores
-        //     if(operators[0] != '~') {
-        //          o.Add(new Tuple<string, string>(operators, wo));
-        //         i = j + auxLen - 1;
-        //         continue;
-        //     }
-            
-        //     // Como es un operador de cercania entonces encontramos la palabra anterior a ella
-        //     int k = i;
-        //     while( --k >= 0 && AuxiliarMethods.Ignore(query[k]) );
-        //     if(k < 0) continue;
-        //     string prev_wo = AuxiliarMethods.NormalizeWord(AuxiliarMethods.GetWord(query, k, "left"));
-        //            prev_wo = Lemmatization.Stemmer(prev_wo); 
-        //     if(prev_wo == "") { // Si la palabra no existe el operador queda invalidado por lo que no la agregamos
-        //          i = j + auxLen - 1;
-        //          continue;
-        //     }
-            
-        //     // Si es la misma que la ultima que pusimos entonces significa que tiene operador, por lo tanto 
-        //     // la quitamos de la lista y la anadimos junto a la palara nueva
-        //     if(o.Count > 0) { // Si hay palabras guardadas
-        //         // Si la el operador de la palabra anterior es el de cercania, tenemos que cojer la segunda palabra de las que estan juntas con ese operador
-        //         string x = ( o.Last().Item1 != "~" ) ? o.Last().Item2 : AuxiliarMethods.GetWordsOfSentence(o.Last().Item2).Last();
-                
-        //         if(prev_wo == x) { // Si la palabras coinciden las tomamos y las unimos
-                    
-        //             // Si la palabra es simple
-        //             if(o.Last().Item1 != "~") prev_wo = o.Last().Item1 + o.Last().Item2;
-        //             else prev_wo = o.Last().Item2;
-                   
-        //             o.RemoveAt(o.Count - 1);
-        //         }
-        //     }
+            // Si esos operadores son los últimos entonces no le corresponden a ninguna palabra
+            if(i == n - 1)  continue;
 
-        //     o.Add(new Tuple<string, string>( "~", prev_wo + " " + operators.Substring(1, operators.Length - 1) + wo));
-        //     i = j + auxLen - 1;
-        // }
+            // Si son los operadores menos el de cercania simplemente anadimos la palabra con sus operadores
+            if( op[0] != '~' ) {
+                operators.Add( new Tuple<string, string> (op, parts[i + 1]) );
+                continue;
+            }
 
-        return o;
+            //  Si es el de cercania
+            // Si es la primera palabra entonces ignoramos la cercania y nos quedamos con los demas operadores que afecten a la palabra
+            if(i == 0) {
+                if( op.Length > 1 ) // Si tiene mas operadores los guardamos junto con la palabra 
+                    operators.Add( new Tuple<string, string> (op.Substring(1, op.Length - 1), parts[i + 1]) );
+                continue;
+            }
+
+            // Sino cojemos las dos palabras de su alrededor que son afectadas por el operador
+            string prev_word = parts[i - 1];
+
+            // Si ya hemos guardando operadores vemos si lo ultimo que tenemos agregado es un operador de cercania
+            Tuple<string, string> last = new Tuple<string, string>("", "");
+            if(operators.Count != 0) last = operators.Last();
+
+            // Si es el de cercania entonces tomamos el ultimo de la cadena
+            string aux_word = (last.Item1 == "~") ? aux_word = last.Item2.Split(' ').Last() : aux_word = last.Item2; // ultima palabra agregada al conjunto de <operadores, palabra>
+
+            //  Si son palabras diferentes entonces anadimos un nuevo elemento a la lista de operadores <"~", prev_word + " " + operadores + " " + parts[i + 1]>
+            string oper_aux = parts[i].Substring(1, parts[i].Length - 1);
+            
+            if( aux_word != prev_word ) {
+               operators.Add(new Tuple<string, string> ("~", prev_word + ' ' + oper_aux + ((oper_aux.Length != 0) ? " " : "")  + parts[i + 1]));
+            } 
+            else {
+                operators.RemoveAt(operators.Count - 1);
+                // Si pertenece a un operador de cercania la anadimos directamente 
+                if( last.Item1 == "~" ) {
+                    operators.Add( new Tuple<string, string>( "~", last.Item2 + " " + oper_aux + oper_aux + 
+                                                            ((oper_aux.Length != 0) ? " " : "")  + parts[i + 1] ) );
+                } 
+                else {
+                    operators.Add( new Tuple<string, string>( "~", last.Item1 + " " + last.Item2 + " " + oper_aux + 
+                                                            ((oper_aux.Length != 0) ? " " : "") + parts[i + 1] ) );
+                }
+
+            }
+
+        }
+
+        return operators;
     }
    //* Devuelve vacio si no es valida, y en otro caso simplifica la expresion a una valida
     public static string ValidOperators(string op) {
