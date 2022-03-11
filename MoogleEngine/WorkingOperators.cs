@@ -101,13 +101,9 @@ public static class WorkingOperators {
         // Si estan los operadores ^ y ! entonces los operadores no tienen logica
         if( cnt[ (int)'^' ] != 0 && cnt[ (int)'!' ] != 0 ) return "";
 
-        // Si el operador de ~ aparece con el operador !
-        if( cnt[ (int)'~' ] != 0 && cnt[ (int)'!' ] != 0 ) return "";
-
         // Si aparece ! entonces no importa los otros operadores, el documento no debe de aparecer
         if(cnt[ (int)'!' ] != 0 ) return "!";
         
-
 
         // Ahora poner una aparicion de cada operador, excepto el * que se ponen todos
         cnt[ (int)'~' ] = cnt[ (int)'!' ] = cnt[ (int)'*' ] = cnt[ (int)'^' ] = 0;
