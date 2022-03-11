@@ -24,17 +24,25 @@
 }
 
 <ul class="results">
-@foreach (var item in result.Items()) {
-    <li>
-        <div class="item">
-            <a href= "/Content/@item.Title" class="title" target="__blank"><strong>@item.Title</strong></a>
-            <p>... @((MarkupString)item.Snippet) ...</p>
-            @if( !string.IsNullOrEmpty(item.MissingWords) ){
-                <p><strong>No aparece: </strong>@((MarkupString)item.MissingWords)</p>
-            }
-        </div>
-    </li>
+@if(result.Count != 0) {
+    foreach (var item in result.Items()) {
+        <li>
+            <div class="item">
+                <a href= "/Content/@item.Title" class="title" target="__blank"><strong>@item.Title</strong></a>
+                <p>... @((MarkupString)item.Snippet) ...</p>
+                @if( !string.IsNullOrEmpty(item.MissingWords) ){
+                    <p><strong>No aparece: </strong>@((MarkupString)item.MissingWords)</p>
+                }
+            </div>
+        </li>
+    }
+} else {
+    <div class="no-results">
+        <img src="/No_Results.jpg" width="350px" height="350px">
+        <h5>La busqueda no ha dado resultados😢!!</h5>
+    </div>
 }
+
 </ul>
 
 @code {
