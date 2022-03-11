@@ -7,17 +7,7 @@ public static class WorkingOperators {
     public static bool IsOperator(char o) {
         return (o == '!' || o == '^' || o == '~' || o == '*');
     }
-    //* Devuelve los operadores que hay en un string en la posicion pos
-    public static string GetOperators(string sentence, int pos) {
-        string operators = "";
-        int n = sentence.Length;
 
-        for(int i = pos; i < n && (IsOperator(sentence[i]) || Char.IsWhiteSpace(sentence[i])); i ++)
-            if(IsOperator(sentence[i]))
-                    operators += sentence[i];
-
-        return operators;
-    }
     //* Devolver lista de pares en forma de <operadores, palabra>
     public static List< Tuple<string, string> > GetOperators(string query) {
         List<Tuple<string, string>> operators = new List<Tuple<string, string>> ();        

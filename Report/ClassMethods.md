@@ -260,8 +260,6 @@ Esta clase contiene un conjunto de Metodos para el procesamiento de los operador
 ```cs
 // Comprobar si un caracter es un operador
 public static bool IsOperator(char o);
-//* Devuelve los operadores que hay en un string en la posicion pos
-public static string GetOperators(string sentence, int pos);
 //* Devuelve vacio si no es valida, y en otro caso simplifica la expresion a una valida
 public static string ValidOperators(string op);
 ```
