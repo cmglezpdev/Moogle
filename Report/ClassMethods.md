@@ -13,10 +13,10 @@ public string MissingWords { get; private set; }
 public string LinkFile {get; private set;}
 
 // Operadores de comparación definidos 
-public static bool operator < (SearchItem left, SearchItem right) 
-public static bool operator > (SearchItem left, SearchItem right) 
-public static bool operator >= (SearchItem left, SearchItem right) 
-public static bool operator <= (SearchItem left, SearchItem right) 
+public static bool operator < (SearchItem left, SearchItem right);
+public static bool operator > (SearchItem left, SearchItem right); 
+public static bool operator >= (SearchItem left, SearchItem right); 
+public static bool operator <= (SearchItem left, SearchItem right); 
 
 // Metodo statico para ordenar un array de elementos(Algoritmo de MergeSort)
 public static void Sort(SearchItem[] items)
@@ -57,13 +57,13 @@ private static void UpdateFreqForOperatorRelevance(Dictionary<string, Tuple<int,
 Si el usuario introdujo en la consulta el operador de relevancia, entonces aplicamos los cambios correspondientes a este operador sumando una aparición de la palabra afectada por cada asterisco.
 
 ```cs
-public static Tuple<float, int>[] GetSimBetweenQueryDocs( Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery )
+public static Tuple<float, int>[] GetSimBetweenQueryDocs( Dictionary<string, Tuple<int, float>> FreqAndWeigthWordsQuery );
 ```
 
 Devuelve un arreglo de pares. Calcula la similitud de la query con cada documento de la colección.
 
 ```cs
-private static (string, string) GetNewQueryAndSuggestion(string query, List<Tuple<string, int>> SynomymsToModif)
+private static (string, string) GetNewQueryAndSuggestion(string query, List<Tuple<string, int>> SynomymsToModif);
 ```
 
 Devulve dos strings, una nueva query y una sugerencia en caso de que halla alguna palabra mal escrita en la query. Este metodo lo que hace es tomar las palabras que conforman la query original ycomprobar si estan o no en los documentos.
@@ -73,7 +73,7 @@ Si la palabra esta mal escrita, entonces la añadimos al string sugerencia y la 
 Buscar un sinónimo se hace con el objetivo de que si la palabra devuelve muy pocos resultados, al buscar un sinónimo encontremos mas información.
 
 ```cs
-    private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, Tuple<int, float>> FreqWordsQuery, string query)
+private static SearchItem[] BuildResult( Tuple<float, int>[] sim, Dictionary<string, Tuple<int, float>> FreqWordsQuery, string query);
 ```
 
 Este metodo lo que hace es que, a partir de toda la información buscada y creada con los otros metodos, crea una lista de SearchItem con la informacion de cada documento.
@@ -108,7 +108,7 @@ public static void GetWeigthOfDocs();
 ```
 
 ```cs
-public static void DataProcessing()l
+public static void DataProcessing();
 ```
 
 Metodo statico de la clase que es llamado mientras carga el servidor para indexar los documentos. Especificamente lo que hace es leer todo el contenido de cada uno de los documentos y construir el Diccionario `PosInDocs`. También calcula el peso de cada palabra en su respectivo documento y carga en la instancia de clase `Synonyms` de la clase `WorkingSynonyms` la base de datos de los sinonimos.
@@ -338,7 +338,7 @@ Se crea una clase synonyms con una propiedad de tipo `List<string[]>` para guard
 Porter Algorithm es una metodo para calcular la raiz de una palabra, permitiendo asi poder crear familias de palabras que pueden estar relacionadas.
 
 ```cs
-ublic static string Stemmer(string w);
+public static string Stemmer(string w);
 ```
 
 Esta clase contiene un metodo llamado Stemmer que dado una palabra, ejecuta un conjunto de reglas(las reglas son diferentes en dependencia del idioma de stemmer) que reducen la palabra a su raíz.
