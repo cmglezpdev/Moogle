@@ -6,11 +6,7 @@
 <div class="home-search">
     <input class="p-1 my-4 input-search" @bind="query" @bind:event="oninput" @onkeydown="PushEnter" placeholder="Introduzca su búsqueda"></input>
 
-    @if(query == "") {
-        <button type="default" class="btn-remove-search" @onclick="RemoveSearch" style="visibility: hidden">⨯</button>
-    } else {
-        <button type="default" class="btn-remove-search" @onclick="RemoveSearch" style="visibility: visible">⨯</button>
-    }
+        <button type="default" class="btn-remove-search" @onclick="RemoveSearch" style=@HiddenX()>⨯</button>
 
     <button type="default" class="btn-search" @onclick="RunQuery">
         <img class="search-icon" src="/Search.jpg">
@@ -71,5 +67,11 @@
 
     private void RemoveSearch() {
         query = "";
+    }
+
+    private string HiddenX() {
+        if(query == "")
+            return "visibility: hidden";
+        return "visibility: visible";
     }
 }
